@@ -1,0 +1,39 @@
+{
+  "name": "form-thing",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Neal Granger <neal@nealg.com>",
+  "license": "CC0-1.0",
+  "peerDependencies": {
+    "react": ">=16.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.46",
+    "@babel/core": "^7.0.0-beta.46",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.46",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.46",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.46",
+    "@babel/preset-env": "^7.0.0-beta.46",
+    "@babel/preset-flow": "^7.0.0-beta.46",
+    "@babel/preset-react": "^7.0.0-beta.46",
+    "@babel/register": "^7.0.0-beta.46",
+    "@std/esm": "^0.26.0",
+    "babel-plugin-dev-expression": "^0.2.1",
+    "enzyme": "^3.3.0",
+    "eslint": "^4.19.1",
+    "eslint-config-metalab": "^9.0.1",
+    "eslint-plugin-prettier": "^2.6.0",
+    "flow-bin": "^0.71.0",
+    "jest": "^22.4.3",
+    "jest-enzyme": "^6.0.0",
+    "lerna": "^2.11.0",
+    "ncp": "^2.0.0",
+    "prettier": "^1.12.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "renamer": "^0.6.1",
+    "rimraf": "^2.6.2"
+  }
+}
