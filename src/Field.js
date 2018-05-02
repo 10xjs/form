@@ -7,6 +7,14 @@ import FieldWrapper from './FieldWrapper';
 import renderWrapper from './renderWrapper';
 
 class Field extends React.PureComponent<FieldProps> {
+  static defaultProps = {
+    format: (v: mixed) => v,
+    parse: (v: mixed) => v,
+    checkbox: false,
+    validateOnBlur: true,
+    validateOnChange: false,
+  };
+
   render() {
     const {
       path,

@@ -2,7 +2,7 @@
 /* eslint-disable react/sort-comp */
 import * as React from 'react';
 
-import {set, get, equalsDeep, matchesDeep, parsePath, formatPath} from './util';
+import {set, matchesDeep, parsePath, formatPath, lazyUpdate} from './util';
 import SubmitValidationError from './SubmitValidationError';
 import {Provider} from './context';
 
@@ -24,12 +24,6 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
     const parsedPath = parsePath(path);
 
     this.setState((state) => {
-      const currentValue = get(state.valueState, parsedPath);
-
-      if (equalsDeep(currentValue, value)) {
-        return null;
-      }
-
       const valueState = set(state.valueState, parsedPath, value);
       const errorState = set(state.errorState, parsedPath, undefined);
       const submitErrorState = set(
@@ -39,7 +33,12 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
       );
       const validationStale = true;
 
-      return {valueState, errorState, submitErrorState, validationStale};
+      return lazyUpdate(state, {
+        valueState,
+        errorState,
+        submitErrorState,
+        validationStale,
+      });
     });
   };
 
@@ -47,15 +46,19 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
     const parsedPath = parsePath(path);
 
     this.setState((state) => {
-      const currentValue = get(state.initialValueState, parsedPath);
-
-      if (equalsDeep(currentValue, value)) {
-        return null;
-      }
-
       const initialValueState = set(state.initialValueState, parsedPath, value);
 
-      return {initialValueState};
+      return lazyUpdate(state, {initialValueState});
+    });
+  };
+
+  setPendingValue = (path: Path, value: mixed) => {
+    const parsedPath = parsePath(path);
+
+    this.setState((state) => {
+      const pendingValueState = set(state.pendingValueState, parsedPath, value);
+
+      return lazyUpdate(state, {pendingValueState});
     });
   };
 
@@ -63,12 +66,6 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
     const parsedPath = parsePath(path);
 
     this.setState((state) => {
-      const currentError = get(state.errorState, parsedPath);
-
-      if (equalsDeep(currentError, error)) {
-        return null;
-      }
-
       const errorState = set(state.errorState, parsedPath, error);
       const submitErrorState = set(
         state.submitErrorState,
@@ -77,7 +74,7 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
       );
       const validationStale = true;
 
-      return {errorState, submitErrorState, validationStale};
+      return lazyUpdate(state, {errorState, submitErrorState, validationStale});
     });
   };
 
@@ -89,7 +86,9 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
         return null;
       }
 
-      const visitedMap = {...state.visitedMap, [formattedPath]: true};
+      const visitedMap = {...state.visitedMap};
+      visitedMap[formattedPath] = true;
+
       return {visitedMap};
     });
   };
@@ -103,7 +102,9 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
         return null;
       }
 
-      const touchedMap = {...state.touchedMap, [formattedPath]: true};
+      const touchedMap = {...state.touchedMap};
+      touchedMap[formattedPath] = true;
+
       return {touchedMap};
     });
   };
@@ -140,17 +141,17 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
         return null;
       }
 
-      const errorState = props.validate(state.valueState) || {};
       const validationStale = false;
+      const errorState = props.validate(state.valueState) || {};
       const valid = matchesDeep(
         errorState,
         (value) =>
-          !/^\[object (Object|Array)\]$/.test(
+          !/^\[object (Object|Array|Undefined)\]$/.test(
             Object.prototype.toString.call(value),
           ),
       );
 
-      return {errorState, validationStale, valid};
+      return {validationStale, errorState, valid};
     });
   };
 
@@ -236,6 +237,7 @@ class Form<T> extends React.PureComponent<FormProps<T>, FormState> {
     actions: {
       setValue: this.setValue,
       setInitialValue: this.setInitialValue,
+      setPendingValue: this.setPendingValue,
       setError: this.setError,
       setTouched: this.setTouched,
       setVisited: this.setVisited,

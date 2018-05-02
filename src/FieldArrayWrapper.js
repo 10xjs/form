@@ -2,14 +2,7 @@
 import * as React from 'react';
 
 import type {FieldArrayWrapperProps, FieldArrayWrapperState} from './types';
-import {
-  matchesDeep,
-  parsePath,
-  formatPath,
-  insert,
-  remove,
-  getId,
-} from './util';
+import {matchesDeep, parsePath, formatPath, insert, remove} from './util';
 import Field from './Field';
 
 const getValues = (value: mixed, formattedPath: string): Array<mixed> => {
@@ -24,24 +17,8 @@ class FieldArrayWrapper extends React.PureComponent<
   FieldArrayWrapperProps,
   FieldArrayWrapperState,
 > {
-  static defaultProps = {
-    value: [],
-  };
-
-  state = {
-    keys: this.getInitialKeys(),
-  };
-
-  getInitialKeys(): Array<string> {
-    const {value, path} = this.props;
-
-    const formattedPath = formatPath(path);
-
-    return getValues(value, formattedPath).map(() => `${getId()}`);
-  }
-
   addField = (index: number, fieldValue: mixed) => {
-    const {value, path, setValue} = this.props;
+    const {value = [], path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
@@ -49,15 +26,10 @@ class FieldArrayWrapper extends React.PureComponent<
     const values = getValues(value, formattedPath);
 
     setValue(parsedPath, insert(values, index, fieldValue));
-
-    this.setState((state) => {
-      const keys = insert(state.keys, index, `${getId()}`);
-      return {keys};
-    });
   };
 
   removeField = (index: number) => {
-    const {value, path, setValue} = this.props;
+    const {value = [], path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
@@ -65,11 +37,6 @@ class FieldArrayWrapper extends React.PureComponent<
     const values = getValues(value, formattedPath);
 
     setValue(parsedPath, remove(values, index));
-
-    this.setState((state) => {
-      const keys = remove(state.keys, index);
-      return {keys};
-    });
   };
 
   render() {
@@ -84,7 +51,7 @@ class FieldArrayWrapper extends React.PureComponent<
 
       // Field state
       initialValue,
-      value,
+      value = [],
       pendingValue,
       error,
       submitting,
@@ -92,25 +59,25 @@ class FieldArrayWrapper extends React.PureComponent<
       // Context Actions
       setValue,
       setInitialValue,
+      setPendingValue,
       validate,
 
       // Render Callbacks
       children,
       renderField,
+      getFieldKey,
     } = this.props;
 
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    const {keys} = this.state;
-
-    const fields = getValues(value, formattedPath).map((_, index) => {
+    const fields = getValues(value, formattedPath).map((fieldValue, index) => {
       const parsedFieldPath = parsedPath.concat([index]);
 
       return (
         <Field
           index={index}
-          key={keys[index]}
+          key={getFieldKey(fieldValue, index)}
           path={parsedFieldPath}
           format={format}
           parse={parse}
@@ -130,7 +97,7 @@ class FieldArrayWrapper extends React.PureComponent<
     const valid = matchesDeep(
       error,
       (value) =>
-        !/^\[object (Object|Array)\]$/.test(
+        !/^\[object (Object|Array|Undefined)\]$/.test(
           Object.prototype.toString.call(value),
         ),
     );
@@ -158,6 +125,10 @@ class FieldArrayWrapper extends React.PureComponent<
       },
       acceptPendingValue() {
         setValue(parsedPath, pendingValue);
+        setInitialValue(parsedPath, pendingValue);
+      },
+      rejectPendingValue() {
+        setPendingValue(parsedPath, value);
         setInitialValue(parsedPath, pendingValue);
       },
 

@@ -2,7 +2,19 @@
   "name": "form-thing",
   "version": "0.1.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run clean && npm run build:flow && npm run build:es && npm run build:lib",
+    "build:es": "BABEL_ENV=es npx babel --copy-files -s -d es src",
+    "build:flow": "ncp src es && ncp src lib && npx renamer --regex --find '$' --replace '.flow' '@(es|lib)/**/*.js'",
+    "build:lib": "BABEL_ENV=lib npx babel --copy-files -s -d lib src",
+    "clean": "npx rimraf lib es",
+    "flow": "npx flow",
+    "format": "npx prettier --write '**/*.js'",
+    "prepare": "npm run build",
+    "lint": "npx eslint .",
+    "spec": "npx jest --runInBand=${SPEC_SERIAL:-$CI} --coverage=${SPEC_COVERAGE:-$CI}",
+    "spec:watch": "npm run spec -- --watch",
+    "start": "cd ./website && npm start",
+    "test": "npm run flow --silent && npm run lint --slient && npm run spec --silent"
   },
   "author": "Neal Granger <neal@nealg.com>",
   "license": "CC0-1.0",
@@ -20,11 +32,11 @@
     "@babel/preset-react": "^7.0.0-beta.46",
     "@babel/register": "^7.0.0-beta.46",
     "@std/esm": "^0.26.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-plugin-dev-expression": "^0.2.1",
     "enzyme": "^3.3.0",
     "eslint": "^4.19.1",
     "eslint-config-metalab": "^9.0.1",
-    "eslint-plugin-prettier": "^2.6.0",
     "flow-bin": "^0.71.0",
     "jest": "^22.4.3",
     "jest-enzyme": "^6.0.0",
@@ -35,5 +47,20 @@
     "react-dom": "^16.3.2",
     "renamer": "^0.6.1",
     "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "hoist-non-react-statics": "^2.5.0"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "lib/",
+      "es/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "__test__/"
+    ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
   }
 }

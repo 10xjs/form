@@ -11,6 +11,7 @@ export type Path = ParsedPath | string;
 type ContextActions = {|
   setValue: (Path, mixed) => void,
   setInitialValue: (Path, mixed) => void,
+  setPendingValue: (Path, mixed) => void,
   setError: (Path, mixed) => void,
   setTouched: (Path) => void,
   setVisited: (Path) => void,
@@ -39,11 +40,11 @@ export type FormState = {|
 
 export type FormProps<T> = {
   values: State,
-  onSubmit: (State) => Promise<T> | T,
-  onSubmitFail: (Error) => mixed,
-  onSubmitSuccess: (T) => mixed,
-  onSubmitValidationFail: (SubmitValidationError) => mixed,
-  validate: (State) => ?State,
+  onSubmit(State): Promise<T> | T,
+  onSubmitFail(Error): mixed,
+  onSubmitSuccess(T): mixed,
+  onSubmitValidationFail(SubmitValidationError): mixed,
+  validate(State): void,
   children(FormState): React.Node,
 };
 
@@ -53,7 +54,7 @@ export type InputProps = {
   checked?: boolean,
   onFocus(): void,
   onBlur(): void,
-  onChange(mixed): void,
+  onChange(fieldValueOrEvent: mixed): void,
 };
 
 export type FieldRenderProps = {
@@ -78,7 +79,7 @@ export type FieldRenderProps = {
   dirty: boolean,
   pristine: boolean,
   submitting: boolean,
-  rawValue: mixed,
+  stateValue: mixed,
   pendingValue: mixed,
   detached: boolean,
 
@@ -89,10 +90,11 @@ export type FieldRenderProps = {
   setTouched(): void,
   setValue(): void,
   acceptPendingValue(): void,
+  rejectPendingValue(): void,
 
   // FieldArray Actions
-  addFieldBefore?: (mixed) => void,
-  addFieldAfter?: (mixed) => void,
+  addFieldBefore?: (stateValue: mixed) => void,
+  addFieldAfter?: (stateValue: mixed) => void,
   removeField?: () => void,
 };
 
@@ -113,15 +115,16 @@ export type FieldArrayRenderProps = {
   // Context Actions
   setValue(): void,
   acceptPendingValue(): void,
+  rejectPendingValue(): void,
 
   // FieldArray Props
-  addField: (mixed) => void,
+  addField: (value: mixed) => void,
 };
 
 export type FieldConfig = {
   path: Path,
-  format: (mixed) => mixed,
-  parse: (mixed, mixed) => mixed,
+  format: (stateValue: mixed) => mixed,
+  parse: (fieldValue: mixed, previousStateValue: mixed) => mixed,
   checkbox: boolean,
   validateOnBlur: boolean,
   validateOnChange: boolean,
@@ -141,14 +144,15 @@ type FieldStateProps = {
 export type FieldProps = {
   key?: string,
   index?: number,
-  addField?: (number, mixed) => void,
-  removeField?: (number) => void,
-  children(FieldRenderProps): React.Node,
+  addField?: (index: number, stateValue: mixed) => void,
+  removeField?: (index: number) => void,
+  children(props: FieldRenderProps): React.Node,
 } & FieldConfig;
 
 export type FieldArrayProps = {
-  renderField(FieldRenderProps): React.Node,
-  children(FieldArrayRenderProps): React.Node,
+  getFieldKey(stateValue: mixed, index: number): string,
+  renderField(props: FieldRenderProps): React.Node,
+  children(props: FieldArrayRenderProps): React.Node,
 } & FieldConfig;
 
 export type FieldWrapperProps = FieldProps & FieldStateProps & ContextActions;

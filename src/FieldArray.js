@@ -9,6 +9,7 @@ import renderWrapper from './renderWrapper';
 class FieldArray extends React.PureComponent<FieldArrayProps> {
   static defaultProps = {
     children: ({fields}: FieldArrayRenderProps) => fields,
+    getFieldKey: (stateValue: mixed, index: number) => `${index}`,
   };
 
   render() {
@@ -21,6 +22,7 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
       validateOnChange,
       renderField,
       children,
+      getFieldKey,
     } = this.props;
 
     return (
@@ -38,7 +40,7 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
               validateOnChange,
             },
             context,
-            {renderField, children},
+            {renderField, children, getFieldKey},
           )
         }
       </Consumer>

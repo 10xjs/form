@@ -12,14 +12,6 @@ import {
 import type {FieldWrapperProps, InputProps} from './types';
 
 class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
-  static defaultProps = {
-    format: (v: mixed) => v,
-    parse: (v: mixed) => v,
-    checkbox: false,
-    validateOnBlur: true,
-    validateOnChange: false,
-  };
-
   render() {
     const {
       // Field Config
@@ -47,6 +39,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       setTouched,
       setValue,
       setInitialValue,
+      setPendingValue,
       validate,
 
       // FieldArray Props
@@ -92,7 +85,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const valid = matchesDeep(
       error,
       (value) =>
-        !/^\[object (Object|Array)\]$/.test(
+        !/^\[object (Object|Array|Undefined)\]$/.test(
           Object.prototype.toString.call(value),
         ),
     );
@@ -130,7 +123,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       pristine: !dirty,
       submitting,
       initialValue,
-      rawValue: value,
+      stateValue: value,
       pendingValue,
       detached,
 
@@ -158,6 +151,10 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       },
       acceptPendingValue() {
         setValue(parsedPath, pendingValue);
+        setInitialValue(parsedPath, pendingValue);
+      },
+      rejectPendingValue() {
+        setPendingValue(parsedPath, value);
         setInitialValue(parsedPath, pendingValue);
       },
 
