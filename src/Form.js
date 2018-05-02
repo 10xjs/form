@@ -2,18 +2,24 @@
 
 import * as React from 'react';
 
-import type {FormProps, Context} from './types';
+import type {FormProps, FormWrapperProps, Context} from './types';
 
 import {Provider} from './context';
 
 import DefaultStateProvider from './DefaultStateProvider';
-import FormWrapper from './FormWrapper';
 
-function defaultStateProvider(
+function defaultStateProviderProp(
   config: React.ElementConfig<typeof DefaultStateProvider>,
   render: (context: Context) => React.Node,
 ) {
   return <DefaultStateProvider {...config}>{render}</DefaultStateProvider>;
+}
+
+class FormWrapper extends React.PureComponent<FormWrapperProps> {
+  render() {
+    const {actions, children} = this.props;
+    return children(actions);
+  }
 }
 
 class Form<StateProviderProps> extends React.PureComponent<
@@ -21,7 +27,7 @@ class Form<StateProviderProps> extends React.PureComponent<
   Context,
 > {
   static defaultProps = {
-    stateProvider: defaultStateProvider,
+    stateProvider: defaultStateProviderProp,
   };
 
   render() {
