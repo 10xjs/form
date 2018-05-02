@@ -15,6 +15,7 @@ export type {
   DefaultStateProviderProps,
   StateProvider,
   FormProps,
+  FormWrapperProps,
   InputProps,
   FieldRenderProps,
   FieldArrayRenderProps,

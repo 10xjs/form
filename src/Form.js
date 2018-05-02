@@ -7,6 +7,7 @@ import type {FormProps, Context} from './types';
 import {Provider} from './context';
 
 import DefaultStateProvider from './DefaultStateProvider';
+import FormWrapper from './FormWrapper';
 
 function defaultStateProvider(
   config: React.ElementConfig<typeof DefaultStateProvider>,
@@ -27,7 +28,9 @@ class Form<StateProviderProps> extends React.PureComponent<
     const {stateProvider, children, ...config} = this.props;
 
     return stateProvider(config, (context: Context) => (
-      <Provider value={context}>{children(context)}</Provider>
+      <Provider value={context}>
+        <FormWrapper actions={context.actions}>{children}</FormWrapper>
+      </Provider>
     ));
   }
 }

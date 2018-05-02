@@ -9,7 +9,13 @@ import renderWrapper from './renderWrapper';
 
 class Field extends React.PureComponent<FieldProps> {
   static defaultProps = {
-    format: (v: mixed) => v,
+    format: (v: mixed) => {
+      if (v === null || v === undefined) {
+        return '';
+      }
+
+      return v;
+    },
     parse: (v: mixed) => v,
     checkbox: false,
     validateOnBlur: true,

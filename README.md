@@ -13,8 +13,8 @@ const FormComponent = () => (
     values={{field: ''}}
     onSubmit={(values) => submitHandlerFunction(values)}
   >
-    {({actions}) => (
-      <form onSubmit={actions.submit}>
+    {({submit}) => (
+      <form onSubmit={submit}>
         <Field path="field">{({props}) => <input {...props} />}</Field>
         <button>Submit form</button>
       </form>

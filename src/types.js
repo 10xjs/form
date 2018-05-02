@@ -55,7 +55,12 @@ export type StateProvider<StateProviderProps> = (
 
 export type FormProps<StateProviderProps> = StateProviderProps & {
   stateProvider: StateProvider<StateProviderProps>,
-  children(Context): React.Node,
+  children(actions: ContextActions): React.Node,
+};
+
+export type FormWrapperProps = {
+  actions: ContextActions,
+  children(actions: ContextActions): React.Node,
 };
 
 export type InputProps = {
