@@ -1,13 +1,14 @@
 // @flow
+
 import * as React from 'react';
 
-import type {FieldConfig, FormState} from './types';
+import type {FieldConfig, Context} from './types';
 import {get, parsePath, formatPath} from './util';
 
 const renderWrapper = <P, T>(
   Wrapper: React.ComponentType<P & T>,
   config: $Exact<FieldConfig>,
-  context: FormState,
+  context: Context,
   props: T,
 ) => {
   const parsedPath = parsePath(config.path);

@@ -21,7 +21,7 @@ type ContextActions = {|
   submit: (event?: Event | SyntheticEvent<>) => void,
 |};
 
-export type FormState = {|
+export type Context = {|
   initialValueState: State,
   valueState: State,
   pendingValueState: State,
@@ -38,14 +38,24 @@ export type FormState = {|
   actions: ContextActions,
 |};
 
-export type FormProps<T> = {
+export type DefaultStateProviderProps<SubmitResponse> = {
   values: State,
-  onSubmit(State): Promise<T> | T,
-  onSubmitFail(Error): mixed,
-  onSubmitSuccess(T): mixed,
-  onSubmitValidationFail(SubmitValidationError): mixed,
+  onSubmit(State): Promise<SubmitResponse> | SubmitResponse,
+  onSubmitFail(SubmitValidationError): mixed,
+  onSubmitSuccess(SubmitResponse): mixed,
+  onSubmitValidationFail(Error): mixed,
   validate(State): void,
-  children(FormState): React.Node,
+  children(context: Context): React.Node,
+};
+
+export type StateProvider<StateProviderProps> = (
+  config: StateProviderProps,
+  (context: Context) => React.Node,
+) => React.Node;
+
+export type FormProps<StateProviderProps> = StateProviderProps & {
+  stateProvider: StateProvider<StateProviderProps>,
+  children(Context): React.Node,
 };
 
 export type InputProps = {

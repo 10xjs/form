@@ -1,4 +1,5 @@
 // @flow
+
 import * as React from 'react';
 // flowlint untyped-import:off
 import hoistStatics from 'hoist-non-react-statics';
