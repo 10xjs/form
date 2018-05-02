@@ -16,7 +16,7 @@ import {
   lazyUpdate,
 } from '../util';
 
-class MockHTMLInputElement {
+class MockHTMLElement {
   value: string | void;
   checked: boolean | void;
   type: string | void;
@@ -44,7 +44,7 @@ class MockEvent {
 const isEvent = createIsEvent(MockEvent);
 const castEvent = createCastEvent(MockEvent);
 const mergeHandlers = createMergeHandlers(MockEvent);
-const parseEvent = createParseEvent(MockEvent, MockHTMLInputElement);
+const parseEvent = createParseEvent(MockEvent, MockHTMLElement);
 
 describe('utils', () => {
   describe('insert', () => {
@@ -414,14 +414,14 @@ describe('utils', () => {
     });
 
     it('should return the value of a plain event target', () => {
-      const event = new MockEvent(new MockHTMLInputElement({value: 'foo'}));
+      const event = new MockEvent(new MockHTMLElement({value: 'foo'}));
 
       expect(parseEvent(event)).toEqual('foo');
     });
 
     it('should return the checked property of a checkbox event target', () => {
       const event = new MockEvent(
-        new MockHTMLInputElement({type: 'checkbox', checked: true}),
+        new MockHTMLElement({type: 'checkbox', checked: true}),
       );
 
       expect(parseEvent(event)).toEqual(true);

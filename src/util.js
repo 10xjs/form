@@ -282,7 +282,7 @@ export const mergeHandlers = createMergeHandlers(Event);
 
 export const createParseEvent = (
   EventClass: Function,
-  HTMLInputElementClass: Function,
+  HTMLElementClass: Function,
 ) => {
   const castEvent = createCastEvent(EventClass);
 
@@ -293,7 +293,7 @@ export const createParseEvent = (
       return eventOrValue;
     }
 
-    if (event.target instanceof HTMLInputElementClass) {
+    if (event.target instanceof HTMLElementClass) {
       const type = event.target.type;
 
       if (type === 'checkbox') {
@@ -309,7 +309,7 @@ export const createParseEvent = (
   };
 };
 
-export const parseEvent = createParseEvent(Event, HTMLInputElement);
+export const parseEvent = createParseEvent(Event, HTMLElement);
 
 export const lazyUpdate = <T: Object, U: $Shape<T>>(
   state: T,
