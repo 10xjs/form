@@ -1,6 +1,6 @@
 # @10xjs/form
 
-_A high performance zero-config form state library for React._
+#### A high performance zero-config form state library for React.
 
 ![build status](http://img.shields.io/travis/10xjs/form/master.svg?style=flat)
 ![coverage](http://img.shields.io/coveralls/10xjs/form/master.svg?style=flat)
