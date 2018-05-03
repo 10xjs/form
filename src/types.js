@@ -9,16 +9,15 @@ export type ParsedPath = Array<string | number>;
 export type Path = ParsedPath | string;
 
 type ContextActions = {|
-  setValue: (Path, mixed) => void,
-  setInitialValue: (Path, mixed) => void,
-  setPendingValue: (Path, mixed) => void,
-  setError: (Path, mixed) => void,
-  setTouched: (Path) => void,
-  setVisited: (Path) => void,
-  setFocused: (Path) => void,
-  clearFocused: (Path) => void,
-  validate: () => void,
-  submit: (event?: Event | SyntheticEvent<>) => void,
+  setValue(path: Path, value: mixed): void,
+  setInitialValue(path: Path, value: mixed): void,
+  setPendingValue(path: Path, value: mixed): void,
+  setError(path: Path, mixed): void,
+  setTouched(path: Path, touched: boolean): void,
+  setVisited(path: Path, visited: boolean): void,
+  setFocused(path: Path, focused: boolean): void,
+  validate(): void,
+  submit(event?: Event | SyntheticEvent<>): void,
 |};
 
 export type Context = {|
@@ -40,11 +39,11 @@ export type Context = {|
 
 export type DefaultStateProviderProps<SubmitResponse> = {
   values: State,
-  onSubmit(State): Promise<SubmitResponse> | SubmitResponse,
-  onSubmitFail(SubmitValidationError): mixed,
-  onSubmitSuccess(SubmitResponse): mixed,
-  onSubmitValidationFail(Error): mixed,
-  validate(State): void,
+  onSubmit(values: State): Promise<SubmitResponse> | SubmitResponse,
+  onSubmitFail(error: Error): mixed,
+  onSubmitSuccess(response: SubmitResponse): mixed,
+  onSubmitValidationFail(error: SubmitValidationError): mixed,
+  validate(values: State): State,
   children(context: Context): React.Node,
 };
 
@@ -99,13 +98,14 @@ export type FieldRenderProps = {
   detached: boolean,
 
   // Context Actions
-  setFocused(): void,
-  setVisited(): void,
-  clearFocused(): void,
-  setTouched(): void,
+  setFocused(focused: boolean): void,
+  setVisited(visited: boolean): void,
+  setTouched(touched: boolean): void,
   setValue(): void,
   acceptPendingValue(): void,
   rejectPendingValue(): void,
+  submit(): void,
+  validate(): void,
 
   // FieldArray Actions
   addFieldBefore?: (stateValue: mixed) => void,
@@ -117,39 +117,35 @@ export type FieldArrayRenderProps = {
   fields: Array<React.Node>,
 
   // "Meta" Props
-  error: mixed,
+  errors: Array<mixed>,
   invalid: boolean,
   valid: boolean,
-  dirty: boolean,
-  pristine: boolean,
   submitting: boolean,
-  rawValue: mixed,
-  pendingValue: mixed,
-  detached: boolean,
+  rawValues: Array<mixed>,
+  pendingValues: Array<mixed>,
 
   // Context Actions
-  setValue(): void,
-  acceptPendingValue(): void,
-  rejectPendingValue(): void,
+  submit(): void,
+  validate(): void,
 
   // FieldArray Props
-  addField: (value: mixed) => void,
+  addField(value: mixed): void,
 };
 
 export type FieldConfig = {
   path: Path,
-  format: (stateValue: mixed) => mixed,
-  parse: (fieldValue: mixed, previousStateValue: mixed) => mixed,
+  format(stateValue: mixed): mixed,
+  parse(fieldValue: mixed, previousStateValue: mixed): mixed,
   checkbox: boolean,
   validateOnBlur: boolean,
   validateOnChange: boolean,
 };
 
-type FieldStateProps = {
-  initialValue: mixed,
-  value: mixed,
-  pendingValue: mixed,
-  error: mixed,
+type FieldStateProps<T> = {
+  initialValue: T,
+  value: T,
+  pendingValue: T,
+  error: T,
   focused: boolean,
   touched: boolean,
   visited: boolean,
@@ -170,12 +166,10 @@ export type FieldArrayProps = {
   children(props: FieldArrayRenderProps): React.Node,
 } & FieldConfig;
 
-export type FieldWrapperProps = FieldProps & FieldStateProps & ContextActions;
-
-export type FieldArrayWrapperProps = FieldArrayProps &
-  FieldStateProps &
+export type FieldWrapperProps = FieldProps &
+  FieldStateProps<mixed> &
   ContextActions;
 
-export type FieldArrayWrapperState = {
-  keys: Array<string>,
-};
+export type FieldArrayWrapperProps = FieldArrayProps &
+  FieldStateProps<Array<mixed>> &
+  ContextActions;

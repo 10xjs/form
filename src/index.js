@@ -24,5 +24,4 @@ export type {
   FieldArrayProps,
   FieldWrapperProps,
   FieldArrayWrapperProps,
-  FieldArrayWrapperState,
 } from './types';

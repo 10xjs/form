@@ -5,7 +5,6 @@ import * as React from 'react';
 import type {
   FieldArrayProps,
   FieldArrayWrapperProps,
-  FieldArrayWrapperState,
   FieldArrayRenderProps,
 } from './types';
 import {matchesDeep, parsePath, formatPath, insert, remove} from './util';
@@ -13,36 +12,26 @@ import {Consumer} from './context';
 import Field from './Field';
 import renderWrapper from './renderWrapper';
 
-const getValues = (value: mixed, formattedPath: string): Array<mixed> => {
-  if (!Array.isArray(value)) {
-    throw new Error(`expected array at ${formattedPath}`);
-  }
+class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
+  static defaultProps = {
+    initialValue: [],
+    value: [],
+    pendingValue: [],
+    error: [],
+  };
 
-  return value;
-};
-
-class FieldArrayWrapper extends React.PureComponent<
-  FieldArrayWrapperProps,
-  FieldArrayWrapperState,
-> {
   addField = (index: number, fieldValue: mixed) => {
-    const {value = [], path, setValue} = this.props;
+    const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
-    const formattedPath = formatPath(path);
-
-    const values = getValues(value, formattedPath);
 
     setValue(parsedPath, insert(values, index, fieldValue));
   };
 
   removeField = (index: number) => {
-    const {value = [], path, setValue} = this.props;
+    const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
-    const formattedPath = formatPath(path);
-
-    const values = getValues(value, formattedPath);
 
     setValue(parsedPath, remove(values, index));
   };
@@ -58,17 +47,15 @@ class FieldArrayWrapper extends React.PureComponent<
       validateOnChange,
 
       // Field state
-      initialValue,
-      value = [],
-      pendingValue,
-      error,
+      initialValue: initialValues,
+      value: values,
+      pendingValue: pendingValues,
+      error: errors,
       submitting,
 
       // Context Actions
-      setValue,
-      setInitialValue,
-      setPendingValue,
       validate,
+      submit,
 
       // Render Callbacks
       children,
@@ -79,13 +66,25 @@ class FieldArrayWrapper extends React.PureComponent<
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    const fields = getValues(value, formattedPath).map((fieldValue, index) => {
+    if (!Array.isArray(values)) {
+      throw new Error(`expected array value at ${formattedPath}`);
+    }
+
+    if (!Array.isArray(pendingValues)) {
+      throw new Error(`expected array pendingValue at ${formattedPath}`);
+    }
+
+    if (!Array.isArray(errors)) {
+      throw new Error(`expected array error at ${formattedPath}`);
+    }
+
+    const fields = values.map((value, index) => {
       const parsedFieldPath = parsedPath.concat([index]);
 
       return (
         <Field
           index={index}
-          key={getFieldKey(fieldValue, index)}
+          key={getFieldKey(value, index)}
           path={parsedFieldPath}
           format={format}
           parse={parse}
@@ -100,10 +99,11 @@ class FieldArrayWrapper extends React.PureComponent<
       );
     });
 
-    const dirty = value !== initialValue;
-    const detached = value !== pendingValue;
+    // TODO: Calculate dirty/detached state with shallow array equality,
+    // potentially with deep equality. Maybe provide a callback to allow the
+    // consumer to provide a compare func?
     const valid = matchesDeep(
-      error,
+      errors,
       (value) =>
         !/^\[object (Object|Array|Undefined)\]$/.test(
           Object.prototype.toString.call(value),
@@ -113,32 +113,17 @@ class FieldArrayWrapper extends React.PureComponent<
     return children({
       fields,
       // "Meta" Props
-      error,
+      errors,
       invalid: !valid,
       valid: valid,
-      dirty,
-      pristine: !dirty,
       submitting,
-      initialValue,
-      rawValue: value,
-      pendingValue,
-      detached,
+      initialValues,
+      rawValues: values,
+      pendingValues,
 
       // Context Actions
-      setValue(nextValue) {
-        setValue(parsedPath, parse(nextValue, value));
-        if (validateOnChange) {
-          validate();
-        }
-      },
-      acceptPendingValue() {
-        setValue(parsedPath, pendingValue);
-        setInitialValue(parsedPath, pendingValue);
-      },
-      rejectPendingValue() {
-        setPendingValue(parsedPath, value);
-        setInitialValue(parsedPath, pendingValue);
-      },
+      validate,
+      submit,
 
       // FieldArray Actions
       addField(value) {

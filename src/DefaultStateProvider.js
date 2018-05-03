@@ -4,9 +4,170 @@ import * as React from 'react';
 
 import type {DefaultStateProviderProps, Context, Path} from './types';
 
-import {set, matchesDeep, parsePath, formatPath, lazyUpdate} from './util';
+import {set, matchesDeep, parsePath, formatPath} from './util';
 import SubmitValidationError from './SubmitValidationError';
 import {Provider} from './context';
+
+const updateValue = (path, value) => (state: Context) => {
+  if (path.length < 1) {
+    throw new Error('unexpected empty path');
+  }
+
+  let nextState = state;
+
+  nextState = set(nextState, ['valueState', ...path], value);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  nextState = set(nextState, ['errorState', ...path], undefined);
+
+  if (nextState.errorState !== state.errorState) {
+    nextState = set(nextState, ['validationStale'], true);
+  }
+
+  nextState = set(nextState, ['submitErrorState', ...path], undefined);
+
+  return nextState;
+};
+
+const updateInitialValue = (path, value) => (state: Context) => {
+  if (path.length < 1) {
+    throw new Error('unexpected empty path');
+  }
+
+  let nextState = state;
+
+  nextState = set(nextState, ['initialValueState', ...path], value);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updatePendingValue = (path, value) => (state: Context) => {
+  if (path.length < 1) {
+    throw new Error('unexpected empty path');
+  }
+
+  let nextState = state;
+
+  nextState = set(nextState, ['pendingValueState', ...path], value);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateError = (path, error) => (state: Context) => {
+  if (path.length < 1) {
+    throw new Error('unexpected empty path');
+  }
+
+  let nextState = state;
+
+  nextState = set(nextState, ['errorState', ...path], error);
+  nextState = set(nextState, ['submitErrorState', ...path], undefined);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateVisited = (key, visited) => (state: Context) => {
+  let nextState = state;
+
+  nextState = set(nextState, ['visitedMap', key], visited);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateTouched = (key, touched) => (state: Context) => {
+  let nextState = state;
+
+  nextState = set(nextState, ['touchedMap', key], touched);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateFocused = (key, focused) => (state: Context) => {
+  if (focused) {
+    if (state.focusedPath === key) {
+      return null;
+    }
+
+    return {focusedPath: key};
+  }
+
+  if (state.focusedPath !== key) {
+    return null;
+  }
+
+  return {focusedPath: null};
+};
+
+const updateValidation = <T>(
+  state: Context,
+  props: DefaultStateProviderProps<T>,
+) => {
+  let nextState = state;
+
+  if (state.validationStale) {
+    const errorState = props.validate(state.valueState);
+    const valid = matchesDeep(
+      errorState,
+      (value) =>
+        !/^\[object (Object|Array|Undefined)\]$/.test(
+          Object.prototype.toString.call(value),
+        ),
+    );
+
+    nextState = set(nextState, ['validationStale'], false);
+    nextState = set(nextState, ['errorState'], errorState);
+    nextState = set(nextState, ['valid'], valid);
+  }
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateSubmit = (error?: Error) => (state) => {
+  let nextState = state;
+
+  nextState = set(nextState, ['submitting'], false);
+  nextState = set(nextState, ['submitSucceeded'], !error);
+  nextState = set(nextState, ['submitFailed'], !!error);
+
+  let submitErrorState;
+
+  if (error && error instanceof SubmitValidationError) {
+    submitErrorState = error.errors;
+  } else {
+    submitErrorState = Array.isArray(nextState.submitErrorState) ? [] : {};
+  }
+
+  nextState = set(nextState, ['submitErrorState'], submitErrorState);
+
+  return nextState;
+};
 
 class DefaultStateProvider<T> extends React.PureComponent<
   DefaultStateProviderProps<T>,
@@ -18,144 +179,54 @@ class DefaultStateProvider<T> extends React.PureComponent<
     onSubmitFail: (error: Error) => Promise.reject(error),
     onSubmitSuccess: () => {},
     onSubmitValidationFail: () => {},
-    validate: () => {},
+    validate: () => ({}),
   };
 
-  _submitPromise: Promise<T> | null = null;
+  static getDerivedStateFromProps(
+    state: Context,
+    props: DefaultStateProviderProps<T>,
+  ) {
+    let nextState = state;
+
+    nextState = set(nextState, ['pendingValueState'], props.values);
+
+    if (nextState === state) {
+      return null;
+    }
+
+    return nextState;
+  }
 
   setValue = (path: Path, value: mixed) => {
-    const parsedPath = parsePath(path);
-
-    this.setState((state) => {
-      const valueState = set(state.valueState, parsedPath, value);
-      const errorState = set(state.errorState, parsedPath, undefined);
-      const submitErrorState = set(
-        state.submitErrorState,
-        parsedPath,
-        undefined,
-      );
-      const validationStale = true;
-
-      return lazyUpdate(state, {
-        valueState,
-        errorState,
-        submitErrorState,
-        validationStale,
-      });
-    });
+    this.setState(updateValue(parsePath(path), value));
   };
 
   setInitialValue = (path: Path, value: mixed) => {
-    const parsedPath = parsePath(path);
-
-    this.setState((state) => {
-      const initialValueState = set(state.initialValueState, parsedPath, value);
-
-      return lazyUpdate(state, {initialValueState});
-    });
+    this.setState(updateInitialValue(parsePath(path), value));
   };
 
   setPendingValue = (path: Path, value: mixed) => {
-    const parsedPath = parsePath(path);
-
-    this.setState((state) => {
-      const pendingValueState = set(state.pendingValueState, parsedPath, value);
-
-      return lazyUpdate(state, {pendingValueState});
-    });
+    this.setState(updatePendingValue(parsePath(path), value));
   };
 
   setError = (path: Path, error: mixed) => {
-    const parsedPath = parsePath(path);
-
-    this.setState((state) => {
-      const errorState = set(state.errorState, parsedPath, error);
-      const submitErrorState = set(
-        state.submitErrorState,
-        parsedPath,
-        undefined,
-      );
-      const validationStale = true;
-
-      return lazyUpdate(state, {errorState, submitErrorState, validationStale});
-    });
+    this.setState(updateError(parsePath(path), error));
   };
 
-  setVisited = (path: Path) => {
-    const formattedPath = formatPath(path);
-
-    this.setState((state) => {
-      if (state.visitedMap[formattedPath]) {
-        return null;
-      }
-
-      const visitedMap = {...state.visitedMap};
-      visitedMap[formattedPath] = true;
-
-      return {visitedMap};
-    });
+  setVisited = (path: Path, visited: boolean) => {
+    this.setState(updateVisited(formatPath(path), visited));
   };
 
-  setTouched = (path: Path) => {
-    const formattedPath = formatPath(path);
-
-    this.clearFocused(formattedPath);
-    this.setState((state) => {
-      if (state.touchedMap[formattedPath]) {
-        return null;
-      }
-
-      const touchedMap = {...state.touchedMap};
-      touchedMap[formattedPath] = true;
-
-      return {touchedMap};
-    });
+  setTouched = (path: Path, touched: boolean) => {
+    this.setState(updateTouched(formatPath(path), touched));
   };
 
-  setFocused = (path: Path) => {
-    const formattedPath = formatPath(path);
-
-    this.setState((state) => {
-      if (state.focusedPath === formattedPath) {
-        return null;
-      }
-
-      const focusedPath = formattedPath;
-      return {focusedPath};
-    });
-  };
-
-  clearFocused = (path: Path) => {
-    const formattedPath = formatPath(path);
-
-    this.setState((state) => {
-      if (state.focusedPath !== formattedPath) {
-        return null;
-      }
-
-      const focusedPath = formattedPath;
-      return {focusedPath};
-    });
+  setFocused = (path: Path, focused: boolean) => {
+    this.setState(updateFocused(formatPath(path), focused));
   };
 
   validate = () => {
-    this.setState((state, props) => {
-      if (!state.validationStale) {
-        return null;
-      }
-
-      const validationStale = false;
-      const errorState = props.validate(state.valueState) || {};
-      const valid = matchesDeep(
-        errorState,
-        (value) =>
-          !/^\[object (Object|Array|Undefined)\]$/.test(
-            Object.prototype.toString.call(value),
-          ),
-      );
-
-      return {validationStale, errorState, valid};
-    });
+    this.setState(updateValidation);
   };
 
   submit = (event?: Event | SyntheticEvent<>): void => {
@@ -163,63 +234,60 @@ class DefaultStateProvider<T> extends React.PureComponent<
       event.preventDefault();
     }
 
-    if (this._submitPromise !== null) {
-      throw new Error('Form submit blocked pending current submit resolution.');
-    }
+    let promise: Promise<T>;
 
-    const promise = (this._submitPromise = Promise.resolve(
-      this.props.onSubmit(this.state.valueState),
-    ));
+    this.setState(
+      (state, props) => {
+        let nextState = state;
 
-    this.setState({submitting: true}, () => {
-      promise.then(
-        (result) =>
-          new Promise((resolve) =>
-            this.setState(
-              {
-                submitting: true,
-                submitSucceeded: true,
-                submitFailed: false,
-                submitErrorState: {},
-              },
-              () => {
-                this._submitPromise = null;
+        if (nextState.submitting) {
+          promise = Promise.reject(
+            new Error('Form submit blocked pending current submit resolution.'),
+          );
+          return null;
+        }
+
+        nextState = updateValidation(nextState, props) || nextState;
+
+        if (!nextState.valid) {
+          promise = Promise.reject(
+            new SubmitValidationError(nextState.errorState),
+          );
+
+          if (nextState === state) {
+            return null;
+          }
+
+          return nextState;
+        }
+
+        nextState = set(nextState, ['submitting'], true);
+
+        promise = Promise.resolve(props.onSubmit(nextState.valueState));
+
+        return nextState;
+      },
+      () => {
+        promise.then(
+          (result) =>
+            new Promise((resolve) =>
+              this.setState(updateSubmit(), () => {
                 resolve(this.props.onSubmitSuccess(result));
-              },
+              }),
             ),
-          ),
-        (error) =>
-          new Promise((resolve) => {
-            if (error instanceof SubmitValidationError) {
-              const {submitErrorState = {}} = error;
-              this.setState(
-                {
-                  submitting: false,
-                  submitSucceeded: false,
-                  submitFailed: true,
-                  submitErrorState,
-                },
-                () => {
-                  this._submitPromise = null;
+          (error) =>
+            new Promise((resolve) => {
+              this.setState(updateSubmit(error), () => {
+                if (error instanceof SubmitValidationError) {
                   resolve(this.props.onSubmitValidationFail(error));
-                },
-              );
-            }
-
-            this.setState(
-              {
-                submitting: false,
-                submitSucceeded: false,
-                submitFailed: false,
-              },
-              () => {
-                this._submitPromise = null;
-                this.props.onSubmitFail(error);
-              },
-            );
-          }),
-      );
-    });
+                } else {
+                  resolve(this.props.onSubmitFail(error));
+                }
+              });
+            }),
+        );
+      },
+    );
   };
 
   state = {
@@ -245,15 +313,10 @@ class DefaultStateProvider<T> extends React.PureComponent<
       setTouched: this.setTouched,
       setVisited: this.setVisited,
       setFocused: this.setFocused,
-      clearFocused: this.clearFocused,
       validate: this.validate,
       submit: this.submit,
     },
   };
-
-  componentWillReceiveProps(nextProps: DefaultStateProviderProps<T>) {
-    this.setState({pendingValueState: nextProps.values});
-  }
 
   render() {
     const {children} = this.props;

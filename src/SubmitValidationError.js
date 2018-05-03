@@ -3,10 +3,10 @@
 import type {State} from './types';
 
 export default class SubmitValidationError extends Error {
-  errors: ?State;
+  errors: State;
   original: Error | void;
 
-  constructor(errors: ?State, original?: Error) {
+  constructor(errors: State, original?: Error) {
     const message = 'Submit Validation Failed';
     super(message);
 

@@ -37,12 +37,12 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       // Context Actions
       setFocused,
       setVisited,
-      clearFocused,
       setTouched,
       setValue,
       setInitialValue,
       setPendingValue,
       validate,
+      submit,
 
       // FieldArray Props
       index,
@@ -61,15 +61,15 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       value: checkbox ? undefined : format(value),
       checked: checkbox ? !!format(value) : undefined,
       onFocus() {
-        setFocused(formattedPath);
-        setVisited(formattedPath);
+        setFocused(formattedPath, true);
+        setVisited(formattedPath, true);
       },
       onBlur() {
-        clearFocused(parsedPath);
+        setFocused(parsedPath, false);
         if (validateOnBlur) {
           validate();
         }
-        setTouched(parsedPath);
+        setTouched(parsedPath, true);
       },
       onChange(eventOrValue) {
         const nextValue = parseEvent(eventOrValue);
@@ -82,6 +82,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       },
     };
 
+    // TODO: Potentially calculate dirty/detached state with deep equality.
+    // Maybe provide a callback to allow the consumer to provide a compare func?
     const dirty = value !== initialValue;
     const detached = value !== pendingValue;
     const valid = matchesDeep(
@@ -130,20 +132,14 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       detached,
 
       // Context Actions
-      setFocused() {
-        setFocused(formattedPath);
+      setFocused(focused: boolean) {
+        setFocused(formattedPath, focused);
       },
-      setVisited() {
-        setVisited(formattedPath);
+      setVisited(visited: boolean) {
+        setVisited(formattedPath, visited);
       },
-      clearFocused() {
-        clearFocused(parsedPath);
-        if (validateOnBlur) {
-          validate();
-        }
-      },
-      setTouched() {
-        setTouched(parsedPath);
+      setTouched(touched: boolean) {
+        setTouched(parsedPath, touched);
       },
       setValue(nextValue) {
         setValue(parsedPath, parse(nextValue, value));
@@ -159,6 +155,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
         setPendingValue(parsedPath, value);
         setInitialValue(parsedPath, pendingValue);
       },
+      validate,
+      submit,
 
       // FieldArray Actions
       ...(addField && removeField && typeof index === 'number'
