@@ -5,6 +5,7 @@
 <PROJECT_ROOT>/**/node_modules
 
 [ignore]
+<PROJECT_ROOT>/packages/\(lib\|es\)/.*\.js.flow$
 .*/node_modules/.*\.nyc_output.*\.json$
 
 [lints]
