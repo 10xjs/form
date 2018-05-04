@@ -5,11 +5,19 @@
 <PROJECT_ROOT>/**/node_modules
 
 [ignore]
-<PROJECT_ROOT>/packages/\(lib\|es\)/.*\.js.flow$
+<PROJECT_ROOT>/\(lib\|es\|esnext\)/.*\.js.flow$
 .*/node_modules/.*\.nyc_output.*\.json$
 
 [lints]
 all=error
+
+[strict]
+nonstrict-import
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+sketchy-null
 
 [libs]
 <PROJECT_ROOT>/flow-typed
