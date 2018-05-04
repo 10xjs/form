@@ -277,7 +277,7 @@ class DefaultStateProvider<T> extends React.PureComponent<
 
         nextState = set(nextState, ['submitting'], true);
 
-        promise = Promise.resolve(props.onSubmit(nextState.valueState));
+        promise = Promise.resolve(nextState.valueState).then(props.onSubmit);
 
         return nextState;
       },
