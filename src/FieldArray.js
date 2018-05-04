@@ -51,6 +51,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       value: values,
       pendingValue: pendingValues,
       error: errors,
+      warning: warnings,
       submitting,
 
       // Context Actions
@@ -109,13 +110,23 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
           Object.prototype.toString.call(value),
         ),
     );
+    const hasWarning = matchesDeep(
+      warnings,
+      (value) =>
+        !/^\[object (Object|Array|Undefined)\]$/.test(
+          Object.prototype.toString.call(value),
+        ),
+    );
 
     return children({
       fields,
+
       // "Meta" Props
       errors,
       invalid: !valid,
       valid: valid,
+      warnings,
+      hasWarning,
       submitting,
       initialValues,
       rawValues: values,

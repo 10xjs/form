@@ -21,6 +21,12 @@ const updateValue = (path, value) => (state: Context) => {
     return null;
   }
 
+  nextState = set(nextState, ['warningState', ...path], undefined);
+
+  if (nextState.warningState !== state.warningState) {
+    nextState = set(nextState, ['warningStale'], true);
+  }
+
   nextState = set(nextState, ['errorState', ...path], undefined);
 
   if (nextState.errorState !== state.errorState) {
@@ -142,6 +148,13 @@ const updateValidation = <T>(
     nextState = set(nextState, ['valid'], valid);
   }
 
+  if (state.warningStale) {
+    const warningState = props.warn(state.valueState);
+
+    nextState = set(nextState, ['warningStale'], false);
+    nextState = set(nextState, ['warningState'], warningState);
+  }
+
   if (nextState === state) {
     return null;
   }
@@ -179,6 +192,7 @@ class DefaultStateProvider<T> extends React.PureComponent<
     onSubmitFail: (error: Error) => Promise.reject(error),
     onSubmitSuccess: () => {},
     onSubmitValidationFail: () => {},
+    warn: () => ({}),
     validate: () => ({}),
   };
 
@@ -294,6 +308,7 @@ class DefaultStateProvider<T> extends React.PureComponent<
     initialValueState: this.props.values,
     valueState: this.props.values,
     pendingValueState: this.props.values,
+    warningState: {},
     errorState: {},
     submitErrorState: {},
     focusedPath: null,
@@ -302,6 +317,7 @@ class DefaultStateProvider<T> extends React.PureComponent<
     submitting: false,
     submitFailed: false,
     submitSucceeded: false,
+    warningStale: false,
     validationStale: false,
     valid: true,
 

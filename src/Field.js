@@ -29,6 +29,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       value,
       pendingValue,
       error,
+      warning,
       focused,
       touched,
       visited,
@@ -93,6 +94,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           Object.prototype.toString.call(value),
         ),
     );
+    const hasWarning = matchesDeep(
+      warning,
+      (value) =>
+        !/^\[object (Object|Array|Undefined)\]$/.test(
+          Object.prototype.toString.call(value),
+        ),
+    );
 
     return children({
       // Input Tag Props
@@ -120,6 +128,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       error,
       invalid: !valid,
       valid: valid,
+      warning,
+      hasWarning,
       focused,
       touched,
       visited,
