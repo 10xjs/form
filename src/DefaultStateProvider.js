@@ -135,7 +135,7 @@ const updateValidation = <T>(
 
   if (state.validationStale) {
     const errorState = props.validate(state.valueState);
-    const valid = matchesDeep(
+    const invalid = matchesDeep(
       errorState,
       (value) =>
         !/^\[object (Object|Array|Undefined)\]$/.test(
@@ -145,7 +145,7 @@ const updateValidation = <T>(
 
     nextState = set(nextState, ['validationStale'], false);
     nextState = set(nextState, ['errorState'], errorState);
-    nextState = set(nextState, ['valid'], valid);
+    nextState = set(nextState, ['valid'], !invalid);
   }
 
   if (state.warningStale) {
@@ -317,8 +317,8 @@ class DefaultStateProvider<T> extends React.PureComponent<
     submitting: false,
     submitFailed: false,
     submitSucceeded: false,
-    warningStale: false,
-    validationStale: false,
+    warningStale: true,
+    validationStale: true,
     valid: true,
 
     actions: {

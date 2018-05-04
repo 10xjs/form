@@ -13,6 +13,12 @@ import {
 import {Consumer} from './context';
 import renderWrapper from './renderWrapper';
 
+type HandlerProps = {
+  onFocus: (mixed) => mixed,
+  onBlur: (mixed) => mixed,
+  onChange: (mixed) => mixed,
+};
+
 class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
   render() {
     const {
@@ -57,37 +63,11 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    const props = {
-      name: formattedPath,
-      value: checkbox ? undefined : format(value),
-      checked: checkbox ? !!format(value) : undefined,
-      onFocus() {
-        setFocused(formattedPath, true);
-        setVisited(formattedPath, true);
-      },
-      onBlur() {
-        setFocused(parsedPath, false);
-        if (validateOnBlur) {
-          validate();
-        }
-        setTouched(parsedPath, true);
-      },
-      onChange(eventOrValue) {
-        const nextValue = parseEvent(eventOrValue);
-
-        setValue(parsedPath, parse(nextValue, value));
-
-        if (validateOnChange) {
-          validate();
-        }
-      },
-    };
-
     // TODO: Potentially calculate dirty/detached state with deep equality.
     // Maybe provide a callback to allow the consumer to provide a compare func?
     const dirty = value !== initialValue;
     const detached = value !== pendingValue;
-    const valid = matchesDeep(
+    const hasError = matchesDeep(
       error,
       (value) =>
         !/^\[object (Object|Array|Undefined)\]$/.test(
@@ -102,32 +82,65 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
         ),
     );
 
+    const focus = (focused: boolean) => setFocused(formattedPath, focused);
+    const visit = (visited: boolean) => setVisited(formattedPath, visited);
+    const touch = (touched: boolean) => setTouched(formattedPath, touched);
+    const change = (nextValue) => {
+      const parsedValue = parse(nextValue, value);
+
+      setValue(parsedPath, parsedValue);
+
+      if (!detached) {
+        setPendingValue(parsedPath, parsedValue);
+      }
+
+      if (validateOnChange) {
+        validate();
+      }
+    };
+
+    const props = {
+      name: formattedPath,
+      value: checkbox ? undefined : format(value),
+      checked: checkbox ? !!format(value) : undefined,
+      onFocus() {
+        focus(true);
+        visit(true);
+      },
+      onBlur() {
+        focus(false);
+        if (validateOnBlur) {
+          validate();
+        }
+        touch(true);
+      },
+      onChange(eventOrValue) {
+        change(parseEvent(eventOrValue));
+      },
+    };
+
+    const composeProps = <P: $Shape<HandlerProps>>({
+      onFocus,
+      onBlur,
+      onChange,
+      ...rest
+    }: P): $Rest<P, $Exact<HandlerProps>> & InputProps => ({
+      ...rest,
+      ...props,
+      onFocus: mergeHandlers(onFocus, props.onFocus),
+      onBlur: mergeHandlers(onBlur, props.onBlur),
+      onChange: mergeHandlers(onChange, props.onChange),
+    });
+
     return children({
       // Input Tag Props
       props,
-      composeProps: <
-        P: {
-          onFocus?: (mixed) => mixed,
-          onBlur?: (mixed) => mixed,
-          onChange?: (mixed) => mixed,
-        },
-      >({
-        onFocus,
-        onBlur,
-        onChange,
-        ...rest
-      }: P): $Rest<P, {|onFocus: *, onBlur: *, onChange: *|}> & InputProps => ({
-        ...rest,
-        ...props,
-        onFocus: mergeHandlers(onFocus, props.onFocus),
-        onBlur: mergeHandlers(onBlur, props.onBlur),
-        onChange: mergeHandlers(onChange, props.onChange),
-      }),
+      composeProps,
 
       // "Meta" Props
       error,
-      invalid: !valid,
-      valid: valid,
+      invalid: hasError,
+      valid: !hasError,
       warning,
       hasWarning,
       focused,
@@ -142,21 +155,10 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       detached,
 
       // Context Actions
-      setFocused(focused: boolean) {
-        setFocused(formattedPath, focused);
-      },
-      setVisited(visited: boolean) {
-        setVisited(formattedPath, visited);
-      },
-      setTouched(touched: boolean) {
-        setTouched(parsedPath, touched);
-      },
-      setValue(nextValue) {
-        setValue(parsedPath, parse(nextValue, value));
-        if (validateOnChange) {
-          validate();
-        }
-      },
+      setFocused: focus,
+      setVisited: visit,
+      setTouched: touch,
+      setValue: change,
       acceptPendingValue() {
         setValue(parsedPath, pendingValue);
         setInitialValue(parsedPath, pendingValue);

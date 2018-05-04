@@ -18,8 +18,10 @@ const renderWrapper = <P, T>(
     initialValueState,
     valueState,
     pendingValueState,
+    warningState,
     errorState,
     submitErrorState,
+    focusedPath,
     touchedMap,
     visitedMap,
     submitting,
@@ -32,8 +34,9 @@ const renderWrapper = <P, T>(
       initialValue={get(initialValueState, parsedPath)}
       value={get(valueState, parsedPath)}
       pendingValue={get(pendingValueState, parsedPath)}
+      warning={get(warningState, parsedPath)}
       error={get(submitErrorState, parsedPath) || get(errorState, parsedPath)}
-      focused={focus === formattedPath}
+      focused={focusedPath === formattedPath}
       touched={!!touchedMap[formattedPath]}
       visited={!!visitedMap[formattedPath]}
       submitting={!!submitting}
