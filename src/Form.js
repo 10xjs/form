@@ -79,10 +79,10 @@ class Form<
         <Provider value={context}>
           <FormWrapper
             actions={context.actions}
-            submitting={submitting}
-            submitFailed={submitFailed}
-            submitSucceeded={submitSucceeded}
-            valid={valid}
+            submitting={context.submitting}
+            submitFailed={context.submitFailed}
+            submitSucceeded={context.submitSucceeded}
+            valid={context.valid}
           >
             {children}
           </FormWrapper>
