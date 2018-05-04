@@ -1,6 +1,7 @@
 node_modules
 *.log
 coverage
+esnext
 es
 lib
 dist

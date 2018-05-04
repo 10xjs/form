@@ -1,6 +1,7 @@
 node_modules
 coverage
 dist
+esnext
 es
 lib
 flow-typed

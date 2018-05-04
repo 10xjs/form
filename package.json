@@ -2,11 +2,12 @@
   "name": "@10xjs/form",
   "version": "0.1.1",
   "scripts": {
-    "build": "npm run clean && npm run build:flow && npm run build:es && npm run build:lib",
+    "build": "npm run clean && npm run build:flow && npm run build:es && npm run build:esnext && npm run build:lib",
     "build:es": "BABEL_ENV=es npx babel --copy-files -s -d es src",
-    "build:flow": "ncp src es && ncp src lib && npx renamer --regex --find '$' --replace '.flow' '@(es|lib)/**/*.js'",
+    "build:esnext": "BABEL_ENV=esnext npx babel --copy-files -s -d esnext src",
+    "build:flow": "ncp src es && ncp src esnext && ncp src lib && npx renamer --regex --find '$' --replace '.flow' '@(es|esnext|lib)/**/*.js'",
     "build:lib": "BABEL_ENV=lib npx babel --copy-files -s -d lib src",
-    "clean": "npx rimraf lib es",
+    "clean": "npx rimraf lib es esnext",
     "flow": "npx flow",
     "format": "npx prettier --write '**/*.js'",
     "prepare": "npm run build",
@@ -20,10 +21,12 @@
   "license": "CC0-1.0",
   "main": "./lib",
   "module": "./es",
+  "esnext": "./esnext",
   "sideEffects": false,
   "files": [
     "lib",
-    "es"
+    "es",
+    "esnext"
   ],
   "repository": {
     "type": "git",
@@ -36,8 +39,8 @@
     "@babel/cli": "^7.0.0-beta.46",
     "@babel/core": "^7.0.0-beta.46",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.46",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.46",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.46",
-    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.46",
     "@babel/plugin-transform-object-assign": "^7.0.0-beta.46",
     "@babel/preset-env": "^7.0.0-beta.46",
     "@babel/preset-flow": "^7.0.0-beta.46",
