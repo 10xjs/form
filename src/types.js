@@ -55,14 +55,26 @@ export type StateProvider<StateProviderProps> = (
   (context: Context) => React.Node,
 ) => React.Node;
 
+export type FormRenderProps = {
+  ...ContextActions,
+  submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  valid: boolean,
+};
+
 export type FormProps<StateProviderProps> = StateProviderProps & {
   stateProvider: StateProvider<StateProviderProps>,
-  children(actions: ContextActions): React.Node,
+  children(props: FormRenderProps): React.Node,
 };
 
 export type FormWrapperProps = {
   actions: ContextActions,
-  children(actions: ContextActions): React.Node,
+  submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
+  valid: boolean,
+  children(props: FormRenderProps): React.Node,
 };
 
 export type InputProps = {

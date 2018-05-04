@@ -26,8 +26,22 @@ function defaultStateProviderProp(
 
 class FormWrapper extends React.PureComponent<FormWrapperProps> {
   render() {
-    const {actions, children} = this.props;
-    return children(actions);
+    const {
+      actions,
+      submitting,
+      submitFailed,
+      submitSucceeded,
+      valid,
+      children,
+    } = this.props;
+
+    return children({
+      ...actions,
+      submitting,
+      submitFailed,
+      submitSucceeded,
+      valid,
+    });
   }
 }
 
@@ -63,7 +77,15 @@ class Form<
       this._handleStateUpdate(context);
       return (
         <Provider value={context}>
-          <FormWrapper actions={context.actions}>{children}</FormWrapper>
+          <FormWrapper
+            actions={context.actions}
+            submitting={submitting}
+            submitFailed={submitFailed}
+            submitSucceeded={submitSucceeded}
+            valid={valid}
+          >
+            {children}
+          </FormWrapper>
         </Provider>
       );
     });
