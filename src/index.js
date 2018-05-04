@@ -13,6 +13,7 @@ export type {
   State,
   ParsedPath,
   Path,
+  ContextActions,
   Context,
   DefaultStateProviderProps,
   StateProvider,

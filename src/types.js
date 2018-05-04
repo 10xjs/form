@@ -8,7 +8,7 @@ export type State = {[string]: mixed} | Array<mixed>;
 export type ParsedPath = Array<string | number>;
 export type Path = ParsedPath | string;
 
-type ContextActions = {|
+export type ContextActions = {|
   setValue(path: Path, value: mixed): void,
   setInitialValue(path: Path, value: mixed): void,
   setPendingValue(path: Path, value: mixed): void,
