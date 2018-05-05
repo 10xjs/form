@@ -76,7 +76,7 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
 
   let nextState = state;
 
-  nextState = set(nextState, ['valueState', ...path], value);
+  nextState = set(nextState, ['valueState'].concat(path), value);
 
   if (nextState === state) {
     return null;
@@ -84,7 +84,7 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
 
   // Clear warning state at path.
   if (nextState.warningState !== null) {
-    nextState = set(nextState, ['warningState', ...path], undefined);
+    nextState = set(nextState, ['warningState'].concat(path), undefined);
 
     if (nextState.warningState !== state.warningState) {
       nextState = set(nextState, ['warningStale'], true);
@@ -94,7 +94,7 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
 
   // Clear error state at path.
   if (nextState.errorState !== null) {
-    nextState = set(nextState, ['errorState', ...path], undefined);
+    nextState = set(nextState, ['errorState'].concat(path), undefined);
 
     if (nextState.errorState !== state.errorState) {
       nextState = set(nextState, ['validationStale'], true);
@@ -104,7 +104,7 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
 
   // Clear submit error state at path.
   if (nextState.submitErrorState !== null) {
-    nextState = set(nextState, ['submitErrorState', ...path], undefined);
+    nextState = set(nextState, ['submitErrorState'].concat(path), undefined);
 
     if (nextState.submitErrorState !== state.submitErrorState) {
       nextState = updateSubmitErrorState(nextState);
@@ -123,7 +123,7 @@ const updateInitialValue = (path: PathArray, value: mixed) => (
 
   let nextState = state;
 
-  nextState = set(nextState, ['initialValueState', ...path], value);
+  nextState = set(nextState, ['initialValueState'].concat(path), value);
 
   if (nextState === state) {
     return null;
@@ -141,7 +141,7 @@ const updatePendingValue = (path: PathArray, value: mixed) => (
 
   let nextState = state;
 
-  nextState = set(nextState, ['pendingValueState', ...path], value);
+  nextState = set(nextState, ['pendingValueState'].concat(path), value);
 
   if (nextState === state) {
     return null;
@@ -157,7 +157,7 @@ const updateWarning = (path: PathArray, warning: mixed) => (state: State) => {
 
   let nextState = state;
 
-  nextState = safeSet(nextState, ['warningState', ...path], warning);
+  nextState = safeSet(nextState, ['warningState'].concat(path), warning);
 
   if (nextState === state) {
     return null;
@@ -176,7 +176,7 @@ const updateError = (path: PathArray, error: mixed) => (state: State) => {
 
   let nextState = state;
 
-  nextState = safeSet(nextState, ['errorState', ...path], error);
+  nextState = safeSet(nextState, ['errorState'].concat(path), error);
 
   if (nextState !== state) {
     nextState = set(nextState, ['validationStale'], true);
@@ -185,7 +185,7 @@ const updateError = (path: PathArray, error: mixed) => (state: State) => {
 
   const reference = nextState;
 
-  nextState = safeSet(nextState, ['submitErrorState', ...path], undefined);
+  nextState = safeSet(nextState, ['submitErrorState'].concat(path), undefined);
 
   if (nextState !== reference) {
     nextState = updateSubmitErrorState(nextState);
@@ -322,27 +322,8 @@ const updateSubmit = (error?: Error) => (state: State) => {
 };
 
 class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
-  static defaultProps = {
-    values: {},
-    onSubmit: () => {},
-    onSubmitFail: (error: Error) => Promise.reject(error),
-    onSubmitSuccess: () => {},
-    onSubmitValidationFail: () => {},
-    warn: () => null,
-    validate: () => null,
-  };
-
-  static getDerivedStateFromProps(props: Props<T>, state: State) {
-    let nextState = state;
-
-    nextState = set(nextState, ['pendingValueState'], props.values);
-
-    if (nextState === state) {
-      return null;
-    }
-
-    return nextState;
-  }
+  static defaultProps: typeof DefaultStateProvider.defaultProps;
+  static getDerivedStateFromProps: typeof DefaultStateProvider.getDerivedStateFromProps;
 
   setValue(path: Path, value: mixed) {
     this.setState(updateValue(parsePath(path), value));
@@ -484,5 +465,30 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
     return children(this.state);
   }
 }
+
+DefaultStateProvider.defaultProps = {
+  values: {},
+  onSubmit: () => {},
+  onSubmitFail: (error: Error) => Promise.reject(error),
+  onSubmitSuccess: () => {},
+  onSubmitValidationFail: () => {},
+  warn: () => null,
+  validate: () => null,
+};
+
+DefaultStateProvider.getDerivedStateFromProps = <T>(
+  props: Props<T>,
+  state: State,
+) => {
+  let nextState = state;
+
+  nextState = set(nextState, ['pendingValueState'], props.values);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
 
 export default DefaultStateProvider;

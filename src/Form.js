@@ -6,7 +6,7 @@ import type {
   FormProps,
   FormWrapperProps,
   Context,
-  ContextActions,
+  FormActions,
   Path,
 } from './types';
 
@@ -26,35 +26,24 @@ function defaultStateProviderProp(
 
 class FormWrapper extends React.PureComponent<FormWrapperProps> {
   render() {
-    const {
-      actions,
-      submitting,
-      submitFailed,
-      submitSucceeded,
-      hasErrors,
-      hasWarnings,
-      children,
-    } = this.props;
-
-    return children({
-      ...actions,
-      submitting,
-      submitFailed,
-      submitSucceeded,
-      hasErrors,
-      hasWarnings,
-    });
+    return this.props.children(
+      Object.assign({}, this.props.actions, {
+        submitting: this.props.submitting,
+        submitFailed: this.props.submitFailed,
+        submitSucceeded: this.props.submitSucceeded,
+        hasErrors: this.props.hasErrors,
+        hasWarnings: this.props.hasWarnings,
+      }),
+    );
   }
 }
 
-class Form<
-  StateProviderProps = DefaultStateProviderConfig,
-> extends React.PureComponent<FormProps<StateProviderProps>, Context> {
-  static defaultProps = {
-    stateProvider: defaultStateProviderProp,
-  };
+class Form<StateProviderProps>
+  extends React.PureComponent<FormProps<StateProviderProps>, Context>
+  implements FormActions {
+  static defaultProps: typeof Form.defaultProps;
 
-  _lastContextActions: ContextActions;
+  _lastSetActions: ?FormActions;
   setValue: (path: Path, value: mixed) => void;
   setInitialValue: (path: Path, value: mixed) => void;
   setPendingValue: (path: Path, value: mixed) => void;
@@ -66,18 +55,12 @@ class Form<
   validate: () => void;
   submit: (event?: Event | SyntheticEvent<>) => void;
 
-  _handleStateUpdate(context: Context) {
-    if (context.actions !== this._lastContextActions) {
-      Object.assign(this, context.actions);
-    }
-    this._lastContextActions = context.actions;
-  }
-
   render() {
-    const {stateProvider, children, ...config} = this.props;
-
-    return stateProvider(config, (context: Context) => {
-      this._handleStateUpdate(context);
+    return this.props.stateProvider(this.props, (context: Context) => {
+      if (this._lastSetActions !== context.actions) {
+        Object.assign(this, context.actions);
+        this._lastSetActions = context.actions;
+      }
       return (
         <Provider value={context}>
           <FormWrapper
@@ -90,12 +73,16 @@ class Form<
             }
             hasWarnings={context.warningState !== null}
           >
-            {children}
+            {this.props.children}
           </FormWrapper>
         </Provider>
       );
     });
   }
 }
+
+Form.defaultProps = {
+  stateProvider: defaultStateProviderProp,
+};
 
 export default Form;

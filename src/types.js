@@ -8,18 +8,18 @@ export type State = {[string]: mixed};
 export type PathArray = Array<string | number>;
 export type Path = PathArray | string;
 
-export type ContextActions = {|
-  setValue(path: Path, value: mixed): void,
-  setInitialValue(path: Path, value: mixed): void,
-  setPendingValue(path: Path, value: mixed): void,
-  setWarning(path: Path, warning: mixed): void,
-  setError(path: Path, error: mixed): void,
-  setTouched(path: Path, touched: boolean): void,
-  setVisited(path: Path, visited: boolean): void,
-  setFocused(path: Path, focused: boolean): void,
-  validate(): void,
-  submit(event?: Event | SyntheticEvent<>): void,
-|};
+export interface FormActions {
+  setValue(path: Path, value: mixed): void;
+  setInitialValue(path: Path, value: mixed): void;
+  setPendingValue(path: Path, value: mixed): void;
+  setWarning(path: Path, warning: mixed): void;
+  setError(path: Path, error: mixed): void;
+  setTouched(path: Path, touched: boolean): void;
+  setVisited(path: Path, visited: boolean): void;
+  setFocused(path: Path, focused: boolean): void;
+  validate(): void;
+  submit(event?: Event | SyntheticEvent<>): void;
+}
 
 export type Context = {|
   initialValueState: State,
@@ -36,7 +36,7 @@ export type Context = {|
   submitSucceeded: boolean,
   warningStale: boolean,
   validationStale: boolean,
-  actions: ContextActions,
+  actions: FormActions,
 |};
 
 export type DefaultStateProviderProps<SubmitResponse> = {
@@ -63,9 +63,7 @@ type FormWrapperStateProps = {
   hasWarnings: boolean,
 };
 
-export type FormRenderProps = FormWrapperStateProps & {
-  ...ContextActions,
-};
+export type FormRenderProps = FormWrapperStateProps & FormActions;
 
 export type FormProps<StateProviderProps> = StateProviderProps & {
   stateProvider: StateProvider<StateProviderProps>,
@@ -73,7 +71,7 @@ export type FormProps<StateProviderProps> = StateProviderProps & {
 };
 
 export type FormWrapperProps = FormWrapperStateProps & {
-  actions: ContextActions,
+  actions: FormActions,
   children(props: FormRenderProps): React.Node,
 };
 
@@ -186,8 +184,8 @@ export type FieldArrayProps = {
 
 export type FieldWrapperProps = FieldProps &
   FieldStateProps<mixed> &
-  ContextActions;
+  FormActions;
 
 export type FieldArrayWrapperProps = FieldArrayProps &
   FieldStateProps<Array<mixed>> &
-  ContextActions;
+  FormActions;

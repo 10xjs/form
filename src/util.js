@@ -140,7 +140,9 @@ export const parsePath = (
         return result;
       }
 
-      const [key, ...rest] = part.split('[');
+      const split = part.split('[');
+      const key = split[0];
+      const rest = split.slice(1);
 
       return result.concat(
         key === '' ? [] : [key],
@@ -160,7 +162,7 @@ export const parsePath = (
   throw new TypeError(pathError());
 };
 
-export const _setWith = <T>(
+const _setWith = <T>(
   value: T,
   path: Array<string | number>,
   updater: (any) => any,
@@ -223,7 +225,9 @@ export const _setWith = <T>(
     return value;
   }
 
-  return {...value, [path[0]]: updateResult};
+  const result = Object.assign({}, value);
+  result[path[0]] = updateResult;
+  return result;
 };
 
 export const setWith = <T>(

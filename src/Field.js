@@ -107,88 +107,82 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       },
     };
 
-    const composeProps = <P: $Shape<HandlerProps>>({
-      onFocus,
-      onBlur,
-      onChange,
-      ...rest
-    }: P): $Rest<P, $Exact<HandlerProps>> & InputProps => ({
-      ...rest,
-      ...props,
-      onFocus: mergeHandlers(onFocus, props.onFocus),
-      onBlur: mergeHandlers(onBlur, props.onBlur),
-      onChange: mergeHandlers(onChange, props.onChange),
-    });
+    const composeProps = <P: $Shape<HandlerProps>>(
+      userProps: P,
+    ): $Rest<P, $Exact<HandlerProps>> & InputProps =>
+      Object.assign({}, (userProps: $Rest<P, $Exact<HandlerProps>>), props, {
+        onFocus: mergeHandlers(userProps.onFocus, props.onFocus),
+        onBlur: mergeHandlers(userProps.onBlur, props.onBlur),
+        onChange: mergeHandlers(userProps.onChange, props.onChange),
+      });
 
-    return children({
-      // Input Tag Props
-      props,
-      composeProps,
+    let arrayActions;
 
-      // "Meta" Props
-      hasError,
-      error,
-      hasWarning,
-      warning,
-      focused,
-      touched,
-      visited,
-      dirty,
-      pristine: !dirty,
-      submitting,
-      initialValue,
-      stateValue: value,
-      pendingValue,
-      detached,
+    if (addField && removeField && typeof index === 'number') {
+      arrayActions = {
+        addFieldBefore(value) {
+          addField(index, value);
+        },
+        addFieldAfter(value) {
+          addField(index + 1, value);
+        },
+        removeField() {
+          removeField(index);
+        },
+      };
+    }
 
-      // Context Actions
-      setFocused: focus,
-      setVisited: visit,
-      setTouched: touch,
-      setValue: change,
-      acceptPendingValue() {
-        setValue(parsedPath, pendingValue);
-        setInitialValue(parsedPath, pendingValue);
-      },
-      rejectPendingValue() {
-        setPendingValue(parsedPath, value);
-        setInitialValue(parsedPath, pendingValue);
-      },
-      validate,
-      submit,
+    return children(
+      Object.assign(
+        {
+          // Input Tag Props
+          props,
+          composeProps,
 
-      // FieldArray Actions
-      ...(addField && removeField && typeof index === 'number'
-        ? {
-            addFieldBefore(value) {
-              addField(index, value);
-            },
-            addFieldAfter(value) {
-              addField(index + 1, value);
-            },
-            removeField() {
-              removeField(index);
-            },
-          }
-        : null),
-    });
+          // "Meta" Props
+          hasError,
+          error,
+          hasWarning,
+          warning,
+          focused,
+          touched,
+          visited,
+          dirty,
+          pristine: !dirty,
+          submitting,
+          initialValue,
+          stateValue: value,
+          pendingValue,
+          detached,
+
+          // Context Actions
+          setFocused: focus,
+          setVisited: visit,
+          setTouched: touch,
+          setValue: change,
+          acceptPendingValue() {
+            setValue(parsedPath, pendingValue);
+            setInitialValue(parsedPath, pendingValue);
+          },
+          rejectPendingValue() {
+            setPendingValue(parsedPath, value);
+            setInitialValue(parsedPath, pendingValue);
+          },
+          validate,
+          submit,
+
+          addFieldBefore: undefined,
+          addFieldAfter: undefined,
+          removeField: undefined,
+        },
+        arrayActions,
+      ),
+    );
   }
 }
 
 class Field extends React.PureComponent<FieldProps> {
-  static defaultProps = {
-    format: (v: mixed) => {
-      if (v === null || v === undefined) {
-        return '';
-      }
-
-      return v;
-    },
-    parse: (v: mixed) => v,
-    checkbox: false,
-    validateOnBlur: true,
-    validateOnChange: false,
-  };
+  static defaultProps: typeof Field.defaultProps;
 
   render() {
     const {
@@ -223,5 +217,19 @@ class Field extends React.PureComponent<FieldProps> {
     );
   }
 }
+
+Field.defaultProps = {
+  format: (v: mixed) => {
+    if (v === null || v === undefined) {
+      return '';
+    }
+
+    return v;
+  },
+  parse: (v: mixed) => v,
+  checkbox: false,
+  validateOnBlur: true,
+  validateOnChange: false,
+};
 
 export default Field;

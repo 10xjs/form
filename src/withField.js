@@ -31,9 +31,11 @@ const withField = <P: string>(
     render() {
       return (
         <Field {...config}>
-          {(fieldProps: FieldRenderProps) => (
-            <Component {...{[propName]: fieldProps}} {...this.props} />
-          )}
+          {(fieldProps: FieldRenderProps) => {
+            const props = {};
+            props[propName] = fieldProps;
+            return <Component {...props} {...this.props} />;
+          }}
         </Field>
       );
     }

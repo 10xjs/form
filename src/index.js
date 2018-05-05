@@ -13,7 +13,7 @@ export type {
   State,
   PathArray,
   Path,
-  ContextActions,
+  FormActions,
   Context,
   DefaultStateProviderProps,
   StateProvider,

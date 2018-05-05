@@ -13,28 +13,23 @@ import Field from './Field';
 import renderWrapper from './renderWrapper';
 
 class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
-  static defaultProps = {
-    initialValue: [],
-    value: [],
-    pendingValue: [],
-    error: [],
-  };
+  static defaultProps: typeof FieldArrayWrapper.defaultProps;
 
-  addField = (index: number, fieldValue: mixed) => {
+  addField(index: number, fieldValue: mixed) {
     const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
 
     setValue(parsedPath, insert(values, index, fieldValue));
-  };
+  }
 
-  removeField = (index: number) => {
+  removeField(index: number) {
     const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
 
     setValue(parsedPath, remove(values, index));
-  };
+  }
 
   render() {
     const {
@@ -92,8 +87,8 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
           checkbox={checkbox}
           validateOnBlur={validateOnBlur}
           validateOnChange={validateOnChange}
-          addField={this.addField}
-          removeField={this.removeField}
+          addField={this.addField.bind(this)}
+          removeField={this.removeField.bind(this)}
         >
           {renderField}
         </Field>
@@ -131,11 +126,15 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
   }
 }
 
+FieldArrayWrapper.defaultProps = {
+  initialValue: [],
+  value: [],
+  pendingValue: [],
+  error: [],
+};
+
 class FieldArray extends React.PureComponent<FieldArrayProps> {
-  static defaultProps = {
-    children: ({fields}: FieldArrayRenderProps) => fields,
-    getFieldKey: (stateValue: mixed, index: number) => `${index}`,
-  };
+  static defaultProps: typeof FieldArray.defaultProps;
 
   render() {
     const {
@@ -172,5 +171,10 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
     );
   }
 }
+
+FieldArray.defaultProps = {
+  children: ({fields}: FieldArrayRenderProps) => fields,
+  getFieldKey: (stateValue: mixed, index: number) => `${index}`,
+};
 
 export default FieldArray;
