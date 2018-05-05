@@ -1,9 +1,9 @@
 # @10xjs/form
 
-#### A high performance zero-config form state library for React.
+> A high performance zero-config form state library for React.
 
-![build status](http://img.shields.io/travis/10xjs/form/master.svg?style=flat)
-![coverage](http://img.shields.io/coveralls/10xjs/form/master.svg?style=flat)
+[![Build Status](https://travis-ci.org/10xjs/form.svg?branch=master)](https://travis-ci.org/10xjs/form)
+[![Coverage Status](https://coveralls.io/repos/github/10xjs/form/badge.svg?branch=master)](https://coveralls.io/github/10xjs/form?branch=master)
 
 ```jsx
 import {Form, Field} from '@10xjs/form';
