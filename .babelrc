@@ -8,14 +8,10 @@
   ],
   "env": {
     "test": {
-      "presets": [["@babel/preset-env"]]
+      "presets": [["@babel/preset-env"]],
     },
     "lib": {
-      "presets": [["@babel/preset-env"]]
+      "presets": [["@babel/preset-env", {"modules": false}]],
     },
-    "es": {
-      "presets": [["@babel/preset-env", {"modules": false}]]
-    },
-    "esnext": {}
   }
 }

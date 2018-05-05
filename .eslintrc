@@ -9,6 +9,3 @@ overrides:
     files: "*.test.js"
     env:
       jest: true
-globals:
-  __DEV__: false
-  module: false

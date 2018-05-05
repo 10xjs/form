@@ -2,35 +2,34 @@
   "name": "@10xjs/form",
   "version": "0.1.3",
   "scripts": {
-    "build": "npm run clean && npm run build:flow && npm run build:es && npm run build:esnext && npm run build:lib",
-    "build:es": "BABEL_ENV=es npx babel --copy-files -s -d es src",
-    "build:esnext": "BABEL_ENV=esnext npx babel --copy-files -s -d esnext src",
-    "build:flow": "ncp src es && ncp src esnext && ncp src lib && npx renamer --regex --find '$' --replace '.flow' '@(es|esnext|lib)/**/*.js'",
-    "build:lib": "BABEL_ENV=lib npx babel --copy-files -s -d lib src",
-    "clean": "npx rimraf lib es esnext",
+    "build": "npm run clean && npm run build:flow && npm run build:lib && npm run build:esnext",
+    "build:flow": "ncp src lib && ncp src esnext && npx renamer --regex --find '$' --replace '.flow' '@(lib|esnext)/**/*.js'",
+    "build:lib": "BABEL_ENV=lib npx rollup src/index.js --file lib/index.js --config",
+    "build:esnext": "npx babel -s -d esnext src",
+    "clean": "npx rimraf lib",
     "flow": "npx flow",
     "format": "npx prettier --write '**/*.js'",
     "prepare": "npm run build",
     "lint": "npx eslint .",
     "spec": "npx jest --runInBand=${SPEC_SERIAL:-$CI} --coverage=${SPEC_COVERAGE:-$CI}",
     "spec:watch": "npm run spec -- --watch",
-    "start": "cd ./website && npm start",
     "test": "npm run flow --silent && npm run lint --slient && npm run spec --silent"
   },
   "author": "Neal Granger <neal@nealg.com>",
   "license": "CC0-1.0",
   "main": "./lib",
-  "module": "./es",
   "esnext": "./esnext",
   "sideEffects": false,
   "files": [
-    "lib",
-    "es",
-    "esnext"
+    "@(lib|esnext)/**/*.@(js|map|flow)"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/10xjs/form.git"
+  },
+  "dependencies": {
+    "es6-error": "^4.1.1",
+    "hoist-non-react-statics": "^2.5.0"
   },
   "peerDependencies": {
     "react": ">=16.3.0"
@@ -55,16 +54,14 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "renamer": "^0.6.1",
-    "rimraf": "^2.6.2"
-  },
-  "dependencies": {
-    "es6-error": "^4.1.1",
-    "hoist-non-react-statics": "^2.5.0"
+    "rimraf": "^2.6.2",
+    "rollup": "^0.58.2",
+    "rollup-plugin-babel": "^4.0.0-beta.4",
+    "rollup-plugin-babel-minify": "^4.0.0"
   },
   "jest": {
     "modulePathIgnorePatterns": [
       "lib/",
-      "es/",
       "esnext/"
     ],
     "coveragePathIgnorePatterns": [

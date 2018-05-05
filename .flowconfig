@@ -5,8 +5,7 @@
 <PROJECT_ROOT>/**/node_modules
 
 [ignore]
-<PROJECT_ROOT>/\(lib\|es\|esnext\)/.*\.js.flow$
-.*/node_modules/.*\.nyc_output.*\.json$
+<PROJECT_ROOT>/\(lib\|esnext\)/.*\.js.flow$
 
 [lints]
 all=error

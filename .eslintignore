@@ -1,7 +1,5 @@
 node_modules
 coverage
-dist
-esnext
-es
 lib
+esnext
 flow-typed
