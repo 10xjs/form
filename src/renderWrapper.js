@@ -28,14 +28,30 @@ const renderWrapper = <P, T>(
     actions,
   } = context;
 
+  let error;
+
+  if (submitErrorState !== null) {
+    error = get(submitErrorState, parsedPath);
+  }
+
+  if (error === undefined && errorState !== null) {
+    error = get(errorState, parsedPath);
+  }
+
+  let warning;
+
+  if (warningState !== null) {
+    warning = get(warningState, parsedPath);
+  }
+
   return (
     <Wrapper
       {...config}
       initialValue={get(initialValueState, parsedPath)}
       value={get(valueState, parsedPath)}
       pendingValue={get(pendingValueState, parsedPath)}
-      warning={get(warningState, parsedPath)}
-      error={get(submitErrorState, parsedPath) || get(errorState, parsedPath)}
+      warning={warning}
+      error={error}
       focused={focusedPath === formattedPath}
       touched={!!touchedMap[formattedPath]}
       visited={!!visitedMap[formattedPath]}

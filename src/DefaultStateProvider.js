@@ -2,15 +2,76 @@
 
 import * as React from 'react';
 
-import type {DefaultStateProviderProps, Context, Path} from './types';
+import type {
+  DefaultStateProviderProps,
+  Context,
+  PathArray,
+  Path,
+} from './types';
 
-import {set, matchesDeep, parsePath, formatPath} from './util';
+import {
+  set,
+  setWith,
+  parsePath,
+  formatPath,
+  emptyPathArrayError,
+  emptyPathStringError,
+  hasValue,
+} from './util';
 import SubmitValidationError from './SubmitValidationError';
-import {Provider} from './context';
 
-const updateValue = (path, value) => (state: Context) => {
+type Props<T> = DefaultStateProviderProps<T>;
+type State = Context;
+
+const safeSet = (state: Context, path: PathArray, value: mixed) => {
+  let nextState = state;
+
+  const baseIsNull = nextState[path[0]] === null;
+
+  const tempState = baseIsNull ? set(nextState, [path[0]], {}) : nextState;
+
+  nextState = set(tempState, path, value);
+
+  if (nextState === tempState) {
+    return state;
+  }
+
+  return nextState;
+};
+
+const updateWarningState = (state: State) => {
+  let nextState = state;
+
+  if (!hasValue(nextState.warningState)) {
+    nextState = set(nextState, ['warningState'], null);
+  }
+
+  return nextState;
+};
+
+const updateErrorState = (state: State) => {
+  let nextState = state;
+
+  if (!hasValue(nextState.errorState)) {
+    nextState = set(nextState, ['errorState'], null);
+  }
+
+  return nextState;
+};
+
+const updateSubmitErrorState = (state: State) => {
+  let nextState = state;
+
+  if (!hasValue(nextState.submitErrorState)) {
+    nextState = set(nextState, ['submitErrorState'], null);
+  }
+
+  return nextState;
+};
+
+const updateValue = (path: PathArray, value: mixed) => (state: State) => {
   if (path.length < 1) {
-    throw new Error('unexpected empty path');
+    throw new TypeError(emptyPathArrayError());
   }
 
   let nextState = state;
@@ -21,26 +82,43 @@ const updateValue = (path, value) => (state: Context) => {
     return null;
   }
 
-  nextState = set(nextState, ['warningState', ...path], undefined);
+  // Clear warning state at path.
+  if (nextState.warningState !== null) {
+    nextState = set(nextState, ['warningState', ...path], undefined);
 
-  if (nextState.warningState !== state.warningState) {
-    nextState = set(nextState, ['warningStale'], true);
+    if (nextState.warningState !== state.warningState) {
+      nextState = set(nextState, ['warningStale'], true);
+      nextState = updateWarningState(nextState);
+    }
   }
 
-  nextState = set(nextState, ['errorState', ...path], undefined);
+  // Clear error state at path.
+  if (nextState.errorState !== null) {
+    nextState = set(nextState, ['errorState', ...path], undefined);
 
-  if (nextState.errorState !== state.errorState) {
-    nextState = set(nextState, ['validationStale'], true);
+    if (nextState.errorState !== state.errorState) {
+      nextState = set(nextState, ['validationStale'], true);
+      nextState = updateErrorState(nextState);
+    }
   }
 
-  nextState = set(nextState, ['submitErrorState', ...path], undefined);
+  // Clear submit error state at path.
+  if (nextState.submitErrorState !== null) {
+    nextState = set(nextState, ['submitErrorState', ...path], undefined);
+
+    if (nextState.submitErrorState !== state.submitErrorState) {
+      nextState = updateSubmitErrorState(nextState);
+    }
+  }
 
   return nextState;
 };
 
-const updateInitialValue = (path, value) => (state: Context) => {
+const updateInitialValue = (path: PathArray, value: mixed) => (
+  state: State,
+) => {
   if (path.length < 1) {
-    throw new Error('unexpected empty path');
+    throw new TypeError(emptyPathArrayError());
   }
 
   let nextState = state;
@@ -54,9 +132,11 @@ const updateInitialValue = (path, value) => (state: Context) => {
   return nextState;
 };
 
-const updatePendingValue = (path, value) => (state: Context) => {
+const updatePendingValue = (path: PathArray, value: mixed) => (
+  state: State,
+) => {
   if (path.length < 1) {
-    throw new Error('unexpected empty path');
+    throw new TypeError(emptyPathArrayError());
   }
 
   let nextState = state;
@@ -70,15 +150,46 @@ const updatePendingValue = (path, value) => (state: Context) => {
   return nextState;
 };
 
-const updateError = (path, error) => (state: Context) => {
+const updateWarning = (path: PathArray, warning: mixed) => (state: State) => {
   if (path.length < 1) {
-    throw new Error('unexpected empty path');
+    throw new TypeError(emptyPathArrayError());
   }
 
   let nextState = state;
 
-  nextState = set(nextState, ['errorState', ...path], error);
-  nextState = set(nextState, ['submitErrorState', ...path], undefined);
+  nextState = safeSet(nextState, ['warningState', ...path], warning);
+
+  if (nextState === state) {
+    return null;
+  }
+
+  nextState = set(nextState, ['warningStale'], true);
+  nextState = updateWarningState(nextState);
+
+  return nextState;
+};
+
+const updateError = (path: PathArray, error: mixed) => (state: State) => {
+  if (path.length < 1) {
+    throw new TypeError(emptyPathArrayError());
+  }
+
+  let nextState = state;
+
+  nextState = safeSet(nextState, ['errorState', ...path], error);
+
+  if (nextState !== state) {
+    nextState = set(nextState, ['validationStale'], true);
+    nextState = updateErrorState(nextState);
+  }
+
+  const reference = nextState;
+
+  nextState = safeSet(nextState, ['submitErrorState', ...path], undefined);
+
+  if (nextState !== reference) {
+    nextState = updateSubmitErrorState(nextState);
+  }
 
   if (nextState === state) {
     return null;
@@ -87,10 +198,18 @@ const updateError = (path, error) => (state: Context) => {
   return nextState;
 };
 
-const updateVisited = (key, visited) => (state: Context) => {
+const updateVisited = (key: string, visited: boolean) => (state: State) => {
+  if (key.length < 1) {
+    throw new TypeError(emptyPathStringError());
+  }
+
   let nextState = state;
 
-  nextState = set(nextState, ['visitedMap', key], visited);
+  const updater = (currentVisited) => {
+    return !!currentVisited === visited ? currentVisited : visited;
+  };
+
+  nextState = setWith(nextState, ['visitedMap', key], updater);
 
   if (nextState === state) {
     return null;
@@ -99,10 +218,18 @@ const updateVisited = (key, visited) => (state: Context) => {
   return nextState;
 };
 
-const updateTouched = (key, touched) => (state: Context) => {
+const updateTouched = (key: string, touched: boolean) => (state: State) => {
+  if (key.length < 1) {
+    throw new TypeError(emptyPathStringError());
+  }
+
   let nextState = state;
 
-  nextState = set(nextState, ['touchedMap', key], touched);
+  const updater = (currentTouched) => {
+    return !!currentTouched === touched ? currentTouched : touched;
+  };
+
+  nextState = setWith(nextState, ['touchedMap', key], updater);
 
   if (nextState === state) {
     return null;
@@ -111,7 +238,11 @@ const updateTouched = (key, touched) => (state: Context) => {
   return nextState;
 };
 
-const updateFocused = (key, focused) => (state: Context) => {
+const updateFocused = (key: string, focused: boolean) => (state: State) => {
+  if (key.length < 1) {
+    throw new TypeError(emptyPathStringError());
+  }
+
   if (focused) {
     if (state.focusedPath === key) {
       return null;
@@ -127,32 +258,18 @@ const updateFocused = (key, focused) => (state: Context) => {
   return {focusedPath: null};
 };
 
-const updateValidation = <T>(
-  state: Context,
-  props: DefaultStateProviderProps<T>,
-) => {
+const runWarn = <T>(state: State, props: Props<T>) => {
   let nextState = state;
 
-  if (state.validationStale) {
-    const errorState = props.validate(state.valueState);
-    const invalid = matchesDeep(
-      errorState,
-      (value) =>
-        !/^\[object (Object|Array|Undefined)\]$/.test(
-          Object.prototype.toString.call(value),
-        ),
-    );
-
-    nextState = set(nextState, ['validationStale'], false);
-    nextState = set(nextState, ['errorState'], errorState);
-    nextState = set(nextState, ['valid'], !invalid);
-  }
-
   if (state.warningStale) {
-    const warningState = props.warn(state.valueState);
+    const warningState = props.warn(state.valueState) || null;
 
     nextState = set(nextState, ['warningStale'], false);
     nextState = set(nextState, ['warningState'], warningState);
+  }
+
+  if (nextState.warningState !== state.warningState) {
+    nextState = updateWarningState(nextState);
   }
 
   if (nextState === state) {
@@ -162,7 +279,28 @@ const updateValidation = <T>(
   return nextState;
 };
 
-const updateSubmit = (error?: Error) => (state) => {
+const runValidate = <T>(state: State, props: Props<T>) => {
+  let nextState = state;
+
+  if (state.validationStale) {
+    const errorState = props.validate(state.valueState) || null;
+
+    nextState = set(nextState, ['validationStale'], false);
+    nextState = set(nextState, ['errorState'], errorState);
+  }
+
+  if (nextState.errorState !== state.errorState) {
+    nextState = updateErrorState(nextState);
+  }
+
+  if (nextState === state) {
+    return null;
+  }
+
+  return nextState;
+};
+
+const updateSubmit = (error?: Error) => (state: State) => {
   let nextState = state;
 
   nextState = set(nextState, ['submitting'], false);
@@ -174,32 +312,27 @@ const updateSubmit = (error?: Error) => (state) => {
   if (error && error instanceof SubmitValidationError) {
     submitErrorState = error.errors;
   } else {
-    submitErrorState = Array.isArray(nextState.submitErrorState) ? [] : {};
+    submitErrorState = null;
   }
 
   nextState = set(nextState, ['submitErrorState'], submitErrorState);
+  nextState = updateSubmitErrorState(nextState);
 
   return nextState;
 };
 
-class DefaultStateProvider<T> extends React.PureComponent<
-  DefaultStateProviderProps<T>,
-  Context,
-> {
+class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
   static defaultProps = {
     values: {},
     onSubmit: () => {},
     onSubmitFail: (error: Error) => Promise.reject(error),
     onSubmitSuccess: () => {},
     onSubmitValidationFail: () => {},
-    warn: () => ({}),
-    validate: () => ({}),
+    warn: () => null,
+    validate: () => null,
   };
 
-  static getDerivedStateFromProps(
-    state: Context,
-    props: DefaultStateProviderProps<T>,
-  ) {
+  static getDerivedStateFromProps(props: Props<T>, state: State) {
     let nextState = state;
 
     nextState = set(nextState, ['pendingValueState'], props.values);
@@ -211,39 +344,44 @@ class DefaultStateProvider<T> extends React.PureComponent<
     return nextState;
   }
 
-  setValue = (path: Path, value: mixed) => {
+  setValue(path: Path, value: mixed) {
     this.setState(updateValue(parsePath(path), value));
-  };
+  }
 
-  setInitialValue = (path: Path, value: mixed) => {
+  setInitialValue(path: Path, value: mixed) {
     this.setState(updateInitialValue(parsePath(path), value));
-  };
+  }
 
-  setPendingValue = (path: Path, value: mixed) => {
+  setPendingValue(path: Path, value: mixed) {
     this.setState(updatePendingValue(parsePath(path), value));
-  };
+  }
 
-  setError = (path: Path, error: mixed) => {
+  setWarning(path: Path, error: mixed) {
+    this.setState(updateWarning(parsePath(path), error));
+  }
+
+  setError(path: Path, error: mixed) {
     this.setState(updateError(parsePath(path), error));
-  };
+  }
 
-  setVisited = (path: Path, visited: boolean) => {
+  setVisited(path: Path, visited: boolean) {
     this.setState(updateVisited(formatPath(path), visited));
-  };
+  }
 
-  setTouched = (path: Path, touched: boolean) => {
+  setTouched(path: Path, touched: boolean) {
     this.setState(updateTouched(formatPath(path), touched));
-  };
+  }
 
-  setFocused = (path: Path, focused: boolean) => {
+  setFocused(path: Path, focused: boolean) {
     this.setState(updateFocused(formatPath(path), focused));
-  };
+  }
 
-  validate = () => {
-    this.setState(updateValidation);
-  };
+  validate() {
+    this.setState(runWarn);
+    this.setState(runValidate);
+  }
 
-  submit = (event?: Event | SyntheticEvent<>): void => {
+  submit(event?: Event | SyntheticEvent<>) {
     if (event) {
       event.preventDefault();
     }
@@ -261,9 +399,9 @@ class DefaultStateProvider<T> extends React.PureComponent<
           return null;
         }
 
-        nextState = updateValidation(nextState, props) || nextState;
+        nextState = runValidate(nextState, props) || nextState;
 
-        if (!nextState.valid) {
+        if (nextState.errorState !== null) {
           promise = Promise.reject(
             new SubmitValidationError(nextState.errorState),
           );
@@ -302,42 +440,48 @@ class DefaultStateProvider<T> extends React.PureComponent<
         );
       },
     );
-  };
+  }
 
-  state = {
-    initialValueState: this.props.values,
-    valueState: this.props.values,
-    pendingValueState: this.props.values,
-    warningState: {},
-    errorState: {},
-    submitErrorState: {},
-    focusedPath: null,
-    touchedMap: {},
-    visitedMap: {},
-    submitting: false,
-    submitFailed: false,
-    submitSucceeded: false,
-    warningStale: true,
-    validationStale: true,
-    valid: true,
+  getInitialState() {
+    return {
+      initialValueState: this.props.values,
+      valueState: this.props.values,
+      pendingValueState: this.props.values,
+      warningState: null,
+      errorState: null,
+      submitErrorState: null,
+      focusedPath: null,
+      touchedMap: {},
+      visitedMap: {},
+      submitting: false,
+      submitFailed: false,
+      submitSucceeded: false,
+      warningStale: true,
+      validationStale: true,
 
-    actions: {
-      setValue: this.setValue,
-      setInitialValue: this.setInitialValue,
-      setPendingValue: this.setPendingValue,
-      setError: this.setError,
-      setTouched: this.setTouched,
-      setVisited: this.setVisited,
-      setFocused: this.setFocused,
-      validate: this.validate,
-      submit: this.submit,
-    },
-  };
+      actions: {
+        setValue: this.setValue.bind(this),
+        setInitialValue: this.setInitialValue.bind(this),
+        setPendingValue: this.setPendingValue.bind(this),
+        setWarning: this.setError.bind(this),
+        setError: this.setError.bind(this),
+        setTouched: this.setTouched.bind(this),
+        setVisited: this.setVisited.bind(this),
+        setFocused: this.setFocused.bind(this),
+        validate: this.validate.bind(this),
+        submit: this.submit.bind(this),
+      },
+    };
+  }
+
+  constructor(props: Props<T>) {
+    super(props);
+    this.state = this.getInitialState();
+  }
 
   render() {
     const {children} = this.props;
-
-    return <Provider value={this.state}>{children(this.state)}</Provider>;
+    return children(this.state);
   }
 }
 

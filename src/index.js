@@ -11,7 +11,7 @@ export {default as withField} from './withField';
 
 export type {
   State,
-  ParsedPath,
+  PathArray,
   Path,
   ContextActions,
   Context,

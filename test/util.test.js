@@ -1,10 +1,22 @@
-// @flow
+// @flow strict
 
 import {
+  pathError,
+  pathSyntaxError,
+  arrayTargetError,
+  emptyPathError,
+  indexError,
+  boundsError,
+  pathArrayError,
+  expectedArrayError,
+  expectedPathIntError,
+  pathPartError,
+  isValidPath,
   insert,
   remove,
   equals,
   set,
+  setWith,
   get,
   parsePath,
   formatPath,
@@ -13,8 +25,7 @@ import {
   createCastEvent,
   createMergeHandlers,
   createParseEvent,
-  lazyUpdate,
-} from '../util';
+} from '../src/util';
 
 class MockHTMLElement {
   value: string | void;
@@ -47,6 +58,24 @@ const mergeHandlers = createMergeHandlers(MockEvent);
 const parseEvent = createParseEvent(MockEvent, MockHTMLElement);
 
 describe('utils', () => {
+  describe('emptyPathError', () => {
+    it('should return a string', () => {
+      expect(typeof emptyPathError()).toBe('string');
+    });
+  });
+  describe('isValidPath', () => {
+    it('should return true if the provided path is valid', () => {
+      expect(isValidPath([])).toEqual(false);
+
+      expect(isValidPath(['foo'])).toEqual(true);
+
+      expect(isValidPath('')).toEqual(false);
+
+      expect(isValidPath('foo')).toEqual(true);
+
+      expect(isValidPath(null)).toEqual(false);
+    });
+  });
   describe('insert', () => {
     it('should insert a value at the correct index', () => {
       const result = insert([1, 2, 3, 4], 2, null);
@@ -58,28 +87,28 @@ describe('utils', () => {
       expect(() => {
         // $ExpectError 'array' is an invalid argument
         insert('array', 2, null);
-      }).toThrow();
+      }).toThrow(arrayTargetError());
     });
 
     it('should throw if the index argument is invalid', () => {
       expect(() => {
         // $ExpectError '2' is an invalid argument
         insert([1, 2, 3, 4], '2', null);
-      }).toThrow();
+      }).toThrow(indexError());
 
       expect(() => {
         insert([1, 2, 3, 4], 2.5, null);
-      }).toThrow();
+      }).toThrow(indexError());
     });
 
     it('should throw if the index argument is out of bounds', () => {
       expect(() => {
         insert([1, 2, 3, 4], -1, null);
-      }).toThrow();
+      }).toThrow(boundsError());
 
       expect(() => {
         insert([1, 2, 3, 4], 5, null);
-      }).toThrow();
+      }).toThrow(boundsError());
     });
   });
 
@@ -94,28 +123,28 @@ describe('utils', () => {
       expect(() => {
         // $ExpectError 'array' is an invalid argument
         remove('array', 2);
-      }).toThrow();
+      }).toThrow(arrayTargetError());
     });
 
     it('should throw if the index argument is invalid', () => {
       expect(() => {
         // $ExpectError '2' is an invalid argument
         remove([1, 2, 3, 4], '2');
-      }).toThrow();
+      }).toThrow(indexError());
 
       expect(() => {
         remove([1, 2, 3, 4], 2.5);
-      }).toThrow();
+      }).toThrow(indexError());
     });
 
     it('should throw if the index argument is out of bounds', () => {
       expect(() => {
         remove([1, 2, 3, 4], -1);
-      }).toThrow();
+      }).toThrow(boundsError());
 
       expect(() => {
         remove([1, 2, 3, 4], 4);
-      }).toThrow();
+      }).toThrow(boundsError());
     });
   });
 
@@ -130,6 +159,68 @@ describe('utils', () => {
 
     it('should not consider mutually falsy values equal', () => {
       expect(equals(null, undefined)).toEqual(false);
+    });
+  });
+
+  describe('formatPath', () => {
+    it('should convert a path array to a string', () => {
+      expect(formatPath([])).toEqual('');
+
+      expect(formatPath(['foo'])).toEqual('foo');
+
+      expect(formatPath(['foo', 'bar'])).toEqual('foo.bar');
+
+      expect(formatPath(['foo', 'bar', 3, 'foo'])).toEqual('foo.bar[3].foo');
+
+      expect(formatPath([0])).toEqual('[0]');
+
+      expect(formatPath([0, 1, 2])).toEqual('[0][1][2]');
+    });
+
+    it('should return the passed value if it is a string', () => {
+      const path = '[0][1][2]';
+
+      expect(formatPath(path)).toEqual(path);
+    });
+
+    it('should throw an error if the provided path is invalid', () => {
+      expect(() => {
+        // $ExpectError null is an invalid argument
+        formatPath(null);
+      }).toThrow(pathError());
+    });
+  });
+
+  describe('parsePath', () => {
+    it('should convert a path string to an array', () => {
+      expect(parsePath('')).toEqual([]);
+
+      expect(parsePath('foo')).toEqual(['foo']);
+
+      expect(parsePath('foo.bar')).toEqual(['foo', 'bar']);
+
+      expect(parsePath('foo.bar[3].foo')).toEqual(['foo', 'bar', 3, 'foo']);
+
+      expect(parsePath('[0]')).toEqual([0]);
+
+      expect(parsePath('[0][1][2]')).toEqual([0, 1, 2]);
+    });
+
+    it('should return the passed value if it is an array', () => {
+      const path = [0, 1, 2];
+
+      expect(parsePath(path)).toBe(path);
+    });
+
+    it('should throw an error if the provided path is invalid', () => {
+      expect(() => {
+        parsePath('foo.bar[3]3.foo');
+      }).toThrow(pathSyntaxError('foo.bar[3]3'));
+
+      expect(() => {
+        // $ExpectError null is an invalid argument
+        parsePath(null);
+      }).toThrow(pathError());
     });
   });
 
@@ -189,22 +280,54 @@ describe('utils', () => {
       expect(() => {
         // $ExpectError 'path' is an invalid argument
         set({}, 'path', null);
-      }).toThrow('invalid path. expected array');
+      }).toThrow(pathArrayError());
 
       expect(() => {
         // $ExpectError [null] is an invalid argument
         set({}, [null], null);
-      }).toThrow('invalid path. expected string or int');
+      }).toThrow(pathPartError([null], false));
+
+      expect(() => {
+        // $ExpectError [null] is an invalid argument
+        set({}, [null, null], null);
+      }).toThrow(pathPartError([null], true));
     });
 
     it('should throw if the path does not match the object shape', () => {
       expect(() => {
         set({}, [0], null);
-      }).toThrow('expected array');
+      }).toThrow(expectedArrayError({}, [0], false));
+
+      expect(() => {
+        set({}, [0, 1], null);
+      }).toThrow(expectedArrayError({}, [0], true));
 
       expect(() => {
         set([], ['0'], null);
-      }).toThrow('expected int');
+      }).toThrow(expectedPathIntError(['0'], false));
+
+      expect(() => {
+        set([], ['0', 1], null);
+      }).toThrow(expectedPathIntError(['0'], true));
+    });
+  });
+
+  describe('setWith', () => {
+    it('should set a value using an updater at the correct path', () => {
+      const state = {foo: {bar: [1, 2, 3, {foo: 'bar'}]}};
+
+      const updater = jest.fn(() => null);
+
+      expect(setWith(state, ['foo', 'bar', 3, 'foo'], updater)).toEqual({
+        ...state,
+        foo: {
+          ...state.foo,
+          bar: [...state.foo.bar.slice(0, 3), {...state.foo.bar[3], foo: null}],
+        },
+      });
+
+      expect(updater.mock.calls.length).toBe(1);
+      expect(updater.mock.calls[0][0]).toBe(state.foo.bar[3].foo);
     });
   });
 
@@ -229,84 +352,35 @@ describe('utils', () => {
       expect(() => {
         // $ExpectError 'path' is an invalid argument
         get({}, 'path');
-      }).toThrow('invalid path. expected array');
+      }).toThrow(pathArrayError());
 
       expect(() => {
         // $ExpectError [null] is an invalid argument
         get({}, [null]);
-      }).toThrow('invalid path. expected string or int');
+      }).toThrow(pathPartError([null], false));
+
+      expect(() => {
+        // $ExpectError [null] is an invalid argument
+        get({}, [null, null]);
+      }).toThrow(pathPartError([null], true));
     });
 
     it('should throw if the path does not match the object shape', () => {
       expect(() => {
         get({}, [0]);
-      }).toThrow('expected array');
+      }).toThrow(expectedArrayError({}, [0], false));
+
+      expect(() => {
+        get({}, [0, 1]);
+      }).toThrow(expectedArrayError({}, [0], true));
 
       expect(() => {
         get([], ['0']);
-      }).toThrow('expected int');
-    });
-  });
-
-  describe('parsePath', () => {
-    it('should convert a path string to an array', () => {
-      expect(parsePath('')).toEqual([]);
-
-      expect(parsePath('foo')).toEqual(['foo']);
-
-      expect(parsePath('foo.bar')).toEqual(['foo', 'bar']);
-
-      expect(parsePath('foo.bar[3].foo')).toEqual(['foo', 'bar', 3, 'foo']);
-
-      expect(parsePath('[0]')).toEqual([0]);
-
-      expect(parsePath('[0][1][2]')).toEqual([0, 1, 2]);
-    });
-
-    it('should return the passed value if it is an array', () => {
-      const path = [0, 1, 2];
-
-      expect(parsePath(path)).toBe(path);
-    });
-
-    it('should throw an error if the provided path is invalid', () => {
-      expect(() => {
-        parsePath('foo.bar[3.foo');
-      }).toThrow('invalid path. syntax error');
+      }).toThrow(expectedPathIntError(['0'], false));
 
       expect(() => {
-        // $ExpectError null is an invalid argument
-        parsePath(null);
-      }).toThrow('invalid path. expected array or string');
-    });
-  });
-
-  describe('formatPath', () => {
-    it('should convert a path array to a string', () => {
-      expect(formatPath([])).toEqual('');
-
-      expect(formatPath(['foo'])).toEqual('foo');
-
-      expect(formatPath(['foo', 'bar'])).toEqual('foo.bar');
-
-      expect(formatPath(['foo', 'bar', 3, 'foo'])).toEqual('foo.bar[3].foo');
-
-      expect(formatPath([0])).toEqual('[0]');
-
-      expect(formatPath([0, 1, 2])).toEqual('[0][1][2]');
-    });
-
-    it('should return the passed value if it is a string', () => {
-      const path = '[0][1][2]';
-
-      expect(formatPath(path)).toBe(path);
-    });
-
-    it('should throw an error if the provided path is invalid', () => {
-      expect(() => {
-        // $ExpectError null is an invalid argument
-        formatPath(null);
-      }).toThrow('invalid path. expected array or string');
+        get([], ['0', 1]);
+      }).toThrow(expectedPathIntError(['0'], true));
     });
   });
 
@@ -431,28 +505,6 @@ describe('utils', () => {
       const event = new MockEvent({value: 'foo'});
 
       expect(parseEvent(event)).toEqual(undefined);
-    });
-  });
-
-  describe('lazyUpdate', () => {
-    it('should return null if the update shallow equals the state', () => {
-      const state = {foo: {foo: 'bar'}, bar: {bar: 'foo'}};
-
-      const update1 = {foo: state.foo};
-      const update2 = {foo: {...state.foo}};
-
-      expect(lazyUpdate(state, update1)).toEqual(null);
-      expect(lazyUpdate(state, update2)).toEqual(update2);
-    });
-  });
-
-  describe('lazyUpdate', () => {
-    it('should ignore prototype properties', () => {
-      const state = {foo: {foo: 'bar'}};
-
-      const update = Object.create({foo: state.foo});
-
-      expect(lazyUpdate(state, update)).toEqual(null);
     });
   });
 });

@@ -4,15 +4,16 @@ import * as React from 'react';
 
 import type SubmitValidationError from './SubmitValidationError';
 
-export type State = {[string]: mixed} | Array<mixed>;
-export type ParsedPath = Array<string | number>;
-export type Path = ParsedPath | string;
+export type State = {[string]: mixed};
+export type PathArray = Array<string | number>;
+export type Path = PathArray | string;
 
 export type ContextActions = {|
   setValue(path: Path, value: mixed): void,
   setInitialValue(path: Path, value: mixed): void,
   setPendingValue(path: Path, value: mixed): void,
-  setError(path: Path, mixed): void,
+  setWarning(path: Path, warning: mixed): void,
+  setError(path: Path, error: mixed): void,
   setTouched(path: Path, touched: boolean): void,
   setVisited(path: Path, visited: boolean): void,
   setFocused(path: Path, focused: boolean): void,
@@ -24,9 +25,9 @@ export type Context = {|
   initialValueState: State,
   valueState: State,
   pendingValueState: State,
-  errorState: State,
-  warningState: State,
-  submitErrorState: State,
+  errorState: State | null,
+  warningState: State | null,
+  submitErrorState: State | null,
   focusedPath: string | null,
   touchedMap: {[string]: boolean},
   visitedMap: {[string]: boolean},
@@ -35,7 +36,6 @@ export type Context = {|
   submitSucceeded: boolean,
   warningStale: boolean,
   validationStale: boolean,
-  valid: boolean,
   actions: ContextActions,
 |};
 
@@ -45,8 +45,8 @@ export type DefaultStateProviderProps<SubmitResponse> = {
   onSubmitFail(error: Error): mixed,
   onSubmitSuccess(response: SubmitResponse): mixed,
   onSubmitValidationFail(error: SubmitValidationError): mixed,
-  warn(values: State): State,
-  validate(values: State): State,
+  warn(values: State): State | null,
+  validate(values: State): State | null,
   children(context: Context): React.Node,
 };
 
@@ -55,12 +55,16 @@ export type StateProvider<StateProviderProps> = (
   (context: Context) => React.Node,
 ) => React.Node;
 
-export type FormRenderProps = {
-  ...ContextActions,
+type FormWrapperStateProps = {
   submitting: boolean,
   submitFailed: boolean,
   submitSucceeded: boolean,
-  valid: boolean,
+  hasErrors: boolean,
+  hasWarnings: boolean,
+};
+
+export type FormRenderProps = FormWrapperStateProps & {
+  ...ContextActions,
 };
 
 export type FormProps<StateProviderProps> = StateProviderProps & {
@@ -68,12 +72,8 @@ export type FormProps<StateProviderProps> = StateProviderProps & {
   children(props: FormRenderProps): React.Node,
 };
 
-export type FormWrapperProps = {
+export type FormWrapperProps = FormWrapperStateProps & {
   actions: ContextActions,
-  submitting: boolean,
-  submitFailed: boolean,
-  submitSucceeded: boolean,
-  valid: boolean,
   children(props: FormRenderProps): React.Node,
 };
 
@@ -99,11 +99,10 @@ export type FieldRenderProps = {
   ) => $Rest<P, {|onFocus: *, onBlur: *, onChange: *|}> & InputProps,
 
   // "Meta" Props
+  hasError: boolean,
   error: mixed,
-  invalid: boolean,
-  valid: boolean,
-  warning: mixed,
   hasWarning: boolean,
+  warning: mixed,
   focused: boolean,
   touched: boolean,
   visited: boolean,
@@ -135,8 +134,9 @@ export type FieldArrayRenderProps = {
 
   // "Meta" Props
   errors: Array<mixed>,
-  invalid: boolean,
-  valid: boolean,
+  hasErrors: boolean,
+  hasWarnings: boolean,
+  warnings: Array<mixed>,
   submitting: boolean,
   rawValues: Array<mixed>,
   pendingValues: Array<mixed>,

@@ -7,7 +7,7 @@ import type {
   FieldArrayWrapperProps,
   FieldArrayRenderProps,
 } from './types';
-import {matchesDeep, parsePath, formatPath, insert, remove} from './util';
+import {parsePath, formatPath, insert, remove, hasValue} from './util';
 import {Consumer} from './context';
 import Field from './Field';
 import renderWrapper from './renderWrapper';
@@ -103,30 +103,17 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     // TODO: Calculate dirty/detached state with shallow array equality,
     // potentially with deep equality. Maybe provide a callback to allow the
     // consumer to provide a compare func?
-    const valid = matchesDeep(
-      errors,
-      (value) =>
-        !/^\[object (Object|Array|Undefined)\]$/.test(
-          Object.prototype.toString.call(value),
-        ),
-    );
-    const hasWarning = matchesDeep(
-      warnings,
-      (value) =>
-        !/^\[object (Object|Array|Undefined)\]$/.test(
-          Object.prototype.toString.call(value),
-        ),
-    );
+    const hasErrors = hasValue(errors);
+    const hasWarnings = hasValue(warnings);
 
     return children({
       fields,
 
       // "Meta" Props
+      hasErrors,
       errors,
-      invalid: !valid,
-      valid: valid,
+      hasWarnings,
       warnings,
-      hasWarning,
       submitting,
       initialValues,
       rawValues: values,

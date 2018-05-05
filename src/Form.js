@@ -31,7 +31,8 @@ class FormWrapper extends React.PureComponent<FormWrapperProps> {
       submitting,
       submitFailed,
       submitSucceeded,
-      valid,
+      hasErrors,
+      hasWarnings,
       children,
     } = this.props;
 
@@ -40,7 +41,8 @@ class FormWrapper extends React.PureComponent<FormWrapperProps> {
       submitting,
       submitFailed,
       submitSucceeded,
-      valid,
+      hasErrors,
+      hasWarnings,
     });
   }
 }
@@ -56,6 +58,7 @@ class Form<
   setValue: (path: Path, value: mixed) => void;
   setInitialValue: (path: Path, value: mixed) => void;
   setPendingValue: (path: Path, value: mixed) => void;
+  setWarning: (path: Path, warning: mixed) => void;
   setError: (path: Path, error: mixed) => void;
   setTouched: (path: Path, touched: boolean) => void;
   setVisited: (path: Path, visited: boolean) => void;
@@ -82,7 +85,10 @@ class Form<
             submitting={context.submitting}
             submitFailed={context.submitFailed}
             submitSucceeded={context.submitSucceeded}
-            valid={context.valid}
+            hasErrors={
+              context.errorState !== null && context.submitErrorState !== null
+            }
+            hasWarnings={context.warningState !== null}
           >
             {children}
           </FormWrapper>

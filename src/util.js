@@ -2,7 +2,54 @@
 
 // flowlint unclear-type:off
 
-const isInt = (val: mixed): boolean %checks => {
+const formatErrorPath = (path: Array<any>, more: boolean): string => {
+  return path
+    .map((val) => (typeof val === 'string' ? `"${val}"` : `${val}`))
+    .concat(more ? ['...'] : [])
+    .join(', ');
+};
+
+export const pathError = () => 'Invalid path. Expected array or string.';
+export const pathSyntaxError = (path: string) =>
+  `Invalid path. Syntax error at "${path}".`;
+export const emptyPathError = () =>
+  'Invalid path. Expected non-empty array or string.';
+export const emptyPathArrayError = () =>
+  'Invalid path. Expected non-empty array.';
+export const emptyPathStringError = () =>
+  'Invalid path. Expected non-empty string.';
+export const arrayTargetError = () => 'Invalid target. Expected array.';
+export const indexError = () => 'Invalid index. Expected int.';
+export const boundsError = () => 'Invalid index. Out of bounds.';
+export const pathArrayError = () => 'Invalid path. Expected array.';
+export const expectedArrayError = (
+  value: any,
+  path: Array<any>,
+  more: boolean,
+) =>
+  `Invalid value. Expected array at path: [ ${formatErrorPath(
+    path,
+    more,
+  )} ]. Encountered value: ${value}.`;
+export const expectedPathIntError = (path: Array<any>, more: boolean) =>
+  `Invalid path part. Expected int at path: [ ${formatErrorPath(
+    path,
+    more,
+  )} ].`;
+export const pathPartError = (path: Array<any>, more: boolean) =>
+  `Invalid path part. Expected string or int at path: [ ${formatErrorPath(
+    path,
+    more,
+  )} ].`;
+
+export const isValidPath = (path: mixed): boolean %checks => {
+  return (
+    (Array.isArray(path) && path.length !== 0) ||
+    (typeof path === 'string' && path !== '')
+  );
+};
+
+export const isInt = (val: mixed): boolean %checks => {
   return typeof val === 'number' && val === (val | 0);
 };
 
@@ -12,15 +59,15 @@ export const insert = <T>(
   value: T,
 ): Array<T> => {
   if (!Array.isArray(array)) {
-    throw new TypeError('expected array');
+    throw new TypeError(arrayTargetError());
   }
 
   if (!isInt(index)) {
-    throw new TypeError('expected integer');
+    throw new TypeError(indexError());
   }
 
   if (index < 0 || index > array.length) {
-    throw new Error('index out of bounds');
+    throw new TypeError(boundsError());
   }
 
   return array.slice(0, index).concat([value], array.slice(index));
@@ -28,15 +75,15 @@ export const insert = <T>(
 
 export const remove = <T>(array: Array<T>, index: number): Array<T> => {
   if (!Array.isArray(array)) {
-    throw new TypeError('expected array');
+    throw new TypeError(arrayTargetError());
   }
 
   if (!isInt(index)) {
-    throw new TypeError('expected integer');
+    throw new TypeError(indexError());
   }
 
   if (index < 0 || index >= array.length) {
-    throw new Error('index out of bounds');
+    throw new TypeError(boundsError());
   }
 
   return array.slice(0, index).concat(array.slice(index + 1));
@@ -54,128 +101,6 @@ export const equals = (a: any, b: any): boolean => {
     return true;
   }
   return false;
-};
-
-export const set = <T>(
-  object: T,
-  path: Array<string | number>,
-  value: *,
-): T => {
-  if (!Array.isArray(path)) {
-    throw new TypeError('invalid path. expected array');
-  }
-
-  if (!path.length) {
-    return value;
-  }
-
-  const key = path[0];
-  const intKey = isInt(key) ? key : null;
-
-  if (intKey === null && typeof key !== 'string') {
-    throw new TypeError('invalid path. expected string or int');
-  }
-
-  const nextValue =
-    path.length > 1
-      ? set(
-          object !== undefined ? (object: any)[key] : undefined,
-          path.slice(1),
-          value,
-        )
-      : value;
-
-  if (intKey !== null) {
-    if (Array.isArray(object) || object === undefined) {
-      if (object && equals(nextValue, object[intKey])) {
-        // The correct value is already in place, abort update.
-        return object;
-      }
-
-      const result = object ? object.slice(0) : [];
-      while (result.length <= intKey) {
-        result.push(undefined);
-      }
-
-      result.splice(intKey, 1, nextValue);
-      return (result: any);
-    }
-
-    throw new TypeError(`invalid value. expected array at ${key}`);
-  } else if (Array.isArray(object)) {
-    throw new TypeError(`invalid path. expected int at ${key} (string)`);
-  }
-
-  if (
-    object !== null &&
-    object !== undefined &&
-    equals(nextValue, (object: any)[key])
-  ) {
-    // The correct value is already in place, abort update.
-    return object;
-  }
-
-  return {...object, [path[0]]: nextValue};
-};
-
-export const get = (value: any, path: Array<string | number>): mixed => {
-  if (!Array.isArray(path)) {
-    throw new TypeError('invalid path. expected array');
-  }
-
-  if (!path.length) {
-    return value;
-  }
-
-  const key = path[0];
-  const keyIsInt = isInt(key);
-  const valueIsArray = Array.isArray(value);
-  const valueIsUndefined = value === undefined;
-
-  if (!keyIsInt && typeof key !== 'string') {
-    throw new TypeError('invalid path. expected string or int');
-  }
-
-  if ((keyIsInt || valueIsUndefined) !== (valueIsArray || valueIsUndefined)) {
-    throw new TypeError(
-      keyIsInt
-        ? `invalid value. expected array at ${key}`
-        : `invalid path. expected int at ${key} (string)`,
-    );
-  }
-
-  return get(valueIsUndefined ? undefined : value[key], path.slice(1));
-};
-
-export const parsePath = (
-  path: Array<string | number> | string,
-): Array<string | number> => {
-  if (Array.isArray(path)) {
-    return path;
-  }
-
-  if (typeof path === 'string') {
-    return path.split('.').reduce((result, part) => {
-      if (part === '' && result.length === 0) {
-        return result;
-      }
-
-      const [key, ...rest] = part.split('[');
-
-      return result.concat(
-        key === '' ? [] : [key],
-        rest.map((i) => {
-          const match = /^([0-9]+)\]$/.exec(i);
-          if (!match) {
-            throw new TypeError(`invalid path. syntax error at ${part}`);
-          }
-          return parseInt(match[1], 10);
-        }),
-      );
-    }, []);
-  }
-
-  throw new TypeError('invalid path. expected array or string');
 };
 
 export const formatPath = (path: Array<string | number> | string): string => {
@@ -199,7 +124,157 @@ export const formatPath = (path: Array<string | number> | string): string => {
     return result;
   }
 
-  throw new TypeError('invalid path. expected array or string');
+  throw new TypeError(pathError());
+};
+
+export const parsePath = (
+  path: Array<string | number> | string,
+): Array<string | number> => {
+  if (Array.isArray(path)) {
+    return path;
+  }
+
+  if (typeof path === 'string') {
+    return path.split('.').reduce((result, part) => {
+      if (part === '' && result.length === 0) {
+        return result;
+      }
+
+      const [key, ...rest] = part.split('[');
+
+      return result.concat(
+        key === '' ? [] : [key],
+        rest.map((i) => {
+          const match = /^([0-9]+)\]$/.exec(i);
+          if (!match) {
+            throw new TypeError(
+              pathSyntaxError(formatPath(result.concat([part]))),
+            );
+          }
+          return parseInt(match[1], 10);
+        }),
+      );
+    }, []);
+  }
+
+  throw new TypeError(pathError());
+};
+
+export const _setWith = <T>(
+  value: T,
+  path: Array<string | number>,
+  updater: (any) => any,
+  currentPath: Array<string | number> = [],
+): T => {
+  if (!Array.isArray(path)) {
+    throw pathArrayError();
+  }
+
+  if (!path.length) {
+    return updater(value);
+  }
+
+  const key = path[0];
+  const intKey = isInt(key) ? key : null;
+
+  if (intKey === null && typeof key !== 'string') {
+    throw new TypeError(
+      pathPartError(currentPath.concat([key]), path.length > 1),
+    );
+  }
+
+  const nextValue = value !== undefined ? (value: any)[key] : undefined;
+  const updateResult =
+    path.length === 1
+      ? updater(nextValue)
+      : _setWith(nextValue, path.slice(1), updater, currentPath.concat[key]);
+
+  if (intKey !== null) {
+    if (Array.isArray(value) || value === undefined) {
+      if (value && equals(updateResult, value[intKey])) {
+        // The correct value is already in place, abort update.
+        return value;
+      }
+
+      const result = value ? value.slice(0) : [];
+      while (result.length <= intKey) {
+        result.push(undefined);
+      }
+
+      result.splice(intKey, 1, updateResult);
+      return (result: any);
+    }
+
+    throw new TypeError(
+      expectedArrayError(value, currentPath.concat([key]), path.length > 1),
+    );
+  } else if (Array.isArray(value)) {
+    throw new TypeError(
+      expectedPathIntError(currentPath.concat([key]), path.length > 1),
+    );
+  }
+
+  if (
+    value !== null &&
+    value !== undefined &&
+    equals(updateResult, (value: any)[key])
+  ) {
+    // The correct value is already in place, abort update.
+    return value;
+  }
+
+  return {...value, [path[0]]: updateResult};
+};
+
+export const setWith = <T>(
+  object: T,
+  path: Array<string | number>,
+  updater: (mixed) => mixed,
+): T => _setWith(object, path, updater);
+
+export const set = <T>(
+  object: T,
+  path: Array<string | number>,
+  value: mixed,
+): T => _setWith(object, path, () => value);
+
+export const get = (
+  value: any,
+  path: Array<string | number>,
+  currentPath: Array<string | number> = [],
+): mixed => {
+  if (!Array.isArray(path)) {
+    throw new TypeError(pathArrayError());
+  }
+
+  if (!path.length) {
+    return value;
+  }
+
+  const key = path[0];
+  const keyIsInt = isInt(key);
+  const valueIsArray = Array.isArray(value);
+  const valueIsUndefined = value === undefined;
+
+  if (!keyIsInt && typeof key !== 'string') {
+    throw new TypeError(
+      pathPartError(currentPath.concat([key]), path.length > 1),
+    );
+  }
+
+  if ((keyIsInt || valueIsUndefined) !== (valueIsArray || valueIsUndefined)) {
+    throw new TypeError(
+      keyIsInt
+        ? expectedArrayError(value, currentPath.concat([key]), path.length > 1)
+        : expectedPathIntError(currentPath.concat([key]), path.length > 1),
+    );
+  }
+
+  return get(
+    valueIsUndefined ? undefined : value[key],
+    path.slice(1),
+    currentPath.concat[key],
+  );
 };
 
 export const matchesDeep = (value: any, test: (mixed) => boolean): boolean => {
@@ -226,6 +301,15 @@ export const matchesDeep = (value: any, test: (mixed) => boolean): boolean => {
 
   return false;
 };
+
+export const hasValue = (value: mixed) =>
+  matchesDeep(
+    value,
+    (value) =>
+      !/^\[object (Object|Array|Undefined)\]$/.test(
+        Object.prototype.toString.call(value),
+      ),
+  );
 
 export const createIsEvent = (EventClass: Function) => (
   _event: mixed,
@@ -310,18 +394,3 @@ export const createParseEvent = (
 };
 
 export const parseEvent = createParseEvent(Event, HTMLElement);
-
-export const lazyUpdate = <T: Object, U: $Shape<T>>(
-  state: T,
-  update: U,
-): U | null => {
-  for (const key in update) {
-    if (Object.prototype.hasOwnProperty.call(update, key)) {
-      if (state[key] !== update[key]) {
-        return update;
-      }
-    }
-  }
-
-  return null;
-};

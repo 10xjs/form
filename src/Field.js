@@ -4,11 +4,11 @@ import * as React from 'react';
 
 import type {FieldProps, FieldWrapperProps, InputProps} from './types';
 import {
-  matchesDeep,
   parsePath,
   formatPath,
   parseEvent,
   mergeHandlers,
+  hasValue,
 } from './util';
 import {Consumer} from './context';
 import renderWrapper from './renderWrapper';
@@ -67,20 +67,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     // Maybe provide a callback to allow the consumer to provide a compare func?
     const dirty = value !== initialValue;
     const detached = value !== pendingValue;
-    const hasError = matchesDeep(
-      error,
-      (value) =>
-        !/^\[object (Object|Array|Undefined)\]$/.test(
-          Object.prototype.toString.call(value),
-        ),
-    );
-    const hasWarning = matchesDeep(
-      warning,
-      (value) =>
-        !/^\[object (Object|Array|Undefined)\]$/.test(
-          Object.prototype.toString.call(value),
-        ),
-    );
+    const hasError = hasValue(error);
+    const hasWarning = hasValue(warning);
 
     const focus = (focused: boolean) => setFocused(formattedPath, focused);
     const visit = (visited: boolean) => setVisited(formattedPath, visited);
@@ -138,11 +126,10 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       composeProps,
 
       // "Meta" Props
+      hasError,
       error,
-      invalid: hasError,
-      valid: !hasError,
-      warning,
       hasWarning,
+      warning,
       focused,
       touched,
       visited,
