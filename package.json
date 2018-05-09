@@ -1,6 +1,6 @@
 {
   "name": "@10xjs/form",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "scripts": {
     "build": "npm run clean && npm run build:flow && npm run build:lib && npm run build:esnext",
     "build:flow": "ncp src lib && ncp src esnext && npx renamer --regex --find '$' --replace '.flow' '@(lib|esnext)/**/*.js'",
