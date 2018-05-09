@@ -16,7 +16,7 @@
     "test": "npm run flow --silent && npm run lint --slient && npm run spec --silent"
   },
   "author": "Neal Granger <neal@nealg.com>",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "main": "./lib",
   "esnext": "./esnext",
   "sideEffects": false,
