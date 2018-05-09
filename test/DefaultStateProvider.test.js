@@ -807,6 +807,29 @@ describe('<DefaultStateProvider/>', () => {
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, instance.state)).toBe(true);
     });
+
+    it('should not call setState if the component is unmounted during submit', async () => {
+      instance.props = {
+        ...instance.props,
+        // 3. Invoke the componentWillUnmount callback from within the onSubmit
+        // callback tick. This is equivalent to what happens when the Form
+        // instance is unmounted as a result of calling submit.
+        onSubmit: () => instance.componentWillUnmount(),
+      };
+
+      // 1. Submit
+      instance.submit();
+
+      // 2. Begin spying on setState. This will count the number of calls to
+      // setState after the onSubmit callback prop is invoked.
+      jest.spyOn(instance, 'setState');
+
+      // 4. Wait for the onSubmitSuccess callback prop to be called.
+      await promise;
+
+      // 5. Assert that setState has not been called.
+      expect(instance.setState.mock.calls).toHaveLength(0);
+    });
   });
 
   describe('render', () => {

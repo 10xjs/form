@@ -325,6 +325,8 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
   static defaultProps: typeof DefaultStateProvider.defaultProps;
   static getDerivedStateFromProps: typeof DefaultStateProvider.getDerivedStateFromProps;
 
+  _willUnmount: boolean;
+
   setValue(path: Path, value: mixed) {
     this.setState(updateValue(parsePath(path), value));
   }
@@ -369,58 +371,56 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
 
     let promise: Promise<T>;
 
-    this.setState(
-      (state, props) => {
-        let nextState = state;
+    const setState = (update) =>
+      new Promise(
+        (resolve) =>
+          this._willUnmount ? resolve() : this.setState(update, resolve),
+      );
 
-        if (nextState.submitting) {
-          promise = Promise.reject(
-            new Error('Form submit blocked pending current submit resolution.'),
-          );
+    setState((state, props) => {
+      let nextState = state;
+
+      if (nextState.submitting) {
+        promise = Promise.reject(
+          new Error('Form submit blocked pending current submit resolution.'),
+        );
+        return null;
+      }
+
+      nextState = runValidate(nextState, props) || nextState;
+
+      if (nextState.errorState !== null) {
+        promise = Promise.reject(
+          new SubmitValidationError(nextState.errorState),
+        );
+
+        if (nextState === state) {
           return null;
         }
 
-        nextState = runValidate(nextState, props) || nextState;
-
-        if (nextState.errorState !== null) {
-          promise = Promise.reject(
-            new SubmitValidationError(nextState.errorState),
-          );
-
-          if (nextState === state) {
-            return null;
-          }
-
-          return nextState;
-        }
-
-        nextState = set(nextState, ['submitting'], true);
-
-        promise = Promise.resolve(nextState.valueState).then(props.onSubmit);
-
         return nextState;
-      },
-      () => {
-        promise.then(
-          (result) =>
-            new Promise((resolve) =>
-              this.setState(updateSubmit(), () => {
-                resolve(this.props.onSubmitSuccess(result));
-              }),
-            ),
-          (error) =>
-            new Promise((resolve) => {
-              this.setState(updateSubmit(error), () => {
-                if (error instanceof SubmitValidationError) {
-                  resolve(this.props.onSubmitValidationFail(error));
-                } else {
-                  resolve(this.props.onSubmitFail(error));
-                }
-              });
-            }),
-        );
-      },
-    );
+      }
+
+      nextState = set(nextState, ['submitting'], true);
+
+      promise = Promise.resolve(nextState.valueState).then(props.onSubmit);
+
+      return nextState;
+    }).then(() => {
+      promise.then(
+        (result) =>
+          setState(updateSubmit()).then(() =>
+            this.props.onSubmitSuccess(result),
+          ),
+        (error) =>
+          setState(updateSubmit(error)).then(
+            () =>
+              error instanceof SubmitValidationError
+                ? this.props.onSubmitValidationFail(error)
+                : this.props.onSubmitFail(error),
+          ),
+      );
+    });
   }
 
   getInitialState() {
@@ -455,8 +455,13 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
     };
   }
 
+  componentWillUnmount() {
+    this._willUnmount = true;
+  }
+
   constructor(props: Props<T>) {
     super(props);
+    this._willUnmount = false;
     this.state = this.getInitialState();
   }
 
