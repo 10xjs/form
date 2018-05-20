@@ -87,7 +87,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       }
     };
 
-    const props = {
+    const input = {
       name: formattedPath,
       value: checkbox ? undefined : format(value),
       checked: checkbox ? !!format(value) : undefined,
@@ -107,13 +107,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       },
     };
 
-    const composeProps = <P: $Shape<HandlerProps>>(
+    const composeInput = <P: $Shape<HandlerProps>>(
       userProps: P,
     ): $Rest<P, $Exact<HandlerProps>> & InputProps =>
-      Object.assign({}, (userProps: $Rest<P, $Exact<HandlerProps>>), props, {
-        onFocus: mergeHandlers(userProps.onFocus, props.onFocus),
-        onBlur: mergeHandlers(userProps.onBlur, props.onBlur),
-        onChange: mergeHandlers(userProps.onChange, props.onChange),
+      Object.assign({}, (userProps: $Rest<P, $Exact<HandlerProps>>), input, {
+        onFocus: mergeHandlers(userProps.onFocus, input.onFocus),
+        onBlur: mergeHandlers(userProps.onBlur, input.onBlur),
+        onChange: mergeHandlers(userProps.onChange, input.onChange),
       });
 
     let arrayActions;
@@ -136,8 +136,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       Object.assign(
         {
           // Input Tag Props
-          props,
-          composeProps,
+          input,
+          composeInput,
 
           // "Meta" Props
           hasError,

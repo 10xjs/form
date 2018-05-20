@@ -425,7 +425,7 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
   }
 
   getInitialState() {
-    return {
+    let state = {
       initialValueState: this.props.values,
       valueState: this.props.values,
       pendingValueState: this.props.values,
@@ -454,6 +454,11 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
         submit: this.submit.bind(this),
       },
     };
+
+    state = runValidate(state, this.props) || state;
+    state = runWarn(state, this.props) || state;
+
+    return state;
   }
 
   componentWillUnmount() {

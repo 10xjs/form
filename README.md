@@ -15,7 +15,7 @@ const FormComponent = () => (
   >
     {({submit}) => (
       <form onSubmit={submit}>
-        <Field path="field">{({props}) => <input {...props} />}</Field>
+        <Field path="field">{({input}) => <input {...input} />}</Field>
         <button>Submit form</button>
       </form>
     )}

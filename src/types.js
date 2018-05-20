@@ -85,8 +85,8 @@ export type InputProps = {
 };
 
 export type FieldRenderProps = {
-  props: InputProps,
-  composeProps: <
+  input: InputProps,
+  composeInput: <
     P: {
       onFocus?: () => mixed,
       onBlur?: () => mixed,
