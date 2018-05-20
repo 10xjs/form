@@ -82,12 +82,14 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
     return null;
   }
 
+  nextState = set(nextState, ['warningStale'], true);
+  nextState = set(nextState, ['validationStale'], true);
+
   // Clear warning state at path.
   if (nextState.warningState !== null) {
     nextState = set(nextState, ['warningState'].concat(path), undefined);
 
     if (nextState.warningState !== state.warningState) {
-      nextState = set(nextState, ['warningStale'], true);
       nextState = updateWarningState(nextState);
     }
   }
@@ -97,7 +99,6 @@ const updateValue = (path: PathArray, value: mixed) => (state: State) => {
     nextState = set(nextState, ['errorState'].concat(path), undefined);
 
     if (nextState.errorState !== state.errorState) {
-      nextState = set(nextState, ['validationStale'], true);
       nextState = updateErrorState(nextState);
     }
   }

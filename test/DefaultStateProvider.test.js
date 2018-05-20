@@ -173,11 +173,20 @@ describe('<DefaultStateProvider/>', () => {
 
       instance.setValue(['foo'], 'bar');
 
-      const {valueState, ...rest} = instance.state;
+      const {
+        valueState,
+        validationStale,
+        warningStale,
+        ...rest
+      } = instance.state;
 
       // it should set value state at path
       expect(valueState).not.toBe(previousState.valueState);
       expect(get(valueState, ['foo'])).toBe('bar');
+
+      // it should reset validation and warning state
+      expect(validationStale).toBe(true);
+      expect(warningStale).toBe(true);
 
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, previousState)).toBe(true);
@@ -195,7 +204,12 @@ describe('<DefaultStateProvider/>', () => {
 
       instance.setValue(['foo'], 'bar');
 
-      const {valueState: _valueState, ...rest} = instance.state;
+      const {
+        valueState: _valueState,
+        validationStale: _validationStale,
+        warningStale: _warningStale,
+        ...rest
+      } = instance.state;
 
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, previousState)).toBe(true);
