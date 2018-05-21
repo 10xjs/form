@@ -136,7 +136,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       Object.assign(
         {
           // Input Tag Props
-          props,
+          input: props,
           composeProps,
 
           // "Meta" Props
@@ -229,7 +229,7 @@ Field.defaultProps = {
   parse: (v: mixed) => v,
   checkbox: false,
   validateOnBlur: true,
-  validateOnChange: false,
+  validateOnChange: true,
 };
 
 export default Field;
