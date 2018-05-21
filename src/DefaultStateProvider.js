@@ -464,6 +464,8 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
     super(props);
     this._willUnmount = false;
     this.state = this.getInitialState();
+    Object.assign(this.state, runWarn(this.state, this.props));
+    Object.assign(this.state, runValidate(this.state, this.props));
   }
 
   render() {

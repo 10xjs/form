@@ -69,7 +69,7 @@ class Form<StateProviderProps>
             submitFailed={context.submitFailed}
             submitSucceeded={context.submitSucceeded}
             hasErrors={
-              context.errorState !== null && context.submitErrorState !== null
+              context.errorState !== null || context.submitErrorState !== null
             }
             hasWarnings={context.warningState !== null}
           >
