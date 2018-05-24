@@ -38,8 +38,6 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       format,
       parse,
       checkbox,
-      validateOnBlur,
-      validateOnChange,
 
       // Field state
       initialValue: initialValues,
@@ -50,7 +48,6 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       submitting,
 
       // Context Actions
-      validate,
       submit,
 
       // Render Callbacks
@@ -85,8 +82,6 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
           format={format}
           parse={parse}
           checkbox={checkbox}
-          validateOnBlur={validateOnBlur}
-          validateOnChange={validateOnChange}
           addField={this.addField.bind(this)}
           removeField={this.removeField.bind(this)}
         >
@@ -115,7 +110,6 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       pendingValues,
 
       // Context Actions
-      validate,
       submit,
 
       // FieldArray Actions
@@ -142,8 +136,6 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
       format,
       parse,
       checkbox,
-      validateOnBlur,
-      validateOnChange,
       renderField,
       children,
       getFieldKey,
@@ -160,8 +152,6 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
               format,
               parse,
               checkbox,
-              validateOnBlur,
-              validateOnChange,
             },
             context,
             {renderField, children, getFieldKey},

@@ -47,12 +47,9 @@ class Form<StateProviderProps>
   setValue: (path: Path, value: mixed) => void;
   setInitialValue: (path: Path, value: mixed) => void;
   setPendingValue: (path: Path, value: mixed) => void;
-  setWarning: (path: Path, warning: mixed) => void;
-  setError: (path: Path, error: mixed) => void;
   setTouched: (path: Path, touched: boolean) => void;
   setVisited: (path: Path, visited: boolean) => void;
   setFocused: (path: Path, focused: boolean) => void;
-  validate: () => void;
   submit: (event?: Event | SyntheticEvent<>) => void;
 
   render() {
