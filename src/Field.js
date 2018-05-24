@@ -33,6 +33,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       value,
       pendingValue,
       error,
+      submitError,
       warning,
       focused,
       touched,
@@ -65,6 +66,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const dirty = value !== initialValue;
     const detached = value !== pendingValue;
     const hasError = hasValue(error);
+    const hasSubmitError = hasValue(submitError);
     const hasWarning = hasValue(warning);
 
     const focus = (focused: boolean) => setFocused(formattedPath, focused);
@@ -132,6 +134,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           // "Meta" Props
           hasError,
           error,
+          hasSubmitError,
+          submitError,
           hasWarning,
           warning,
           focused,

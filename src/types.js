@@ -94,6 +94,8 @@ export type FieldRenderProps = {
   // "Meta" Props
   hasError: boolean,
   error: mixed,
+  hasSubmitError: boolean,
+  submitError: mixed,
   hasWarning: boolean,
   warning: mixed,
   focused: boolean,
@@ -152,6 +154,7 @@ type FieldStateProps<T> = {
   value: T,
   pendingValue: T,
   error: T,
+  submitError: T,
   warning: T,
   focused: boolean,
   touched: boolean,

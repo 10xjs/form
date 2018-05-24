@@ -44,6 +44,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       value: values,
       pendingValue: pendingValues,
       error: errors,
+      submitError: submitErrors,
       warning: warnings,
       submitting,
 
@@ -67,8 +68,16 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       throw new Error(`expected array pendingValue at ${formattedPath}`);
     }
 
+    if (!Array.isArray(warnings)) {
+      throw new Error(`expected array warnings at ${formattedPath}`);
+    }
+
     if (!Array.isArray(errors)) {
       throw new Error(`expected array error at ${formattedPath}`);
+    }
+
+    if (!Array.isArray(submitErrors)) {
+      throw new Error(`expected array submitError at ${formattedPath}`);
     }
 
     const fields = values.map((value, index) => {
@@ -94,6 +103,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     // potentially with deep equality. Maybe provide a callback to allow the
     // consumer to provide a compare func?
     const hasErrors = hasValue(errors);
+    const hasSubmitErrors = hasValue(submitErrors);
     const hasWarnings = hasValue(warnings);
 
     return children({
@@ -102,6 +112,8 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       // "Meta" Props
       hasErrors,
       errors,
+      hasSubmitErrors,
+      submitErrors,
       hasWarnings,
       warnings,
       submitting,
@@ -125,6 +137,8 @@ FieldArrayWrapper.defaultProps = {
   value: [],
   pendingValue: [],
   error: [],
+  warning: [],
+  submitError: [],
 };
 
 class FieldArray extends React.PureComponent<FieldArrayProps> {
