@@ -93,6 +93,31 @@ describe('<DefaultStateProvider/>', () => {
     });
   });
 
+  describe('getInitialState', () => {
+    it('should run validate and warn', () => {
+      const instance = getInstance();
+
+      const errors = {foo: 'bar'};
+      const warnings = {bar: 'foo'};
+
+      // $ExpectError modify sealed props object
+      instance.props.validate = jest.fn(() => errors);
+      // $ExpectError modify sealed props object
+      instance.props.warn = jest.fn(() => warnings);
+
+      const state = instance.getInitialState();
+
+      expect(instance.props.validate.mock.calls).toHaveLength(1);
+      expect(instance.props.warn.mock.calls).toHaveLength(1);
+
+      expect(state.validationStale).toBe(false);
+      expect(state.warningStale).toBe(false);
+
+      expect(state.errorState).toBe(errors);
+      expect(state.warningState).toBe(warnings);
+    });
+  });
+
   describe('static getDerivedStateFromProps', () => {
     let instance;
 
