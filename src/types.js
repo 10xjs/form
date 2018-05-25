@@ -55,6 +55,7 @@ type FormWrapperStateProps = {
   submitFailed: boolean,
   submitSucceeded: boolean,
   hasErrors: boolean,
+  hasSubmitErrors: boolean,
   hasWarnings: boolean,
 };
 

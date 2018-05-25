@@ -32,6 +32,7 @@ class FormWrapper extends React.PureComponent<FormWrapperProps> {
         submitFailed: this.props.submitFailed,
         submitSucceeded: this.props.submitSucceeded,
         hasErrors: this.props.hasErrors,
+        hasSubmitErrors: this.props.hasSubmitErrors,
         hasWarnings: this.props.hasWarnings,
       }),
     );
