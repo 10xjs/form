@@ -18,7 +18,7 @@ export interface FormActions {
   submit(event?: Event | SyntheticEvent<>): void;
 }
 
-export type Context = {|
+export type Context = {
   initialValueState: State,
   valueState: State,
   pendingValueState: State,
@@ -32,7 +32,7 @@ export type Context = {|
   submitFailed: boolean,
   submitSucceeded: boolean,
   actions: FormActions,
-|};
+};
 
 export type DefaultStateProviderProps<SubmitResponse> = {
   values: State,

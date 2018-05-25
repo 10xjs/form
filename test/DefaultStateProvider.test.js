@@ -121,8 +121,8 @@ describe('<DefaultStateProvider/>', () => {
       instance = getInstance();
     });
 
-    it('should not modify state if `values` prop has not changed', () => {
-      const nextProps = {...instance.props};
+    it('should not modify state if no relevant props have changed', () => {
+      const nextProps = {...instance.props, foo: 'bar'};
 
       const state = DefaultStateProvider.getDerivedStateFromProps(
         nextProps,
@@ -144,6 +144,46 @@ describe('<DefaultStateProvider/>', () => {
 
       // it should set value state at path
       expect(pendingValueState).toBe(nextProps.values);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
+
+    it('should run `validate` if the prop has changed', () => {
+      const nextProps = {
+        ...instance.props,
+        validate: jest.fn(() => instance.state.errorState),
+      };
+
+      const state = DefaultStateProvider.getDerivedStateFromProps(
+        nextProps,
+        instance.state,
+      );
+
+      // Updating `validate` update the `_props` cache.
+      const {_props, ...rest} = (state: any);
+
+      expect(nextProps.validate.mock.calls).toHaveLength(1);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
+
+    it('should run `warn` if the prop has changed', () => {
+      const nextProps = {
+        ...instance.props,
+        warn: jest.fn(() => instance.state.warningState),
+      };
+
+      const state = DefaultStateProvider.getDerivedStateFromProps(
+        nextProps,
+        instance.state,
+      );
+
+      // Updating `warn` update the `_props` cache.
+      const {_props, ...rest} = (state: any);
+
+      expect(nextProps.warn.mock.calls).toHaveLength(1);
 
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, instance.state)).toBe(true);

@@ -21,7 +21,7 @@ import {
 import SubmitValidationError from './SubmitValidationError';
 
 type Props<T> = DefaultStateProviderProps<T>;
-type State = Context;
+type State = {_props: *} & Context;
 
 const updateWarningState = (state: State) => {
   let nextState: State = state;
@@ -89,26 +89,27 @@ const runValidate = <T>(state: State, props: Props<T>) => {
   return nextState;
 };
 
-const updateValue = (path: PathArray, value: mixed) => {
-  return function<T>(state: State, props: Props<T>) {
-    if (path.length < 1) {
-      throw new TypeError(emptyPathArrayError());
-    }
+const updateValue = (path: PathArray, value: mixed) => <T>(
+  state: State,
+  props: Props<T>,
+) => {
+  if (path.length < 1) {
+    throw new TypeError(emptyPathArrayError());
+  }
 
-    let nextState: State = state;
+  let nextState: State = state;
 
-    nextState = set(nextState, ['valueState'].concat(path), value);
+  nextState = set(nextState, ['valueState'].concat(path), value);
 
-    if (nextState === state) {
-      return null;
-    }
+  if (nextState === state) {
+    return null;
+  }
 
-    nextState = runWarn(nextState, props) || nextState;
-    nextState = runValidate(nextState, props) || nextState;
-    nextState = set(nextState, ['submitErrorState'], null);
+  nextState = runWarn(nextState, props) || nextState;
+  nextState = runValidate(nextState, props) || nextState;
+  nextState = set(nextState, ['submitErrorState'], null);
 
-    return nextState;
-  };
+  return nextState;
 };
 
 const updateInitialValue = (path: PathArray, value: mixed) => (
@@ -327,6 +328,12 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
         setFocused: this.setFocused.bind(this),
         submit: this.submit.bind(this),
       },
+
+      // Cache prop values for comparison in getDerivedStateFromProps
+      _props: {
+        warn: this.props.warn,
+        validate: this.props.validate,
+      },
     };
 
     state = runValidate(state, this.props) || state;
@@ -368,6 +375,16 @@ DefaultStateProvider.getDerivedStateFromProps = <T>(
   let nextState: State = state;
 
   nextState = set(nextState, ['pendingValueState'], props.values);
+
+  if (props.validate !== state._props.validate) {
+    nextState = set(nextState, ['_props', 'validate'], props.validate);
+    nextState = runValidate(nextState, props) || nextState;
+  }
+
+  if (props.warn !== state._props.warn) {
+    nextState = set(nextState, ['_props', 'warn'], props.warn);
+    nextState = runWarn(nextState, props) || nextState;
+  }
 
   if (nextState === state) {
     return null;
