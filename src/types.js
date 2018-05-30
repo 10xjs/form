@@ -12,16 +12,13 @@ export interface FormActions {
   setValue(path: Path, value: mixed): void;
   setInitialValue(path: Path, value: mixed): void;
   setPendingValue(path: Path, value: mixed): void;
-  setWarning(path: Path, warning: mixed): void;
-  setError(path: Path, error: mixed): void;
   setTouched(path: Path, touched: boolean): void;
   setVisited(path: Path, visited: boolean): void;
   setFocused(path: Path, focused: boolean): void;
-  validate(): void;
   submit(event?: Event | SyntheticEvent<>): void;
 }
 
-export type Context = {|
+export type Context = {
   initialValueState: State,
   valueState: State,
   pendingValueState: State,
@@ -34,10 +31,8 @@ export type Context = {|
   submitting: boolean,
   submitFailed: boolean,
   submitSucceeded: boolean,
-  warningStale: boolean,
-  validationStale: boolean,
   actions: FormActions,
-|};
+};
 
 export type DefaultStateProviderProps<SubmitResponse> = {
   values: State,
@@ -60,6 +55,7 @@ type FormWrapperStateProps = {
   submitFailed: boolean,
   submitSucceeded: boolean,
   hasErrors: boolean,
+  hasSubmitErrors: boolean,
   hasWarnings: boolean,
 };
 
@@ -99,6 +95,8 @@ export type FieldRenderProps = {
   // "Meta" Props
   hasError: boolean,
   error: mixed,
+  hasSubmitError: boolean,
+  submitError: mixed,
   hasWarning: boolean,
   warning: mixed,
   focused: boolean,
@@ -119,7 +117,6 @@ export type FieldRenderProps = {
   acceptPendingValue(): void,
   rejectPendingValue(): void,
   submit(): void,
-  validate(): void,
 
   // FieldArray Actions
   addFieldBefore?: (stateValue: mixed) => void,
@@ -141,7 +138,6 @@ export type FieldArrayRenderProps = {
 
   // Context Actions
   submit(): void,
-  validate(): void,
 
   // FieldArray Props
   addField(value: mixed): void,
@@ -152,8 +148,6 @@ export type FieldConfig = {
   format(stateValue: mixed): mixed,
   parse(fieldValue: mixed, previousStateValue: mixed): mixed,
   checkbox: boolean,
-  validateOnBlur: boolean,
-  validateOnChange: boolean,
 };
 
 type FieldStateProps<T> = {
@@ -161,6 +155,7 @@ type FieldStateProps<T> = {
   value: T,
   pendingValue: T,
   error: T,
+  submitError: T,
   warning: T,
   focused: boolean,
   touched: boolean,

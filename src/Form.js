@@ -32,6 +32,7 @@ class FormWrapper extends React.PureComponent<FormWrapperProps> {
         submitFailed: this.props.submitFailed,
         submitSucceeded: this.props.submitSucceeded,
         hasErrors: this.props.hasErrors,
+        hasSubmitErrors: this.props.hasSubmitErrors,
         hasWarnings: this.props.hasWarnings,
       }),
     );
@@ -47,12 +48,9 @@ class Form<StateProviderProps>
   setValue: (path: Path, value: mixed) => void;
   setInitialValue: (path: Path, value: mixed) => void;
   setPendingValue: (path: Path, value: mixed) => void;
-  setWarning: (path: Path, warning: mixed) => void;
-  setError: (path: Path, error: mixed) => void;
   setTouched: (path: Path, touched: boolean) => void;
   setVisited: (path: Path, visited: boolean) => void;
   setFocused: (path: Path, focused: boolean) => void;
-  validate: () => void;
   submit: (event?: Event | SyntheticEvent<>) => void;
 
   render() {
@@ -68,9 +66,8 @@ class Form<StateProviderProps>
             submitting={context.submitting}
             submitFailed={context.submitFailed}
             submitSucceeded={context.submitSucceeded}
-            hasErrors={
-              context.errorState !== null && context.submitErrorState !== null
-            }
+            hasErrors={context.errorState !== null}
+            hasSubmitErrors={context.submitErrorState !== null}
             hasWarnings={context.warningState !== null}
           >
             {this.props.children}

@@ -34,10 +34,8 @@ const getInstance = () => {
     initialValueState: values,
     pendingValueState: values,
     warningState: warnings,
-    warningStale: false,
     errorState: errors,
     submitErrorState: submitErrors,
-    validationStale: false,
   };
 
   return instance;
@@ -93,6 +91,29 @@ describe('<DefaultStateProvider/>', () => {
     });
   });
 
+  describe('getInitialState', () => {
+    it('should run validation', () => {
+      const instance = getInstance();
+
+      const errors = {foo: 'bar'};
+      const warnings = {bar: 'foo'};
+
+      instance.props = {
+        ...instance.props,
+        validate: jest.fn(() => errors),
+        warn: jest.fn(() => warnings),
+      };
+
+      const state = instance.getInitialState();
+
+      expect(instance.props.validate.mock.calls).toHaveLength(1);
+      expect(instance.props.warn.mock.calls).toHaveLength(1);
+
+      expect(state.errorState).toBe(errors);
+      expect(state.warningState).toBe(warnings);
+    });
+  });
+
   describe('static getDerivedStateFromProps', () => {
     let instance;
 
@@ -100,8 +121,8 @@ describe('<DefaultStateProvider/>', () => {
       instance = getInstance();
     });
 
-    it('should not modify state if `values` prop has not changed', () => {
-      const nextProps = {...instance.props};
+    it('should not modify state if no relevant props have changed', () => {
+      const nextProps = {...instance.props, foo: 'bar'};
 
       const state = DefaultStateProvider.getDerivedStateFromProps(
         nextProps,
@@ -127,6 +148,46 @@ describe('<DefaultStateProvider/>', () => {
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, instance.state)).toBe(true);
     });
+
+    it('should run `validate` if the prop has changed', () => {
+      const nextProps = {
+        ...instance.props,
+        validate: jest.fn(() => instance.state.errorState),
+      };
+
+      const state = DefaultStateProvider.getDerivedStateFromProps(
+        nextProps,
+        instance.state,
+      );
+
+      // Updating `validate` update the `_props` cache.
+      const {_props, ...rest} = (state: any);
+
+      expect(nextProps.validate.mock.calls).toHaveLength(1);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
+
+    it('should run `warn` if the prop has changed', () => {
+      const nextProps = {
+        ...instance.props,
+        warn: jest.fn(() => instance.state.warningState),
+      };
+
+      const state = DefaultStateProvider.getDerivedStateFromProps(
+        nextProps,
+        instance.state,
+      );
+
+      // Updating `warn` update the `_props` cache.
+      const {_props, ...rest} = (state: any);
+
+      expect(nextProps.warn.mock.calls).toHaveLength(1);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
   });
 
   describe('setValue', () => {
@@ -146,10 +207,8 @@ describe('<DefaultStateProvider/>', () => {
       instance.state = {
         ...instance.state,
         warningState: {},
-        warningStale: false,
         errorState: {},
         submitErrorState: {},
-        validationStale: false,
       };
 
       const previousState = instance.state;
@@ -163,99 +222,77 @@ describe('<DefaultStateProvider/>', () => {
       instance.state = {
         ...instance.state,
         warningState: null,
-        warningStale: false,
         errorState: null,
         submitErrorState: null,
-        validationStale: false,
       };
 
       const previousState = instance.state;
 
       instance.setValue(['foo'], 'bar');
 
-      const {
-        valueState,
-        validationStale,
-        warningStale,
-        ...rest
-      } = instance.state;
+      const {valueState, ...rest} = instance.state;
 
       // it should set value state at path
       expect(valueState).not.toBe(previousState.valueState);
       expect(get(valueState, ['foo'])).toBe('bar');
 
-      // it should reset validation and warning state
-      expect(validationStale).toBe(true);
-      expect(warningStale).toBe(true);
-
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, previousState)).toBe(true);
     });
 
-    it('should not unnecessarily update error and warning state', () => {
-      instance.state = {
-        ...instance.state,
-        warningState: {bar: 'warning'},
-        errorState: {bar: 'error'},
-        submitErrorState: {bar: 'error'},
-      };
-
+    it('should run validation', () => {
       const previousState = instance.state;
 
-      instance.setValue(['foo'], 'bar');
+      const errors = {foo: 'bar'};
+      const warnings = {foo: 'foo'};
 
-      const {
-        valueState: _valueState,
-        validationStale: _validationStale,
-        warningStale: _warningStale,
-        ...rest
-      } = instance.state;
-
-      // it should leave remaining state values unchanged
-      expect(shallowIntersect(rest, previousState)).toBe(true);
-    });
-
-    it('should return updated error and warning state', () => {
-      instance.state = {
-        ...instance.state,
-        warningState: {...instance.state.warningState, bar: 'warning'},
-        errorState: {...instance.state.errorState, bar: 'error'},
-        submitErrorState: {...instance.state.submitErrorState, bar: 'error'},
-      };
-
-      const previousState = instance.state;
+      // $ExpectError modify sealed props object
+      instance.props.validate = jest.fn(() => errors);
+      // $ExpectError modify sealed props object
+      instance.props.warn = jest.fn(() => warnings);
 
       instance.setValue(['foo'], 'bar');
 
       const {
         valueState: _,
         errorState,
-        validationStale,
         warningState,
-        warningStale,
         submitErrorState,
         ...rest
       } = instance.state;
 
-      // it should clear error state at path
-      expect(errorState).not.toBe(previousState.errorState);
-      expect(get(errorState, ['foo'])).toBe(undefined);
+      expect(instance.props.validate.mock.calls).toHaveLength(1);
+      expect(instance.props.warn.mock.calls).toHaveLength(1);
 
-      // it should invalidate validation stale state
-      expect(validationStale).not.toBe(previousState.validationStale);
-      expect(validationStale).toBe(true);
+      expect(errorState).toBe(errors);
+      expect(warningState).toBe(warnings);
+      expect(submitErrorState).toBe(null);
 
-      // it should clear warning state at path
-      expect(warningState).not.toBe(previousState.warningState);
-      expect(get(warningState, ['foo'])).toBe(undefined);
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, previousState)).toBe(true);
+    });
 
-      // it should invalidate warning stale state
-      expect(warningStale).not.toBe(previousState.warningStale);
-      expect(warningStale).toBe(true);
+    it('should convert empty validation state to null', () => {
+      const previousState = instance.state;
 
-      // it should clear submit error state at path
-      expect(submitErrorState).not.toBe(previousState.submitErrorState);
-      expect(get(submitErrorState, ['foo'])).toBe(undefined);
+      // $ExpectError modify sealed props object
+      instance.props.validate = () => ({});
+      // $ExpectError modify sealed props object
+      instance.props.warn = () => [];
+
+      instance.setValue(['foo'], 'bar');
+
+      const {
+        valueState: _,
+        errorState,
+        warningState,
+        submitErrorState,
+        ...rest
+      } = instance.state;
+
+      expect(errorState).toBe(null);
+      expect(warningState).toBe(null);
+      expect(submitErrorState).toBe(null);
 
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, previousState)).toBe(true);
@@ -268,8 +305,6 @@ describe('<DefaultStateProvider/>', () => {
 
       const {
         valueState: _valueState,
-        warningStale: _warningStale,
-        validationStale: _validationStale,
         errorState,
         warningState,
         submitErrorState,
@@ -360,108 +395,6 @@ describe('<DefaultStateProvider/>', () => {
       // it should set pending value state at path
       expect(pendingValueState).not.toBe(previousState.pendingValueState);
       expect(get(pendingValueState, ['foo'])).toBe('bar');
-
-      // it should leave remaining state values unchanged
-      expect(shallowIntersect(rest, previousState)).toBe(true);
-    });
-  });
-
-  describe('static setWarning', () => {
-    let instance;
-
-    beforeEach(() => {
-      instance = getInstance();
-    });
-
-    it('should throw if the path is empty', () => {
-      expect(() => {
-        instance.setWarning([], {});
-      }).toThrow(emptyPathArrayError());
-    });
-
-    it('should not modify state if change is idempotent', () => {
-      instance.state = {
-        ...instance.state,
-        warningState: null,
-      };
-
-      const previousState = instance.state;
-
-      instance.setWarning(['foo'], undefined);
-
-      expect(instance.state).toBe(previousState);
-    });
-
-    it('should return updated warning state', () => {
-      const previousState = instance.state;
-
-      instance.setWarning(['foo'], 'bar');
-
-      const {warningState, warningStale, ...rest} = instance.state;
-
-      // it should set warning state at path
-      expect(warningState).not.toBe(previousState.warningState);
-      expect(get(warningState, ['foo'])).toBe('bar');
-
-      // it should invalidate warning stale state
-      expect(warningStale).not.toBe(previousState.warningStale);
-      expect(warningStale).toBe(true);
-
-      // it should leave remaining state values unchanged
-      expect(shallowIntersect(rest, previousState)).toBe(true);
-    });
-  });
-
-  describe('static setError', () => {
-    let instance;
-
-    beforeEach(() => {
-      instance = getInstance();
-    });
-
-    it('should throw if the path is empty', () => {
-      expect(() => {
-        instance.setError([], {});
-      }).toThrow(emptyPathArrayError());
-    });
-
-    it('should not modify state if change is idempotent', () => {
-      instance.state = {
-        ...instance.state,
-        errorState: null,
-        submitErrorState: null,
-      };
-
-      const previousState = instance.state;
-
-      instance.setError(['foo'], undefined);
-
-      expect(instance.state).toBe(previousState);
-    });
-
-    it('should return updated error state', () => {
-      const previousState = instance.state;
-
-      instance.setError(['foo'], 'bar');
-
-      const {
-        errorState,
-        validationStale,
-        submitErrorState,
-        ...rest
-      } = instance.state;
-
-      // it should set error state at path
-      expect(errorState).not.toBe(previousState.errorState);
-      expect(get(errorState, ['foo'])).toBe('bar');
-
-      // it should clear submit error state at path
-      expect(submitErrorState).not.toBe(previousState.submitErrorState);
-      expect(submitErrorState).toBe(null);
-
-      // it should invalidate error stale state
-      expect(validationStale).not.toBe(previousState.validationStale);
-      expect(validationStale).toBe(true);
 
       // it should leave remaining state values unchanged
       expect(shallowIntersect(rest, previousState)).toBe(true);
@@ -613,90 +546,6 @@ describe('<DefaultStateProvider/>', () => {
     });
   });
 
-  describe('validate', () => {
-    let instance;
-
-    beforeEach(() => {
-      instance = getInstance();
-    });
-
-    it('should not modify state if cached result is not stale', () => {
-      instance.state = {
-        ...instance.state,
-        warningStale: false,
-        validationStale: false,
-      };
-
-      const previousState = instance.state;
-
-      instance.validate();
-
-      expect(instance.state).toBe(previousState);
-    });
-
-    it('should call validate and warn and update state with results', () => {
-      instance.state = {
-        ...instance.state,
-        warningStale: true,
-        validationStale: true,
-      };
-
-      const validateResult = {foo: 'bar'};
-      const warnResult = {foo: 'bar'};
-
-      const validate = jest.fn(() => validateResult);
-      const warn = jest.fn(() => warnResult);
-
-      instance.props = {...instance.props, validate, warn};
-
-      const previousState = instance.state;
-
-      instance.validate();
-
-      expect(validate.mock.calls).toHaveLength(1);
-      expect(validate.mock.calls[0][0]).toBe(instance.state.valueState);
-
-      expect(warn.mock.calls).toHaveLength(1);
-      expect(warn.mock.calls[0][0]).toBe(instance.state.valueState);
-
-      const {
-        errorState,
-        validationStale,
-        warningState,
-        warningStale,
-        ...rest
-      } = instance.state;
-
-      expect(errorState).toBe(validateResult);
-      expect(validationStale).toBe(false);
-
-      expect(warningState).toBe(warnResult);
-      expect(warningStale).toBe(false);
-
-      // it should leave remaining state values unchanged
-      expect(shallowIntersect(rest, previousState)).toBe(true);
-    });
-
-    it('should handle falsy callback results', () => {
-      instance.state = {
-        ...instance.state,
-        warningStale: true,
-        validationStale: true,
-      };
-
-      instance.props = {
-        ...instance.props,
-        validate() {},
-        warn() {},
-      };
-
-      instance.validate();
-
-      expect(instance.state.errorState).toBe(null);
-      expect(instance.state.warningState).toBe(null);
-    });
-  });
-
   describe('submit', () => {
     let instance;
     let promise;
@@ -740,48 +589,10 @@ describe('<DefaultStateProvider/>', () => {
       );
     });
 
-    it('should run validation if validation state is stale', async () => {
-      instance.state = {
-        ...instance.state,
-        validationStale: true,
-      };
-
-      const errors = {foo: 'bar'};
-
-      instance.props = {
-        ...instance.props,
-        validate: jest.fn(() => errors),
-      };
-
-      instance.submit();
-
-      await expect(promise).rejects.toThrowError();
-
-      expect(instance.props.validate.mock.calls).toHaveLength(1);
-
-      const {
-        submitting,
-        submitSucceeded,
-        submitFailed,
-        submitErrorState,
-        ...rest
-      } = instance.state;
-
-      expect(submitting).toBe(false);
-      expect(submitSucceeded).toBe(false);
-      expect(submitFailed).toBe(true);
-      expect(submitErrorState).toBe(errors);
-
-      // it should leave remaining state values unchanged
-      expect(shallowIntersect(rest, instance.state)).toBe(true);
-    });
-
     it('should reject if error state is not null', async () => {
       instance.state = {
         ...instance.state,
         errorState: {foo: 'bar'},
-        validationStale: false,
-        warningStale: false,
       };
 
       instance.submit();
@@ -816,6 +627,50 @@ describe('<DefaultStateProvider/>', () => {
       expect(submitting).toBe(false);
       expect(submitSucceeded).toBe(true);
       expect(submitFailed).toBe(false);
+      expect(submitErrorState).toBe(null);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
+
+    it('should store submit validation errors', async () => {
+      const errors = {foo: 'submitError'};
+
+      const error = new SubmitValidationError(errors);
+
+      instance.props = {
+        ...instance.props,
+        onSubmit: () => Promise.reject(error),
+      };
+
+      instance.submit();
+
+      await expect(promise).rejects.toEqual(error);
+
+      const {submitErrorState, ...rest} = instance.state;
+
+      expect(submitErrorState).toBe(errors);
+
+      // it should leave remaining state values unchanged
+      expect(shallowIntersect(rest, instance.state)).toBe(true);
+    });
+
+    it('should store convert empty submit validation to null', async () => {
+      const errors = {};
+
+      const error = new SubmitValidationError(errors);
+
+      instance.props = {
+        ...instance.props,
+        onSubmit: () => Promise.reject(error),
+      };
+
+      instance.submit();
+
+      await expect(promise).rejects.toEqual(error);
+
+      const {submitErrorState, ...rest} = instance.state;
+
       expect(submitErrorState).toBe(null);
 
       // it should leave remaining state values unchanged

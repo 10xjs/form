@@ -27,14 +27,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       format,
       parse,
       checkbox,
-      validateOnBlur,
-      validateOnChange,
 
       // Field state
       initialValue,
       value,
       pendingValue,
       error,
+      submitError,
       warning,
       focused,
       touched,
@@ -48,7 +47,6 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       setValue,
       setInitialValue,
       setPendingValue,
-      validate,
       submit,
 
       // FieldArray Props
@@ -68,6 +66,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const dirty = value !== initialValue;
     const detached = value !== pendingValue;
     const hasError = hasValue(error);
+    const hasSubmitError = hasValue(submitError);
     const hasWarning = hasValue(warning);
 
     const focus = (focused: boolean) => setFocused(formattedPath, focused);
@@ -76,15 +75,11 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const change = (nextValue) => {
       const parsedValue = parse(nextValue, value);
 
-      setValue(parsedPath, parsedValue);
-
       if (!detached) {
         setPendingValue(parsedPath, parsedValue);
       }
 
-      if (validateOnChange) {
-        validate();
-      }
+      setValue(parsedPath, parsedValue);
     };
 
     const input = {
@@ -97,9 +92,6 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       },
       onBlur() {
         focus(false);
-        if (validateOnBlur) {
-          validate();
-        }
         touch(true);
       },
       onChange(eventOrValue) {
@@ -142,6 +134,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           // "Meta" Props
           hasError,
           error,
+          hasSubmitError,
+          submitError,
           hasWarning,
           warning,
           focused,
@@ -168,7 +162,6 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
             setPendingValue(parsedPath, value);
             setInitialValue(parsedPath, pendingValue);
           },
-          validate,
           submit,
 
           addFieldBefore: undefined,
@@ -185,15 +178,7 @@ class Field extends React.PureComponent<FieldProps> {
   static defaultProps: typeof Field.defaultProps;
 
   render() {
-    const {
-      path,
-      format,
-      parse,
-      checkbox,
-      validateOnBlur,
-      validateOnChange,
-      children,
-    } = this.props;
+    const {path, format, parse, checkbox, children} = this.props;
 
     return (
       <Consumer>
@@ -206,8 +191,6 @@ class Field extends React.PureComponent<FieldProps> {
               format,
               parse,
               checkbox,
-              validateOnBlur,
-              validateOnChange,
             },
             context,
             {children},
@@ -228,8 +211,6 @@ Field.defaultProps = {
   },
   parse: (v: mixed) => v,
   checkbox: false,
-  validateOnBlur: true,
-  validateOnChange: false,
 };
 
 export default Field;
