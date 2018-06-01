@@ -106,7 +106,7 @@ export type FieldRenderProps = {
   submitting: boolean,
   submitFailed: boolean,
   submitSucceeded: boolean,
-  stateValue: mixed,
+  rawValue: mixed,
   pendingValue: mixed,
   detached: boolean,
 
@@ -120,8 +120,8 @@ export type FieldRenderProps = {
   submit(): void,
 
   // FieldArray Actions
-  addFieldBefore?: (stateValue: mixed) => void,
-  addFieldAfter?: (stateValue: mixed) => void,
+  addFieldBefore?: (rawValue: mixed) => void,
+  addFieldAfter?: (rawValue: mixed) => void,
   removeField?: () => void,
 };
 
@@ -149,8 +149,8 @@ export type FieldArrayRenderProps = {
 
 export type FieldConfig = {
   path: Path,
-  format(stateValue: mixed): mixed,
-  parse(fieldValue: mixed, previousStateValue: mixed): mixed,
+  format(rawValue: mixed): mixed,
+  parse(rawValue: mixed, previousRawValue: mixed): mixed,
   compare(value: mixed, otherValue: mixed): boolean,
   checkbox: boolean,
 };
@@ -172,7 +172,7 @@ export type FieldStateProps = {
 export type FieldProps = {
   key?: string,
   index?: number,
-  addField?: (index: number, stateValue: mixed) => void,
+  addField?: (index: number, rawValue: mixed) => void,
   removeField?: (index: number) => void,
   children(props: FieldRenderProps): React.Node,
 } & FieldConfig;

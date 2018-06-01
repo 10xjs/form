@@ -146,7 +146,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           submitFailed,
           submitSucceeded,
           initialValue,
-          stateValue: value,
+          rawValue: value,
           pendingValue,
           detached,
 
