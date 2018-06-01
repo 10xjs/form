@@ -93,6 +93,7 @@ export type FieldRenderProps = {
   ) => $Rest<P, {|onFocus: *, onBlur: *, onChange: *|}> & InputProps,
 
   // "Meta" Props
+  path: string,
   hasError: boolean,
   error: mixed,
   hasWarning: boolean,
@@ -103,6 +104,8 @@ export type FieldRenderProps = {
   dirty: boolean,
   pristine: boolean,
   submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
   stateValue: mixed,
   pendingValue: mixed,
   detached: boolean,
@@ -126,11 +129,14 @@ export type FieldArrayRenderProps = {
   fields: Array<React.Node>,
 
   // "Meta" Props
-  errors: Array<mixed>,
+  path: string,
   hasErrors: boolean,
+  errors: Array<mixed>,
   hasWarnings: boolean,
   warnings: Array<mixed>,
   submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
   rawValues: Array<mixed>,
   pendingValues: Array<mixed>,
 
@@ -159,6 +165,8 @@ export type FieldStateProps = {
   touched: boolean,
   visited: boolean,
   submitting: boolean,
+  submitFailed: boolean,
+  submitSucceeded: boolean,
 };
 
 export type FieldProps = {

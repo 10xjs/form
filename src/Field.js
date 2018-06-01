@@ -39,6 +39,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       touched,
       visited,
       submitting,
+      submitFailed,
+      submitSucceeded,
 
       // Context Actions
       setFocused,
@@ -130,6 +132,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           composeInput,
 
           // "Meta" Props
+          path: formattedPath,
           hasError,
           error,
           hasWarning,
@@ -140,6 +143,8 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           dirty,
           pristine: !dirty,
           submitting,
+          submitFailed,
+          submitSucceeded,
           initialValue,
           stateValue: value,
           pendingValue,

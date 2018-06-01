@@ -50,6 +50,8 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       error: errors,
       warning: warnings,
       submitting,
+      submitFailed,
+      submitSucceeded,
 
       // Context Actions
       submit,
@@ -108,11 +110,14 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       fields,
 
       // "Meta" Props
+      path: formattedPath,
       hasErrors,
       errors,
       hasWarnings,
       warnings,
       submitting,
+      submitFailed,
+      submitSucceeded,
       initialValues,
       rawValues: values,
       pendingValues,

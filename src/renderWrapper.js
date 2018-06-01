@@ -24,6 +24,8 @@ const renderWrapper = <P: {path: Path}>(
     touchedMap,
     visitedMap,
     submitting,
+    submitFailed,
+    submitSucceeded,
     actions,
   } = context;
 
@@ -48,7 +50,9 @@ const renderWrapper = <P: {path: Path}>(
       focused={focusedPath === formattedPath}
       touched={!!touchedMap[formattedPath]}
       visited={!!visitedMap[formattedPath]}
-      submitting={!!submitting}
+      submitting={submitting}
+      submitFailed={submitFailed}
+      submitSucceeded={submitSucceeded}
       {...actions}
     />
   );
