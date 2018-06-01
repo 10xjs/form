@@ -95,8 +95,6 @@ export type FieldRenderProps = {
   // "Meta" Props
   hasError: boolean,
   error: mixed,
-  hasSubmitError: boolean,
-  submitError: mixed,
   hasWarning: boolean,
   warning: mixed,
   focused: boolean,
