@@ -163,6 +163,9 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
             setPendingValue(parsedPath, value);
             setInitialValue(parsedPath, pendingValue);
           },
+          reset() {
+            setValue(parsedPath, initialValue);
+          },
           submit,
 
           addFieldBefore: undefined,
