@@ -148,13 +148,12 @@ export type FieldConfig = {
   checkbox: boolean,
 };
 
-type FieldStateProps<T> = {
-  initialValue: T,
-  value: T,
-  pendingValue: T,
-  error: T,
-  submitError: T,
-  warning: T,
+export type FieldStateProps = {
+  initialValue: mixed,
+  value: mixed,
+  pendingValue: mixed,
+  error: mixed,
+  warning: mixed,
   focused: boolean,
   touched: boolean,
   visited: boolean,
@@ -175,10 +174,8 @@ export type FieldArrayProps = {
   children(props: FieldArrayRenderProps): React.Node,
 } & FieldConfig;
 
-export type FieldWrapperProps = FieldProps &
-  FieldStateProps<mixed> &
-  FormActions;
+export type FieldWrapperProps = FieldProps & FieldStateProps & FormActions;
 
 export type FieldArrayWrapperProps = FieldArrayProps &
-  FieldStateProps<Array<mixed>> &
+  FieldStateProps &
   FormActions;

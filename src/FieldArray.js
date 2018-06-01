@@ -20,7 +20,9 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
 
     const parsedPath = parsePath(path);
 
-    setValue(parsedPath, insert(values, index, fieldValue));
+    if (Array.isArray(values)) {
+      setValue(parsedPath, insert(values, index, fieldValue));
+    }
   }
 
   removeField(index: number) {
@@ -28,7 +30,9 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
 
     const parsedPath = parsePath(path);
 
-    setValue(parsedPath, remove(values, index));
+    if (Array.isArray(values)) {
+      setValue(parsedPath, remove(values, index));
+    }
   }
 
   render() {
@@ -151,17 +155,15 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
       <Consumer>
         {(context) =>
           context !== null &&
-          renderWrapper(
-            FieldArrayWrapper,
-            {
-              path,
-              format,
-              parse,
-              checkbox,
-            },
-            context,
-            {renderField, children, getFieldKey},
-          )
+          renderWrapper(FieldArrayWrapper, context, {
+            path,
+            format,
+            parse,
+            checkbox,
+            renderField,
+            children,
+            getFieldKey,
+          })
         }
       </Consumer>
     );

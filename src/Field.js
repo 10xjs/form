@@ -180,17 +180,13 @@ class Field extends React.PureComponent<FieldProps> {
       <Consumer>
         {(context) =>
           context !== null &&
-          renderWrapper(
-            FieldWrapper,
-            {
-              path,
-              format,
-              parse,
-              checkbox,
-            },
-            context,
-            {children},
-          )
+          renderWrapper(FieldWrapper, context, {
+            path,
+            format,
+            parse,
+            checkbox,
+            children,
+          })
         }
       </Consumer>
     );

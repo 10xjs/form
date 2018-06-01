@@ -2,17 +2,16 @@
 
 import * as React from 'react';
 
-import type {FieldConfig, Context} from './types';
+import type {Path, FormActions, Context, FieldStateProps} from './types';
 import {get, parsePath, formatPath} from './util';
 
-const renderWrapper = <P, T>(
-  Wrapper: React.ComponentType<P & T>,
-  config: $Exact<FieldConfig>,
+const renderWrapper = <P: {path: Path}>(
+  Wrapper: React.ComponentType<P & FieldStateProps & FormActions>,
   context: Context,
-  props: T,
+  props: P,
 ) => {
-  const parsedPath = parsePath(config.path);
-  const formattedPath = formatPath(config.path);
+  const parsedPath = parsePath(props.path);
+  const formattedPath = formatPath(props.path);
 
   const {
     initialValueState,
@@ -40,7 +39,7 @@ const renderWrapper = <P, T>(
 
   return (
     <Wrapper
-      {...config}
+      {...props}
       initialValue={get(initialValueState, parsedPath)}
       value={get(valueState, parsedPath)}
       pendingValue={get(pendingValueState, parsedPath)}
@@ -51,7 +50,6 @@ const renderWrapper = <P, T>(
       visited={!!visitedMap[formattedPath]}
       submitting={!!submitting}
       {...actions}
-      {...props}
     />
   );
 };
