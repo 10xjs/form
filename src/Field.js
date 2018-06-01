@@ -26,6 +26,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       path,
       format,
       parse,
+      compare,
       checkbox,
 
       // Field state
@@ -33,12 +34,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       value,
       pendingValue,
       error,
-      submitError,
       warning,
       focused,
       touched,
       visited,
       submitting,
+      submitFailed,
+      submitSucceeded,
 
       // Context Actions
       setFocused,
@@ -61,12 +63,10 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    // TODO: Potentially calculate dirty/detached state with deep equality.
-    // Maybe provide a callback to allow the consumer to provide a compare func?
-    const dirty = value !== initialValue;
-    const detached = value !== pendingValue;
+    const dirty = !compare(value, initialValue);
+    const detached = !compare(value, pendingValue);
+
     const hasError = hasValue(error);
-    const hasSubmitError = hasValue(submitError);
     const hasWarning = hasValue(warning);
 
     const focus = (focused: boolean) => setFocused(formattedPath, focused);
@@ -132,10 +132,9 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           composeInput,
 
           // "Meta" Props
+          path: formattedPath,
           hasError,
           error,
-          hasSubmitError,
-          submitError,
           hasWarning,
           warning,
           focused,
@@ -144,8 +143,10 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           dirty,
           pristine: !dirty,
           submitting,
+          submitFailed,
+          submitSucceeded,
           initialValue,
-          stateValue: value,
+          rawValue: value,
           pendingValue,
           detached,
 
@@ -178,23 +179,20 @@ class Field extends React.PureComponent<FieldProps> {
   static defaultProps: typeof Field.defaultProps;
 
   render() {
-    const {path, format, parse, checkbox, children} = this.props;
+    const {path, format, parse, compare, checkbox, children} = this.props;
 
     return (
       <Consumer>
         {(context) =>
           context !== null &&
-          renderWrapper(
-            FieldWrapper,
-            {
-              path,
-              format,
-              parse,
-              checkbox,
-            },
-            context,
-            {children},
-          )
+          renderWrapper(FieldWrapper, context, {
+            path,
+            format,
+            parse,
+            compare,
+            checkbox,
+            children,
+          })
         }
       </Consumer>
     );
@@ -210,6 +208,9 @@ Field.defaultProps = {
     return v;
   },
   parse: (v: mixed) => v,
+  compare: (value, otherValue) => {
+    return value === otherValue;
+  },
   checkbox: false,
 };
 

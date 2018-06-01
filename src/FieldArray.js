@@ -20,7 +20,9 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
 
     const parsedPath = parsePath(path);
 
-    setValue(parsedPath, insert(values, index, fieldValue));
+    if (Array.isArray(values)) {
+      setValue(parsedPath, insert(values, index, fieldValue));
+    }
   }
 
   removeField(index: number) {
@@ -28,7 +30,9 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
 
     const parsedPath = parsePath(path);
 
-    setValue(parsedPath, remove(values, index));
+    if (Array.isArray(values)) {
+      setValue(parsedPath, remove(values, index));
+    }
   }
 
   render() {
@@ -44,9 +48,10 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       value: values,
       pendingValue: pendingValues,
       error: errors,
-      submitError: submitErrors,
       warning: warnings,
       submitting,
+      submitFailed,
+      submitSucceeded,
 
       // Context Actions
       submit,
@@ -76,10 +81,6 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       throw new Error(`expected array error at ${formattedPath}`);
     }
 
-    if (!Array.isArray(submitErrors)) {
-      throw new Error(`expected array submitError at ${formattedPath}`);
-    }
-
     const fields = values.map((value, index) => {
       const parsedFieldPath = parsedPath.concat([index]);
 
@@ -103,20 +104,20 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     // potentially with deep equality. Maybe provide a callback to allow the
     // consumer to provide a compare func?
     const hasErrors = hasValue(errors);
-    const hasSubmitErrors = hasValue(submitErrors);
     const hasWarnings = hasValue(warnings);
 
     return children({
       fields,
 
       // "Meta" Props
+      path: formattedPath,
       hasErrors,
       errors,
-      hasSubmitErrors,
-      submitErrors,
       hasWarnings,
       warnings,
       submitting,
+      submitFailed,
+      submitSucceeded,
       initialValues,
       rawValues: values,
       pendingValues,
@@ -159,17 +160,15 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
       <Consumer>
         {(context) =>
           context !== null &&
-          renderWrapper(
-            FieldArrayWrapper,
-            {
-              path,
-              format,
-              parse,
-              checkbox,
-            },
-            context,
-            {renderField, children, getFieldKey},
-          )
+          renderWrapper(FieldArrayWrapper, context, {
+            path,
+            format,
+            parse,
+            checkbox,
+            renderField,
+            children,
+            getFieldKey,
+          })
         }
       </Consumer>
     );
