@@ -145,6 +145,7 @@ export type FieldConfig = {
   path: Path,
   format(stateValue: mixed): mixed,
   parse(fieldValue: mixed, previousStateValue: mixed): mixed,
+  compare(value: mixed, otherValue: mixed): boolean,
   checkbox: boolean,
 };
 

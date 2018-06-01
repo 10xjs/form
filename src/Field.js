@@ -26,6 +26,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       path,
       format,
       parse,
+      compare,
       checkbox,
 
       // Field state
@@ -60,10 +61,9 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    // TODO: Potentially calculate dirty/detached state with deep equality.
-    // Maybe provide a callback to allow the consumer to provide a compare func?
-    const dirty = value !== initialValue;
-    const detached = value !== pendingValue;
+    const dirty = !compare(value, initialValue);
+    const detached = !compare(value, pendingValue);
+
     const hasError = hasValue(error);
     const hasWarning = hasValue(warning);
 
@@ -174,7 +174,7 @@ class Field extends React.PureComponent<FieldProps> {
   static defaultProps: typeof Field.defaultProps;
 
   render() {
-    const {path, format, parse, checkbox, children} = this.props;
+    const {path, format, parse, compare, checkbox, children} = this.props;
 
     return (
       <Consumer>
@@ -184,6 +184,7 @@ class Field extends React.PureComponent<FieldProps> {
             path,
             format,
             parse,
+            compare,
             checkbox,
             children,
           })
@@ -202,6 +203,9 @@ Field.defaultProps = {
     return v;
   },
   parse: (v: mixed) => v,
+  compare: (value, otherValue) => {
+    return value === otherValue;
+  },
   checkbox: false,
 };
 
