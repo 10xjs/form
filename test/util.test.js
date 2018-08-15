@@ -21,9 +21,9 @@ import {
   parsePath,
   formatPath,
   matchesDeep,
-  createIsEvent,
-  createCastEvent,
-  createMergeHandlers,
+  isEvent,
+  castEvent,
+  mergeHandlers,
   createParseEvent,
 } from '../src/util';
 
@@ -50,12 +50,10 @@ class MockEvent {
   preventDefault() {
     this.defaultPrevented = true;
   }
+  stopPropagation() {}
 }
 
-const isEvent = createIsEvent(MockEvent);
-const castEvent = createCastEvent(MockEvent);
-const mergeHandlers = createMergeHandlers(MockEvent);
-const parseEvent = createParseEvent(MockEvent, MockHTMLElement);
+const parseEvent = createParseEvent(MockHTMLElement);
 
 describe('utils', () => {
   describe('emptyPathError', () => {
@@ -415,20 +413,6 @@ describe('utils', () => {
   describe('isEvent', () => {
     it('should return true if the value is an Event or SyntheticEvent', () => {
       expect(isEvent(new MockEvent())).toEqual(true);
-      expect(isEvent(new class SyntheticEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticAnimationEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticCompositionEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticInputEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticUIEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticFocusEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticKeyboardEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticMouseEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticDragEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticWheelEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticTouchEvent {}())).toEqual(true);
-      expect(isEvent(new class SyntheticTransitionEvent {}())).toEqual(true);
-
-      expect(isEvent(new class SomeInvalidEvent {}())).toEqual(false);
       expect(isEvent({constructor: null})).toEqual(false);
       expect(isEvent(null)).toEqual(false);
     });
