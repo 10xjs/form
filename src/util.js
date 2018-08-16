@@ -315,65 +315,41 @@ export const hasValue = (value: mixed) =>
       ),
   );
 
-export const createIsEvent = (EventClass: Function) => (
-  _event: mixed,
-): boolean => {
-  if (_event instanceof EventClass) {
-    return true;
-  }
-
-  // Duck-type SyntheticEvent instances
-  if (_event !== null && _event !== undefined && typeof _event === 'object') {
-    const constructor = _event.constructor;
-
-    if (constructor !== null && constructor !== undefined) {
-      const name = constructor.name;
-      return /^Synthetic[A-Z]*[a-z]*Event$/.test(name);
-    }
-  }
-
-  return false;
+export const isEvent = (_event: mixed): boolean => {
+  // Duck-type Event and SyntheticEvent instances
+  return (
+    _event !== null &&
+    typeof _event === 'object' &&
+    typeof _event.stopPropagation === 'function' &&
+    typeof _event.preventDefault === 'function'
+  );
 };
 
-export const isEvent = createIsEvent(Event);
-
-export const createCastEvent = (EventClass: Function) => {
-  const isEvent = createIsEvent(EventClass);
-
-  return <T>(event: mixed): Event | SyntheticEvent<T> | null => {
-    return isEvent(event) ? (event: any) : null;
-  };
+export const castEvent = <T>(
+  event: mixed,
+): Event | SyntheticEvent<T> | null => {
+  return isEvent(event) ? (event: any) : null;
 };
 
-export const castEvent = createCastEvent(Event);
-
-export const createMergeHandlers = (EventClass: Function) => {
-  const castEvent = createCastEvent(EventClass);
-
-  return (h1: ((mixed) => mixed) | void, h2: (mixed) => void) => {
-    return (eventOrValue: mixed): void => {
-      if (h1) {
-        h1(eventOrValue);
-
-        const event = castEvent(eventOrValue);
-        if (event !== null && event.defaultPrevented) {
-          return;
-        }
-      }
-
-      h2(eventOrValue);
-    };
-  };
-};
-
-export const mergeHandlers = createMergeHandlers(Event);
-
-export const createParseEvent = (
-  EventClass: Function,
-  HTMLElementClass: Function,
+export const mergeHandlers = (
+  h1: ((mixed) => mixed) | void,
+  h2: (mixed) => void,
 ) => {
-  const castEvent = createCastEvent(EventClass);
+  return (eventOrValue: mixed): void => {
+    if (h1) {
+      h1(eventOrValue);
 
+      const event = castEvent(eventOrValue);
+      if (event !== null && event.defaultPrevented) {
+        return;
+      }
+    }
+
+    h2(eventOrValue);
+  };
+};
+
+export const createParseEvent = (HTMLElementClass: Function) => {
   return (eventOrValue: mixed): mixed => {
     const event = castEvent(eventOrValue);
 
@@ -397,4 +373,4 @@ export const createParseEvent = (
   };
 };
 
-export const parseEvent = createParseEvent(Event, HTMLElement);
+export const parseEvent = createParseEvent(HTMLElement);
