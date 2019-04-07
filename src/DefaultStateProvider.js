@@ -266,9 +266,8 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
     let promise: Promise<T>;
 
     const setState = (update) =>
-      new Promise(
-        (resolve) =>
-          this._willUnmount ? resolve() : this.setState(update, resolve),
+      new Promise((resolve) =>
+        this._willUnmount ? resolve() : this.setState(update, resolve),
       );
 
     setState((state, props) => {
@@ -294,11 +293,10 @@ class DefaultStateProvider<T> extends React.PureComponent<Props<T>, State> {
             this.props.onSubmitSuccess(result),
           ),
         (error) =>
-          setState(updateSubmit(error)).then(
-            () =>
-              error instanceof SubmitValidationError
-                ? this.props.onSubmitValidationFail(error)
-                : this.props.onSubmitFail(error),
+          setState(updateSubmit(error)).then(() =>
+            error instanceof SubmitValidationError
+              ? this.props.onSubmitValidationFail(error)
+              : this.props.onSubmitFail(error),
           ),
       );
     });
