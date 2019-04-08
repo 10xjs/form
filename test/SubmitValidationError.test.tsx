@@ -1,7 +1,3 @@
-// @flow strict
-
-// flowlint unclear-type:off
-
 import SubmitValidationError from '../src/SubmitValidationError';
 
 describe('SubmitValidationError', () => {
@@ -21,10 +17,10 @@ describe('SubmitValidationError', () => {
   });
 
   it('should convert unexpected values to null', () => {
-    expect(new SubmitValidationError((undefined: any)).errors).toBe(null);
-    expect(new SubmitValidationError((2: any)).errors).toBe(null);
-    expect(new SubmitValidationError(([]: any)).errors).toBe(null);
-    expect(new SubmitValidationError(('foo': any)).errors).toBe(null);
-    expect(new SubmitValidationError((() => {}: any)).errors).toBe(null);
+    expect(new SubmitValidationError(undefined as any).errors).toBe(null);
+    expect(new SubmitValidationError(2 as any).errors).toBe(null);
+    expect(new SubmitValidationError([] as any).errors).toBe(null);
+    expect(new SubmitValidationError('foo' as any).errors).toBe(null);
+    expect(new SubmitValidationError((() => {}) as any).errors).toBe(null);
   });
 });

@@ -1,11 +1,10 @@
-// @flow strict
-
 import * as React from 'react';
 
-import type {
+import {
   FieldArrayProps,
   FieldArrayWrapperProps,
   FieldArrayRenderProps,
+  Context,
 } from './types';
 import {parsePath, formatPath, insert, remove, hasValue} from './util';
 import {Consumer} from './context';
@@ -13,9 +12,16 @@ import Field from './Field';
 import renderWrapper from './renderWrapper';
 
 class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
-  static defaultProps: typeof FieldArrayWrapper.defaultProps;
+  public static defaultProps = {
+    initialValue: [],
+    value: [],
+    pendingValue: [],
+    error: [],
+    warning: [],
+    submitError: [],
+  };
 
-  addField(index: number, fieldValue: mixed) {
+  public addField(index: number, fieldValue: unknown): void {
     const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
@@ -25,7 +31,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     }
   }
 
-  removeField(index: number) {
+  public removeField(index: number): void {
     const {value: values, path, setValue} = this.props;
 
     const parsedPath = parsePath(path);
@@ -35,7 +41,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     }
   }
 
-  render() {
+  public render(): React.ReactNode {
     const {
       // Field Config
       path,
@@ -45,11 +51,11 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       checkbox,
 
       // Field state
-      initialValue: initialValues,
-      value: values,
-      pendingValue: pendingValues,
-      error: errors,
-      warning: warnings,
+      initialValue,
+      value,
+      pendingValue,
+      error,
+      warning,
       submitting,
       submitFailed,
       submitSucceeded,
@@ -66,47 +72,65 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
     const parsedPath = parsePath(path);
     const formattedPath = formatPath(path);
 
-    if (!Array.isArray(values)) {
+    if (!Array.isArray(value)) {
       throw new Error(`expected array value at ${formattedPath}`);
     }
 
-    if (!Array.isArray(pendingValues)) {
+    const values: unknown[] = value;
+
+    if (!Array.isArray(pendingValue)) {
       throw new Error(`expected array pendingValue at ${formattedPath}`);
     }
 
-    if (!Array.isArray(warnings)) {
+    const pendingValues: unknown[] = pendingValue;
+
+    if (!Array.isArray(warning)) {
       throw new Error(`expected array warnings at ${formattedPath}`);
     }
 
-    if (!Array.isArray(errors)) {
+    const warnings: unknown[] = warning;
+
+    if (!Array.isArray(error)) {
       throw new Error(`expected array error at ${formattedPath}`);
     }
 
-    const fields = values.map((value, index) => {
-      const parsedFieldPath = parsedPath.concat([index]);
+    const errors: unknown[] = error;
 
-      return (
-        <Field
-          index={index}
-          key={getFieldKey(value, index)}
-          path={parsedFieldPath}
-          format={format}
-          parse={parse}
-          compare={compare}
-          checkbox={checkbox}
-          addField={this.addField.bind(this)}
-          removeField={this.removeField.bind(this)}
-        >
-          {renderField}
-        </Field>
-      );
-    });
+    if (!Array.isArray(initialValue)) {
+      throw new Error(`expected array error at ${formattedPath}`);
+    }
+
+    const initialValues: unknown[] = initialValue;
+
+    const fields: React.ReactElement<typeof Field>[] = values.map(
+      (value: unknown, index: number): React.ReactElement<typeof Field> => {
+        const parsedFieldPath = parsedPath.concat([index]);
+
+        return (
+          <Field
+            index={index}
+            key={getFieldKey(value, index)}
+            path={parsedFieldPath}
+            format={format}
+            parse={parse}
+            compare={compare}
+            checkbox={checkbox}
+            addField={this.addField.bind(this)}
+            removeField={this.removeField.bind(this)}
+          >
+            {renderField}
+          </Field>
+        );
+      },
+    );
 
     // TODO: Calculate dirty/detached state with shallow array equality,
     // potentially with deep equality. Maybe provide a callback to allow the
     // consumer to provide a compare func?
     const hasErrors = hasValue(errors);
     const hasWarnings = hasValue(warnings);
+
+    const self = this;
 
     return children({
       fields,
@@ -121,33 +145,27 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       submitFailed,
       submitSucceeded,
       initialValues,
-      rawValues: values,
+      values,
       pendingValues,
 
       // Context Actions
       submit,
 
       // FieldArray Actions
-      addField(value) {
-        this.addField(fields.length, value);
+      addField(value: unknown): void {
+        self.addField(fields.length, value);
       },
     });
   }
 }
 
-FieldArrayWrapper.defaultProps = {
-  initialValue: [],
-  value: [],
-  pendingValue: [],
-  error: [],
-  warning: [],
-  submitError: [],
-};
-
 class FieldArray extends React.PureComponent<FieldArrayProps> {
-  static defaultProps: typeof FieldArray.defaultProps;
+  public static defaultProps = {
+    children: ({fields}: FieldArrayRenderProps): React.ReactNode => fields,
+    getFieldKey: (stateValue: unknown, index: number): string => `${index}`,
+  };
 
-  render() {
+  public render(): React.ReactElement<typeof Consumer> {
     const {
       path,
       format,
@@ -161,7 +179,7 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
 
     return (
       <Consumer>
-        {(context) =>
+        {(context: Context | null): React.ReactNode =>
           context !== null &&
           renderWrapper(FieldArrayWrapper, context, {
             path,
@@ -178,10 +196,5 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
     );
   }
 }
-
-FieldArray.defaultProps = {
-  children: ({fields}: FieldArrayRenderProps) => fields,
-  getFieldKey: (stateValue: mixed, index: number) => `${index}`,
-};
 
 export default FieldArray;

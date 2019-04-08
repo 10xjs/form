@@ -1,5 +1,3 @@
-// @flow strict
-
 import {
   pathError,
   pathSyntaxError,
@@ -22,38 +20,37 @@ import {
   formatPath,
   matchesDeep,
   isEvent,
-  castEvent,
   mergeHandlers,
-  createParseEvent,
+  parseEvent,
 } from '../src/util';
 
-class MockHTMLElement {
-  value: string | void;
-  checked: boolean | void;
-  type: string | void;
+class HTMLMockElement {
+  public value: string | void;
+  public checked: boolean | void;
+  public type: string | void;
 
-  constructor(config: {value?: string, checked?: boolean, type?: string} = {}) {
+  public constructor(
+    config: {value?: string; checked?: boolean; type?: string} = {},
+  ) {
     this.value = config.value;
     this.checked = config.checked;
     this.type = config.type;
   }
 }
 
-class MockEvent {
-  defaultPrevented: boolean;
-  target: mixed;
+class MockEvent<T> {
+  public defaultPrevented: boolean;
+  public target: T;
 
-  constructor(target: mixed) {
+  public constructor(target?: T) {
     this.defaultPrevented = false;
     this.target = target;
   }
-  preventDefault() {
+  public preventDefault() {
     this.defaultPrevented = true;
   }
-  stopPropagation() {}
+  public stopPropagation() {}
 }
-
-const parseEvent = createParseEvent(MockHTMLElement);
 
 describe('utils', () => {
   describe('emptyPathError', () => {
@@ -412,15 +409,10 @@ describe('utils', () => {
 
   describe('isEvent', () => {
     it('should return true if the value is an Event or SyntheticEvent', () => {
-      expect(isEvent(new MockEvent())).toEqual(true);
+      expect(isEvent(new MockEvent(new HTMLMockElement()))).toEqual(true);
       expect(isEvent({constructor: null})).toEqual(false);
       expect(isEvent(null)).toEqual(false);
     });
-  });
-
-  describe('castEvent', () => {
-    expect(castEvent(new MockEvent()) instanceof MockEvent).toEqual(true);
-    expect(castEvent(new class SomeInvalidEvent {}())).toEqual(null);
   });
 
   describe('mergeHandlers', () => {
@@ -432,7 +424,7 @@ describe('utils', () => {
       const mergedHandlerA = mergeHandlers(handlerA, handlerB);
       const mergedHandlerB = mergeHandlers(undefined, handlerC);
 
-      const event = new MockEvent();
+      const event = new MockEvent(new HTMLMockElement());
 
       mergedHandlerA(event);
       mergedHandlerB(event);
@@ -455,7 +447,7 @@ describe('utils', () => {
 
       const mergedHandler = mergeHandlers(handlerA, handlerB);
 
-      const event = new MockEvent();
+      const event = new MockEvent(new HTMLMockElement());
 
       mergedHandler(event);
 
@@ -472,23 +464,17 @@ describe('utils', () => {
     });
 
     it('should return the value of a plain event target', () => {
-      const event = new MockEvent(new MockHTMLElement({value: 'foo'}));
+      const event = new MockEvent(new HTMLMockElement({value: 'foo'}));
 
       expect(parseEvent(event)).toEqual('foo');
     });
 
     it('should return the checked property of a checkbox event target', () => {
       const event = new MockEvent(
-        new MockHTMLElement({type: 'checkbox', checked: true}),
+        new HTMLMockElement({type: 'checkbox', checked: true}),
       );
 
       expect(parseEvent(event)).toEqual(true);
-    });
-
-    it('should return `undefined` with an invalid event target', () => {
-      const event = new MockEvent({value: 'foo'});
-
-      expect(parseEvent(event)).toEqual(undefined);
     });
   });
 });

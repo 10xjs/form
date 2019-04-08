@@ -1,12 +1,8 @@
-// @flow strict
-
-// flowlint unclear-type:off
-
 import {emptyPathArrayError, emptyPathStringError, get, set} from '../src/util';
 import SubmitValidationError from '../src/SubmitValidationError';
 import DefaultStateProvider from '../src/DefaultStateProvider';
 
-const getInstance = () => {
+const getInstance = (): DefaultStateProvider => {
   const values = {foo: 'value'};
   const warnings = {foo: 'warning'};
   const errors = {foo: 'error'};
@@ -14,11 +10,11 @@ const getInstance = () => {
 
   const instance = new DefaultStateProvider({
     ...DefaultStateProvider.defaultProps,
-    children() {},
+    children: (): null => null,
     values,
   });
 
-  (instance: any).setState = (updater, callback) => {
+  (instance as any).setState = (updater, callback) => {
     const nextState = updater(instance.state, instance.props);
     if (nextState !== null) {
       instance.state = nextState;
@@ -41,7 +37,10 @@ const getInstance = () => {
   return instance;
 };
 
-const shallowIntersect = (a: Object, b: Object): string | true => {
+const shallowIntersect = (
+  a: Record<string, any>,
+  b: Record<string, any>,
+): string | true => {
   const checked = new Set();
   const keys = Object.keys(a).concat(Object.keys(b));
 
@@ -140,7 +139,7 @@ describe('<DefaultStateProvider/>', () => {
         instance.state,
       );
 
-      const {pendingValueState, ...rest} = (state: any);
+      const {pendingValueState, ...rest} = state as any;
 
       // it should set value state at path
       expect(pendingValueState).toBe(nextProps.values);
@@ -161,7 +160,7 @@ describe('<DefaultStateProvider/>', () => {
       );
 
       // Updating `validate` update the `_props` cache.
-      const {_props, ...rest} = (state: any);
+      const {_props, ...rest} = state as any;
 
       expect(nextProps.validate.mock.calls).toHaveLength(1);
 
@@ -181,7 +180,7 @@ describe('<DefaultStateProvider/>', () => {
       );
 
       // Updating `warn` update the `_props` cache.
-      const {_props, ...rest} = (state: any);
+      const {_props, ...rest} = state as any;
 
       expect(nextProps.warn.mock.calls).toHaveLength(1);
 
@@ -569,7 +568,7 @@ describe('<DefaultStateProvider/>', () => {
         preventDefault: jest.fn(),
       };
 
-      instance.submit((event: any));
+      instance.submit(event as any);
 
       await promise;
 
@@ -598,7 +597,7 @@ describe('<DefaultStateProvider/>', () => {
       instance.submit();
 
       await expect(promise).rejects.toEqual(
-        new SubmitValidationError((instance.state.errorState: any)),
+        new SubmitValidationError(instance.state.errorState as any),
       );
     });
 
