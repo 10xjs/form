@@ -41,6 +41,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
       path,
       format,
       parse,
+      compare,
       checkbox,
 
       // Field state
@@ -91,6 +92,7 @@ class FieldArrayWrapper extends React.PureComponent<FieldArrayWrapperProps> {
           path={parsedFieldPath}
           format={format}
           parse={parse}
+          compare={compare}
           checkbox={checkbox}
           addField={this.addField.bind(this)}
           removeField={this.removeField.bind(this)}
@@ -150,6 +152,7 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
       path,
       format,
       parse,
+      compare,
       checkbox,
       renderField,
       children,
@@ -164,6 +167,7 @@ class FieldArray extends React.PureComponent<FieldArrayProps> {
             path,
             format,
             parse,
+            compare,
             checkbox,
             renderField,
             children,
