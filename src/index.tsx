@@ -1,5 +1,3 @@
-// @flow strict
-
 export {default} from './Form';
 
 export {default as Field} from './Field';
@@ -9,22 +7,4 @@ export {default as SubmitValidationError} from './SubmitValidationError';
 export {default as withField} from './withField';
 export {get, set, parsePath, formatPath} from './util';
 
-export type {
-  State,
-  PathArray,
-  Path,
-  FormActions,
-  Context,
-  DefaultStateProviderProps,
-  StateProvider,
-  FormProps,
-  FormWrapperProps,
-  InputProps,
-  FieldRenderProps,
-  FieldArrayRenderProps,
-  FieldConfig,
-  FieldProps,
-  FieldArrayProps,
-  FieldWrapperProps,
-  FieldArrayWrapperProps,
-} from './types';
+export * from './types';

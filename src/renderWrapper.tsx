@@ -1,15 +1,15 @@
-// @flow strict
-
 import * as React from 'react';
 
-import type {Path, FormActions, Context, FieldStateProps} from './types';
+import {Path, FormActions, Context, FieldStateProps} from './types';
 import {get, parsePath, formatPath} from './util';
 
-const renderWrapper = <P: {path: Path}>(
+const renderWrapper = <P extends {path: Path}>(
   Wrapper: React.ComponentType<P & FieldStateProps & FormActions>,
   context: Context,
   props: P,
-) => {
+): React.ReactElement<
+  React.ComponentType<P & FieldStateProps & FormActions>
+> => {
   const parsedPath = parsePath(props.path);
   const formattedPath = formatPath(props.path);
 

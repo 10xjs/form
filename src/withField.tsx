@@ -1,18 +1,20 @@
-// @flow strict
-
 import * as React from 'react';
-// flowlint untyped-import:off
-import hoistStatics from 'hoist-non-react-statics';
-// flowlint untyped-import:error
+import hoistNonReactStatics from 'hoist-non-react-statics';
 
-import type {FieldRenderProps} from './types';
+import {FieldRenderProps} from './types';
 import {isValidPath, emptyPathError} from './util';
 import Field from './Field';
 
-const withField = <P: string>(
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const withField = <P extends string>(
   propName: P,
-  config: $Diff<React.ElementConfig<typeof Field>, {children: *}>,
-) => <T, R: {[P]: FieldRenderProps} & T>(
+  config: Omit<
+    JSX.LibraryManagedAttributes<typeof Field, Field['props']>,
+    'children'
+  >,
+) => <T, R extends {[key in P]: FieldRenderProps} & T>(
   Component: React.ComponentType<T>,
 ): React.ComponentType<R> => {
   if (typeof propName !== 'string') {
@@ -28,20 +30,18 @@ const withField = <P: string>(
   }
 
   class WithField extends React.PureComponent<R> {
-    render() {
+    public render(): React.ReactNode {
       return (
         <Field {...config}>
-          {(fieldProps: FieldRenderProps) => {
-            const props = {};
-            props[propName] = fieldProps;
-            return <Component {...props} {...this.props} />;
+          {(fieldProps: FieldRenderProps): React.ReactNode => {
+            return <Component {...{[propName]: fieldProps}} {...this.props} />;
           }}
         </Field>
       );
     }
   }
 
-  return hoistStatics(WithField, Component);
+  return hoistNonReactStatics(WithField, Component);
 };
 
 export default withField;

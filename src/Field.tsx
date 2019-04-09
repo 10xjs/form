@@ -1,8 +1,12 @@
-// @flow strict
-
 import * as React from 'react';
 
-import type {FieldProps, FieldWrapperProps, InputProps} from './types';
+import {
+  FieldProps,
+  FieldWrapperProps,
+  Context,
+  InputProps,
+  HandlerProps,
+} from './types';
 import {
   parsePath,
   formatPath,
@@ -13,14 +17,8 @@ import {
 import {Consumer} from './context';
 import renderWrapper from './renderWrapper';
 
-type HandlerProps = {
-  onFocus: (mixed) => mixed,
-  onBlur: (mixed) => mixed,
-  onChange: (mixed) => mixed,
-};
-
 class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
-  render() {
+  public render(): React.ReactNode {
     const {
       // Field Config
       path,
@@ -69,10 +67,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
     const hasError = hasValue(error);
     const hasWarning = hasValue(warning);
 
-    const focus = (focused: boolean) => setFocused(formattedPath, focused);
-    const visit = (visited: boolean) => setVisited(formattedPath, visited);
-    const touch = (touched: boolean) => setTouched(formattedPath, touched);
-    const change = (nextValue) => {
+    const focus = (focused: boolean): void =>
+      setFocused(formattedPath, focused);
+    const visit = (visited: boolean): void =>
+      setVisited(formattedPath, visited);
+    const touch = (touched: boolean): void =>
+      setTouched(formattedPath, touched);
+    const change = (nextValue: unknown): void => {
       const parsedValue = parse(nextValue, value);
 
       if (!detached) {
@@ -82,27 +83,27 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
       setValue(parsedPath, parsedValue);
     };
 
-    const input = {
+    const input: InputProps = {
       name: formattedPath,
       value: checkbox ? undefined : format(value),
       checked: checkbox ? !!format(value) : undefined,
-      onFocus() {
+      onFocus(): void {
         focus(true);
         visit(true);
       },
-      onBlur() {
+      onBlur(): void {
         focus(false);
         touch(true);
       },
-      onChange(eventOrValue) {
+      onChange(eventOrValue: unknown): void {
         change(parseEvent(eventOrValue));
       },
     };
 
-    const composeInput = <P: $Shape<HandlerProps>>(
-      userProps: P,
-    ): $Rest<P, $Exact<HandlerProps>> & InputProps =>
-      Object.assign({}, (userProps: $Rest<P, $Exact<HandlerProps>>), input, {
+    const composeInput = <UP extends Partial<HandlerProps>>(
+      userProps: UP,
+    ): InputProps =>
+      Object.assign({}, userProps, input, {
         onFocus: mergeHandlers(userProps.onFocus, input.onFocus),
         onBlur: mergeHandlers(userProps.onBlur, input.onBlur),
         onChange: mergeHandlers(userProps.onChange, input.onChange),
@@ -112,13 +113,13 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
 
     if (addField && removeField && typeof index === 'number') {
       arrayActions = {
-        addFieldBefore(value) {
+        addFieldBefore(value: unknown): void {
           addField(index, value);
         },
-        addFieldAfter(value) {
+        addFieldAfter(value: unknown): void {
           addField(index + 1, value);
         },
-        removeField() {
+        removeField(): void {
           removeField(index);
         },
       };
@@ -146,7 +147,7 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           submitFailed,
           submitSucceeded,
           initialValue,
-          rawValue: value,
+          value,
           pendingValue,
           detached,
 
@@ -155,11 +156,11 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
           setVisited: visit,
           setTouched: touch,
           setValue: change,
-          acceptPendingValue() {
+          acceptPendingValue(): void {
             setValue(parsedPath, pendingValue);
             setInitialValue(parsedPath, pendingValue);
           },
-          rejectPendingValue() {
+          rejectPendingValue(): void {
             setPendingValue(parsedPath, value);
             setInitialValue(parsedPath, pendingValue);
           },
@@ -176,14 +177,27 @@ class FieldWrapper extends React.PureComponent<FieldWrapperProps> {
 }
 
 class Field extends React.PureComponent<FieldProps> {
-  static defaultProps: typeof Field.defaultProps;
+  public static defaultProps = {
+    format: (v: unknown): unknown => {
+      if (v === null || v === undefined) {
+        return '';
+      }
 
-  render() {
+      return v;
+    },
+    parse: (v: unknown): unknown => v,
+    compare: (value: unknown, otherValue: unknown): unknown => {
+      return value === otherValue;
+    },
+    checkbox: false,
+  };
+
+  public render(): React.ReactNode {
     const {path, format, parse, compare, checkbox, children} = this.props;
 
     return (
       <Consumer>
-        {(context) =>
+        {(context: Context | null): React.ReactNode =>
           context !== null &&
           renderWrapper(FieldWrapper, context, {
             path,
@@ -198,20 +212,5 @@ class Field extends React.PureComponent<FieldProps> {
     );
   }
 }
-
-Field.defaultProps = {
-  format: (v: mixed) => {
-    if (v === null || v === undefined) {
-      return '';
-    }
-
-    return v;
-  },
-  parse: (v: mixed) => v,
-  compare: (value, otherValue) => {
-    return value === otherValue;
-  },
-  checkbox: false,
-};
 
 export default Field;
