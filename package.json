@@ -58,7 +58,7 @@
     "babel-jest": "24.7.1",
     "eslint": "5.16.0",
     "eslint-config-metalab": "10.0.0",
-    "flow-bin": "0.71.0",
+    "flow-bin": "0.97.0",
     "jest": "24.7.1",
     "ncp": "2.0.0",
     "prettier": "1.16.4",
