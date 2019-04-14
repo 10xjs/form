@@ -2,8 +2,8 @@
 
 > A high performance zero-config form state library for React.
 
-[![Build Status](https://travis-ci.org/10xjs/form.svg?branch=master)](https://travis-ci.org/10xjs/form)
-[![Coverage Status](https://coveralls.io/repos/github/10xjs/form/badge.svg?branch=master)](https://coveralls.io/github/10xjs/form?branch=master)
+[![CircleCI](https://circleci.com/gh/10xjs/form.svg?style=svg)](https://circleci.com/gh/10xjs/form)
+[![codecov](https://codecov.io/gh/10xjs/form/branch/master/graph/badge.svg)](https://codecov.io/gh/10xjs/form)
 
 ```jsx
 import {Form, Field} from '@10xjs/form';
