@@ -5,7 +5,7 @@ module.exports = (api) => {
 
   const config = {
     presets: [
-      ['@babel/preset-env', {modules: false, shippedProposals: true}],
+      ['@babel/preset-env', {shippedProposals: true}],
       '@babel/preset-react',
       '@babel/preset-typescript',
     ],
@@ -16,11 +16,7 @@ module.exports = (api) => {
   };
 
   if (process.env.NODE_ENV === 'test') {
-    config.plugins = [
-      ...config.plugins,
-      '@babel/plugin-transform-runtime',
-      '@babel/plugin-transform-modules-commonjs',
-    ];
+    config.plugins = [...config.plugins, '@babel/plugin-transform-runtime'];
   }
 
   return config;
