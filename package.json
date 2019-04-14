@@ -4,7 +4,7 @@
   "scripts": {
     "build": "npm run build:clean && npm run build:types && npm run build:js",
     "build:js": "npx rollup -c",
-    "build:clean": "npx rimraf lib module types",
+    "build:clean": "npx rimraf lib module types umd",
     "build:types": "npx tsc --emitDeclarationOnly -p build.tsconfig.json",
     "format": "npx prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepublishOnly": "npm run test && npm run build",
@@ -23,7 +23,8 @@
   "files": [
     "lib",
     "module",
-    "types"
+    "types",
+    "umd"
   ],
   "repository": {
     "type": "git",
@@ -61,6 +62,7 @@
     "rollup-plugin-babel": "4.3.2",
     "rollup-plugin-commonjs": "9.3.4",
     "rollup-plugin-node-resolve": "4.2.3",
+    "rollup-plugin-terser": "4.0.4",
     "typescript": "3.4.3"
   },
   "jest": {
