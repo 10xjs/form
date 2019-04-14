@@ -4,19 +4,7 @@ import {FormProps, FormWrapperProps, Context, FormActions, Path} from './types';
 
 import {Provider} from './context';
 
-import DefaultStateProvider from './DefaultStateProvider';
-
-type DefaultStateProviderAttributes = JSX.LibraryManagedAttributes<
-  typeof DefaultStateProvider,
-  DefaultStateProvider['props']
->;
-
-function defaultStateProviderProp(
-  config: DefaultStateProviderAttributes,
-  render: (context: Context) => React.ReactNode,
-): React.ReactElement<typeof DefaultStateProvider> {
-  return <DefaultStateProvider {...config}>{render}</DefaultStateProvider>;
-}
+import StateProvider from './StateProvider';
 
 class FormWrapper extends React.PureComponent<FormWrapperProps> {
   public render(): React.ReactNode {
@@ -33,11 +21,16 @@ class FormWrapper extends React.PureComponent<FormWrapperProps> {
   }
 }
 
-class Form<StateProviderProps>
-  extends React.PureComponent<FormProps<StateProviderProps>, Context>
+class Form extends React.PureComponent<FormProps, Context>
   implements FormActions {
   public static defaultProps = {
-    stateProvider: defaultStateProviderProp,
+    values: {},
+    onSubmit: (): void => {},
+    onSubmitFail: (error: Error): Promise<void> => Promise.reject(error),
+    onSubmitSuccess: (): void => {},
+    onSubmitValidationFail: (): void => {},
+    warn: (): null => null,
+    validate: (): null => null,
   };
 
   private _lastSetActions: FormActions | undefined;
@@ -52,29 +45,30 @@ class Form<StateProviderProps>
   ) => void = (): void => {};
 
   public render(): React.ReactNode {
-    return this.props.stateProvider(
-      this.props,
-      (context: Context): React.ReactNode => {
-        if (this._lastSetActions !== context.actions) {
-          Object.assign(this, context.actions);
-          this._lastSetActions = context.actions;
-        }
-        return (
-          <Provider value={context}>
-            <FormWrapper
-              actions={context.actions}
-              submitting={context.submitting}
-              submitFailed={context.submitFailed}
-              submitSucceeded={context.submitSucceeded}
-              hasErrors={context.errorState !== null}
-              hasSubmitErrors={context.submitErrorState !== null}
-              hasWarnings={context.warningState !== null}
-            >
-              {this.props.children}
-            </FormWrapper>
-          </Provider>
-        );
-      },
+    return (
+      <StateProvider {...this.props}>
+        {(context: Context): React.ReactNode => {
+          if (this._lastSetActions !== context.actions) {
+            Object.assign(this, context.actions);
+            this._lastSetActions = context.actions;
+          }
+          return (
+            <Provider value={context}>
+              <FormWrapper
+                actions={context.actions}
+                submitting={context.submitting}
+                submitFailed={context.submitFailed}
+                submitSucceeded={context.submitSucceeded}
+                hasErrors={context.errorState !== null}
+                hasSubmitErrors={context.submitErrorState !== null}
+                hasWarnings={context.warningState !== null}
+              >
+                {this.props.children}
+              </FormWrapper>
+            </Provider>
+          );
+        }}
+      </StateProvider>
     );
   }
 }
