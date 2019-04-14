@@ -1,6 +1,6 @@
 import {PathArray, Path} from './types';
 
-const formatErrorPath = (path: PathArray, more: boolean): string => {
+const formatErrorPath = (path: unknown[], more: boolean): string => {
   return path
     .map((val): string => (typeof val === 'string' ? `"${val}"` : `${val}`))
     .concat(more ? ['...'] : [])
@@ -23,19 +23,19 @@ export const boundsError = (): string => 'Invalid index. Out of bounds.';
 export const pathArrayError = (): string => 'Invalid path. Expected array.';
 export const expectedArrayError = (
   value: unknown,
-  path: PathArray,
+  path: unknown[],
   more: boolean,
 ): string =>
   `Invalid value. Expected array at path: [ ${formatErrorPath(
     path,
     more,
   )} ]. Encountered value: ${value}.`;
-export const expectedPathIntError = (path: PathArray, more: boolean): string =>
+export const expectedPathIntError = (path: unknown[], more: boolean): string =>
   `Invalid path part. Expected int at path: [ ${formatErrorPath(
     path,
     more,
   )} ].`;
-export const pathPartError = (path: PathArray, more: boolean): string =>
+export const pathPartError = (path: unknown[], more: boolean): string =>
   `Invalid path part. Expected string or int at path: [ ${formatErrorPath(
     path,
     more,

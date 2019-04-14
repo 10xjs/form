@@ -6,9 +6,9 @@ export type PathArray = (string | number)[];
 export type Path = PathArray | string;
 
 export interface FormActions {
-  setValue(path: Path, value: unknown): void;
-  setInitialValue(path: Path, value: unknown): void;
-  setPendingValue(path: Path, value: unknown): void;
+  setValue(path: Path, value: any): void;
+  setInitialValue(path: Path, value: any): void;
+  setPendingValue(path: Path, value: any): void;
   setTouched(path: Path, touched: boolean): void;
   setVisited(path: Path, visited: boolean): void;
   setFocused(path: Path, focused: boolean): void;
@@ -16,12 +16,12 @@ export interface FormActions {
 }
 
 export interface Context {
-  initialValueState: unknown;
-  valueState: unknown;
-  pendingValueState: unknown;
-  errorState: unknown;
-  warningState: unknown;
-  submitErrorState: unknown;
+  initialValueState: any;
+  valueState: any;
+  pendingValueState: any;
+  errorState: any;
+  warningState: any;
+  submitErrorState: any;
   focusedPath: string | null;
   touchedMap: {[key in string]: boolean};
   visitedMap: {[key in string]: boolean};
@@ -31,22 +31,19 @@ export interface Context {
   actions: FormActions;
 }
 
-export interface DefaultStateProviderProps {
-  values: unknown;
-  onSubmit(values: unknown): unknown;
-  onSubmitFail(error: Error): unknown;
-  onSubmitSuccess(response: unknown): unknown;
-  onSubmitValidationFail(error: SubmitValidationError): unknown;
-  warn(values: unknown): unknown;
-  validate(values: unknown): unknown;
-  children(context: Context): React.ReactNode;
+export interface StateProviderAttributes {
+  values: any;
+  onSubmit(values: any): any;
+  onSubmitFail(error: Error): any;
+  onSubmitSuccess(response: any): any;
+  onSubmitValidationFail(error: SubmitValidationError): any;
+  warn(values: any): any;
+  validate(values: any): any;
 }
 
-// P: StateProivder props
-type StateProvider<P> = (
-  config: P,
-  render: (context: Context) => React.ReactNode,
-) => React.ReactNode;
+export interface StateProviderProps extends StateProviderAttributes {
+  children(context: Context): React.ReactNode;
+}
 
 interface FormWrapperStateProps {
   submitting: boolean;
@@ -59,11 +56,9 @@ interface FormWrapperStateProps {
 
 interface FormRenderProps extends FormWrapperStateProps, FormActions {}
 
-// P: StateProivder props
-export type FormProps<P> = P & {
-  stateProvider: StateProvider<P>;
+export interface FormProps extends StateProviderAttributes {
   children(props: FormRenderProps): React.ReactNode;
-};
+}
 
 export interface FormWrapperProps extends FormWrapperStateProps {
   actions: FormActions;
@@ -73,12 +68,12 @@ export interface FormWrapperProps extends FormWrapperStateProps {
 export interface HandlerProps {
   onFocus(): void;
   onBlur(): void;
-  onChange(fieldValueOrEvent: unknown): void;
+  onChange(fieldValueOrEvent: any): void;
 }
 
 export interface InputProps extends HandlerProps {
   name: string;
-  value: unknown;
+  value: any;
   checked?: boolean;
 }
 
@@ -91,9 +86,9 @@ export interface FieldRenderProps {
   // "Meta" Props
   path: Path;
   hasError: boolean;
-  error: unknown;
+  error: any;
   hasWarning: boolean;
-  warning: unknown;
+  warning: any;
   focused: boolean;
   touched: boolean;
   visited: boolean;
@@ -102,8 +97,8 @@ export interface FieldRenderProps {
   submitting: boolean;
   submitFailed: boolean;
   submitSucceeded: boolean;
-  value: unknown;
-  pendingValue: unknown;
+  value: any;
+  pendingValue: any;
   detached: boolean;
 
   // Context Actions
@@ -116,8 +111,8 @@ export interface FieldRenderProps {
   submit(): void;
 
   // FieldArray Actions
-  addFieldBefore?: (value: unknown) => void;
-  addFieldAfter?: (value: unknown) => void;
+  addFieldBefore?: (value: any) => void;
+  addFieldAfter?: (value: any) => void;
   removeField?: () => void;
 }
 
@@ -127,37 +122,37 @@ export interface FieldArrayRenderProps {
   // "Meta" Props
   path: Path;
   hasErrors: boolean;
-  errors: unknown[];
+  errors: any[];
   hasWarnings: boolean;
-  warnings: unknown[];
+  warnings: any[];
   submitting: boolean;
   submitFailed: boolean;
   submitSucceeded: boolean;
-  values: unknown[];
-  pendingValues: unknown[];
-  initialValues: unknown[];
+  values: any[];
+  pendingValues: any[];
+  initialValues: any[];
 
   // Context Actions
   submit(): void;
 
   // FieldArray Props
-  addField(value: unknown): void;
+  addField(value: any): void;
 }
 
 interface FieldConfig {
   path: Path;
-  format(value: unknown): unknown;
-  parse(formattedValue: unknown, previousValue: unknown): unknown;
-  compare(value: unknown, otherValue: unknown): boolean;
+  format(value: any): any;
+  parse(formattedValue: any, previousValue: any): any;
+  compare(value: any, otherValue: any): boolean;
   checkbox: boolean;
 }
 
 export interface FieldStateProps {
-  initialValue: unknown;
-  value: unknown;
-  pendingValue: unknown;
-  error: unknown;
-  warning: unknown;
+  initialValue: any;
+  value: any;
+  pendingValue: any;
+  error: any;
+  warning: any;
   focused: boolean;
   touched: boolean;
   visited: boolean;
@@ -169,13 +164,13 @@ export interface FieldStateProps {
 export interface FieldProps extends FieldConfig {
   key?: string;
   index?: number;
-  addField?: (index: number, value: unknown) => void;
+  addField?: (index: number, value: any) => void;
   removeField?: (index: number) => void;
   children(props: FieldRenderProps): React.ReactNode;
 }
 
 export interface FieldArrayProps extends FieldConfig {
-  getFieldKey(stateValue: unknown, index: number): string;
+  getFieldKey(stateValue: any, index: number): string;
   renderField(props: FieldRenderProps): React.ReactNode;
   children(props: FieldArrayRenderProps): React.ReactNode;
 }

@@ -42,7 +42,7 @@ class MockEvent<T> {
   public defaultPrevented: boolean;
   public target: T;
 
-  public constructor(target?: T) {
+  public constructor(target: T) {
     this.defaultPrevented = false;
     this.target = target;
   }
@@ -80,14 +80,14 @@ describe('utils', () => {
 
     it('should throw if the array argument is invalid', () => {
       expect(() => {
-        // $ExpectError 'array' is an invalid argument
+        // @ts-ignore 'array' is an invalid argument
         insert('array', 2, null);
       }).toThrow(arrayTargetError());
     });
 
     it('should throw if the index argument is invalid', () => {
       expect(() => {
-        // $ExpectError '2' is an invalid argument
+        // @ts-ignore '2' is an invalid argument
         insert([1, 2, 3, 4], '2', null);
       }).toThrow(indexError());
 
@@ -116,14 +116,14 @@ describe('utils', () => {
 
     it('should throw if the array argument is invalid', () => {
       expect(() => {
-        // $ExpectError 'array' is an invalid argument
+        // @ts-ignore 'array' is an invalid argument
         remove('array', 2);
       }).toThrow(arrayTargetError());
     });
 
     it('should throw if the index argument is invalid', () => {
       expect(() => {
-        // $ExpectError '2' is an invalid argument
+        // @ts-ignore '2' is an invalid argument
         remove([1, 2, 3, 4], '2');
       }).toThrow(indexError());
 
@@ -180,7 +180,7 @@ describe('utils', () => {
 
     it('should throw an error if the provided path is invalid', () => {
       expect(() => {
-        // $ExpectError null is an invalid argument
+        // @ts-ignore null is an invalid argument
         formatPath(null);
       }).toThrow(pathError());
     });
@@ -213,7 +213,7 @@ describe('utils', () => {
       }).toThrow(pathSyntaxError('foo.bar[3]3'));
 
       expect(() => {
-        // $ExpectError null is an invalid argument
+        // @ts-ignore null is an invalid argument
         parsePath(null);
       }).toThrow(pathError());
     });
@@ -243,7 +243,7 @@ describe('utils', () => {
           ...state.foo,
           bar: state.foo.bar
             .slice(0, -1)
-            .concat([{...state.foo.bar[3], foo: null}]),
+            .concat([Object.assign({}, state.foo.bar[3], {foo: null})]),
         },
       });
 
@@ -273,17 +273,17 @@ describe('utils', () => {
 
     it('should throw if the path is not a valid array', () => {
       expect(() => {
-        // $ExpectError 'path' is an invalid argument
+        // @ts-ignore 'path' is an invalid argument
         set({}, 'path', null);
       }).toThrow(pathArrayError());
 
       expect(() => {
-        // $ExpectError [null] is an invalid argument
+        // @ts-ignore [null] is an invalid argument
         set({}, [null], null);
       }).toThrow(pathPartError([null], false));
 
       expect(() => {
-        // $ExpectError [null] is an invalid argument
+        // @ts-ignore [null] is an invalid argument
         set({}, [null, null], null);
       }).toThrow(pathPartError([null], true));
     });
@@ -317,12 +317,15 @@ describe('utils', () => {
         ...state,
         foo: {
           ...state.foo,
-          bar: [...state.foo.bar.slice(0, 3), {...state.foo.bar[3], foo: null}],
+          bar: [
+            ...state.foo.bar.slice(0, 3),
+            Object.assign({}, state.foo.bar[3], {foo: null}),
+          ],
         },
       });
 
       expect(updater.mock.calls.length).toBe(1);
-      expect(updater.mock.calls[0][0]).toBe(state.foo.bar[3].foo);
+      expect((updater as any).mock.calls[0][0]).toBe('bar');
     });
   });
 
@@ -338,24 +341,22 @@ describe('utils', () => {
 
       expect(get(state, ['foo', 'bar', 0])).toEqual(state.foo.bar[0]);
 
-      expect(get(state, ['foo', 'bar', 3, 'foo'])).toEqual(
-        state.foo.bar[3].foo,
-      );
+      expect(get(state, ['foo', 'bar', 3, 'foo'])).toEqual('bar');
     });
 
     it('should throw if the path is not a valid array', () => {
       expect(() => {
-        // $ExpectError 'path' is an invalid argument
+        // @ts-ignore 'path' is an invalid argument
         get({}, 'path');
       }).toThrow(pathArrayError());
 
       expect(() => {
-        // $ExpectError [null] is an invalid argument
+        // @ts-ignore [null] is an invalid argument
         get({}, [null]);
       }).toThrow(pathPartError([null], false));
 
       expect(() => {
-        // $ExpectError [null] is an invalid argument
+        // @ts-ignore [null] is an invalid argument
         get({}, [null, null]);
       }).toThrow(pathPartError([null], true));
     });
@@ -381,7 +382,7 @@ describe('utils', () => {
 
   describe('matchesDeep', () => {
     it('should return true if a matching branch is found', () => {
-      const test = (value) => value === null;
+      const test = (value: unknown) => value === null;
 
       expect(matchesDeep(null, test)).toEqual(true);
 
@@ -399,7 +400,7 @@ describe('utils', () => {
     });
 
     it('should ignore prototype properties', () => {
-      const test = (value) => value === null;
+      const test = (value: unknown) => value === null;
 
       const val = Object.create({foo: null});
 

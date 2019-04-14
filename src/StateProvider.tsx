@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {DefaultStateProviderProps, Context, PathArray, Path} from './types';
+import {StateProviderProps, Context, PathArray, Path} from './types';
 
 import {
   set,
@@ -13,7 +13,7 @@ import {
 } from './util';
 import SubmitValidationError from './SubmitValidationError';
 
-type Props = DefaultStateProviderProps;
+type Props = StateProviderProps;
 type State = {_props: Pick<Props, 'warn' | 'validate'>} & Context;
 
 type StateUpdater = (state: State, props: Props) => State | null;
@@ -239,20 +239,7 @@ const updateSubmit = (error?: Error): StateUpdater => (
   return nextState;
 };
 
-class DefaultStateProvider extends React.PureComponent<Props, State> {
-  // static defaultProps: typeof DefaultStateProvider.defaultProps;
-  // static getDerivedStateFromProps: typeof DefaultStateProvider.getDerivedStateFromProps;
-
-  public static defaultProps = {
-    values: {},
-    onSubmit: (): void => {},
-    onSubmitFail: (error: Error): Promise<void> => Promise.reject(error),
-    onSubmitSuccess: (): void => {},
-    onSubmitValidationFail: (): void => {},
-    warn: (): null => null,
-    validate: (): null => null,
-  };
-
+class StateProvider extends React.PureComponent<Props, State> {
   public static getDerivedStateFromProps = (
     props: Props,
     state: State,
@@ -410,4 +397,4 @@ class DefaultStateProvider extends React.PureComponent<Props, State> {
   }
 }
 
-export default DefaultStateProvider;
+export default StateProvider;

@@ -1,20 +1,25 @@
 import {emptyPathArrayError, emptyPathStringError, get, set} from '../src/util';
 import SubmitValidationError from '../src/SubmitValidationError';
-import DefaultStateProvider from '../src/DefaultStateProvider';
+import StateProvider from '../src/StateProvider';
 
-const getInstance = (): DefaultStateProvider => {
+const getInstance = (): StateProvider => {
   const values = {foo: 'value'};
   const warnings = {foo: 'warning'};
   const errors = {foo: 'error'};
   const submitErrors = {foo: 'error'};
 
-  const instance = new DefaultStateProvider({
-    ...DefaultStateProvider.defaultProps,
+  const instance = new StateProvider({
+    onSubmit: (): void => {},
+    onSubmitFail: (error: Error): Promise<void> => Promise.reject(error),
+    onSubmitSuccess: (): void => {},
+    onSubmitValidationFail: (): void => {},
+    warn: (): null => null,
+    validate: (): null => null,
     children: (): null => null,
     values,
   });
 
-  (instance as any).setState = (updater, callback) => {
+  (instance as any).setState = (updater: any, callback: any) => {
     const nextState = updater(instance.state, instance.props);
     if (nextState !== null) {
       instance.state = nextState;
@@ -65,31 +70,7 @@ const shallowIntersect = (
   return true;
 };
 
-describe('<DefaultStateProvider/>', () => {
-  describe('defaultProps', () => {
-    it('should contain expected default functions', async () => {
-      const {
-        onSubmit,
-        onSubmitSuccess,
-        onSubmitValidationFail,
-        warn,
-        validate,
-        onSubmitFail,
-      } = DefaultStateProvider.defaultProps;
-
-      expect(onSubmit()).toBe(undefined);
-      expect(onSubmitSuccess()).toBe(undefined);
-      expect(onSubmitValidationFail()).toBe(undefined);
-
-      expect(warn()).toBe(null);
-      expect(validate()).toBe(null);
-
-      const error = new Error();
-
-      await expect(onSubmitFail(error)).rejects.toBe(error);
-    });
-  });
-
+describe('<StateProvider/>', () => {
   describe('getInitialState', () => {
     it('should run validation', () => {
       const instance = getInstance();
@@ -97,7 +78,7 @@ describe('<DefaultStateProvider/>', () => {
       const errors = {foo: 'bar'};
       const warnings = {bar: 'foo'};
 
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         validate: jest.fn(() => errors),
         warn: jest.fn(() => warnings),
@@ -105,8 +86,8 @@ describe('<DefaultStateProvider/>', () => {
 
       const state = instance.getInitialState();
 
-      expect(instance.props.validate.mock.calls).toHaveLength(1);
-      expect(instance.props.warn.mock.calls).toHaveLength(1);
+      expect((instance.props.validate as any).mock.calls).toHaveLength(1);
+      expect((instance.props.warn as any).mock.calls).toHaveLength(1);
 
       expect(state.errorState).toBe(errors);
       expect(state.warningState).toBe(warnings);
@@ -114,7 +95,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static getDerivedStateFromProps', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -123,7 +104,7 @@ describe('<DefaultStateProvider/>', () => {
     it('should not modify state if no relevant props have changed', () => {
       const nextProps = {...instance.props, foo: 'bar'};
 
-      const state = DefaultStateProvider.getDerivedStateFromProps(
+      const state = StateProvider.getDerivedStateFromProps(
         nextProps,
         instance.state,
       );
@@ -134,7 +115,7 @@ describe('<DefaultStateProvider/>', () => {
     it('should return updated state if `values` prop has changed', () => {
       const nextProps = {...instance.props, values: {}};
 
-      const state = DefaultStateProvider.getDerivedStateFromProps(
+      const state = StateProvider.getDerivedStateFromProps(
         nextProps,
         instance.state,
       );
@@ -154,7 +135,7 @@ describe('<DefaultStateProvider/>', () => {
         validate: jest.fn(() => instance.state.errorState),
       };
 
-      const state = DefaultStateProvider.getDerivedStateFromProps(
+      const state = StateProvider.getDerivedStateFromProps(
         nextProps,
         instance.state,
       );
@@ -174,7 +155,7 @@ describe('<DefaultStateProvider/>', () => {
         warn: jest.fn(() => instance.state.warningState),
       };
 
-      const state = DefaultStateProvider.getDerivedStateFromProps(
+      const state = StateProvider.getDerivedStateFromProps(
         nextProps,
         instance.state,
       );
@@ -190,7 +171,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('setValue', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -245,10 +226,8 @@ describe('<DefaultStateProvider/>', () => {
       const errors = {foo: 'bar'};
       const warnings = {foo: 'foo'};
 
-      // $ExpectError modify sealed props object
-      instance.props.validate = jest.fn(() => errors);
-      // $ExpectError modify sealed props object
-      instance.props.warn = jest.fn(() => warnings);
+      (instance as any).props.validate = jest.fn(() => errors);
+      (instance as any).props.warn = jest.fn(() => warnings);
 
       instance.setValue(['foo'], 'bar');
 
@@ -260,8 +239,8 @@ describe('<DefaultStateProvider/>', () => {
         ...rest
       } = instance.state;
 
-      expect(instance.props.validate.mock.calls).toHaveLength(1);
-      expect(instance.props.warn.mock.calls).toHaveLength(1);
+      expect((instance.props.validate as any).mock.calls).toHaveLength(1);
+      expect((instance.props.warn as any).mock.calls).toHaveLength(1);
 
       expect(errorState).toBe(errors);
       expect(warningState).toBe(warnings);
@@ -274,10 +253,8 @@ describe('<DefaultStateProvider/>', () => {
     it('should convert empty validation state to null', () => {
       const previousState = instance.state;
 
-      // $ExpectError modify sealed props object
-      instance.props.validate = () => ({});
-      // $ExpectError modify sealed props object
-      instance.props.warn = () => [];
+      (instance as any).props.validate = () => ({});
+      (instance as any).props.warn = () => [];
 
       instance.setValue(['foo'], 'bar');
 
@@ -327,7 +304,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static setInitialValue', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -364,7 +341,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static setPendingValue', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -401,7 +378,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static setVisited', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -438,7 +415,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static setTouched', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -475,7 +452,7 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('static setFocused', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -546,15 +523,15 @@ describe('<DefaultStateProvider/>', () => {
   });
 
   describe('submit', () => {
-    let instance;
-    let promise;
+    let instance: StateProvider;
+    let promise: Promise<void>;
 
     beforeEach(() => {
       instance = getInstance();
       instance.state = instance.getInitialState();
 
       promise = new Promise((resolve, reject) => {
-        instance.props = {
+        (instance as any).props = {
           ...instance.props,
           onSubmitSuccess: resolve,
           onSubmitFail: reject,
@@ -604,7 +581,7 @@ describe('<DefaultStateProvider/>', () => {
     it('should resolve return value of submit handler', async () => {
       const result = {};
 
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         onSubmit: jest.fn(() => result),
       };
@@ -613,7 +590,7 @@ describe('<DefaultStateProvider/>', () => {
 
       await expect(promise).resolves.toBe(result);
 
-      expect(instance.props.onSubmit.mock.calls).toHaveLength(1);
+      expect((instance.props.onSubmit as any).mock.calls).toHaveLength(1);
 
       const {
         submitting,
@@ -637,7 +614,7 @@ describe('<DefaultStateProvider/>', () => {
 
       const error = new SubmitValidationError(errors);
 
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         onSubmit: () => Promise.reject(error),
       };
@@ -659,7 +636,7 @@ describe('<DefaultStateProvider/>', () => {
 
       const error = new SubmitValidationError(errors);
 
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         onSubmit: () => Promise.reject(error),
       };
@@ -677,7 +654,7 @@ describe('<DefaultStateProvider/>', () => {
     });
 
     it('should not call setState if the component is unmounted during submit', async () => {
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         // 3. Invoke the componentWillUnmount callback from within the onSubmit
         // callback tick. This is equivalent to what happens when the Form
@@ -696,12 +673,12 @@ describe('<DefaultStateProvider/>', () => {
       await promise;
 
       // 5. Assert that setState has not been called.
-      expect(instance.setState.mock.calls).toHaveLength(0);
+      expect((instance.setState as any).mock.calls).toHaveLength(0);
     });
   });
 
   describe('render', () => {
-    let instance;
+    let instance: StateProvider;
 
     beforeEach(() => {
       instance = getInstance();
@@ -710,15 +687,17 @@ describe('<DefaultStateProvider/>', () => {
     it('should return result of current state applied to children', () => {
       const result = {};
 
-      instance.props = {
+      (instance as any).props = {
         ...instance.props,
         children: jest.fn(() => result),
       };
 
       expect(instance.render()).toBe(result);
 
-      expect(instance.props.children.mock.calls).toHaveLength(1);
-      expect(instance.props.children.mock.calls[0][0]).toBe(instance.state);
+      expect((instance.props.children as any).mock.calls).toHaveLength(1);
+      expect((instance.props.children as any).mock.calls[0][0]).toBe(
+        instance.state,
+      );
     });
   });
 });
