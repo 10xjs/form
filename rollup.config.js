@@ -1,6 +1,7 @@
 import path from 'path';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
+import {terser} from 'rollup-plugin-terser';
 import resolve from 'rollup-plugin-node-resolve';
 
 import pkg from './package.json';
@@ -14,38 +15,65 @@ const plugins = [
 ];
 
 const external = ['es6-error', 'react', 'hoist-non-react-statics'];
+const umdGlobals = {react: 'React'};
 
 const sourcemapPathTransform = (sourcePath) =>
   path.join('node_modules', pkg.name, './src', sourcePath);
 
-export default {
-  input: {
-    context: './src/context.tsx',
-    Field: './src/Field.tsx',
-    FieldArray: './src/FieldArray.tsx',
-    Form: './src/Form.tsx',
-    index: './src/index.tsx',
-    renderWrapper: './src/renderWrapper.tsx',
-    StateProvider: './src/StateProvider.tsx',
-    SubmitValidationError: './src/SubmitValidationError.tsx',
-    util: './src/util.tsx',
+export default [
+  {
+    input: './src/index.tsx',
+    output: {
+      file: './umd/form.js',
+      format: 'umd',
+      exports: 'named',
+      name: 'Form',
+      globals: umdGlobals,
+    },
+    external: Object.keys(umdGlobals),
+    plugins: plugins,
   },
-  output: [
-    {
-      dir: 'module',
-      format: 'esm',
+  {
+    input: './src/index.tsx',
+    output: {
+      file: './umd/form.min.js',
+      format: 'umd',
       exports: 'named',
-      sourcemap: true,
-      sourcemapPathTransform,
+      name: 'Form',
+      globals: umdGlobals,
     },
-    {
-      dir: 'lib',
-      format: 'cjs',
-      exports: 'named',
-      sourcemap: true,
-      sourcemapPathTransform,
+    external: Object.keys(umdGlobals),
+    plugins: [terser(), ...plugins],
+  },
+  {
+    input: {
+      context: './src/context.tsx',
+      Field: './src/Field.tsx',
+      FieldArray: './src/FieldArray.tsx',
+      Form: './src/Form.tsx',
+      index: './src/index.tsx',
+      renderWrapper: './src/renderWrapper.tsx',
+      StateProvider: './src/StateProvider.tsx',
+      SubmitValidationError: './src/SubmitValidationError.tsx',
+      util: './src/util.tsx',
     },
-  ],
-  plugins,
-  external,
-};
+    output: [
+      {
+        dir: 'module',
+        format: 'esm',
+        exports: 'named',
+        sourcemap: true,
+        sourcemapPathTransform,
+      },
+      {
+        dir: 'lib',
+        format: 'cjs',
+        exports: 'named',
+        sourcemap: true,
+        sourcemapPathTransform,
+      },
+    ],
+    plugins,
+    external,
+  },
+];
