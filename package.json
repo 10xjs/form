@@ -2,10 +2,9 @@
   "name": "@10xjs/form",
   "version": "0.1.7",
   "scripts": {
-    "build": "npm run build:clean && npm run build:types && npm run build:cjs && npm run build:module",
+    "build": "npm run build:clean && npm run build:types && npm run build:js",
+    "build:js": "npx rollup -c",
     "build:clean": "npx rimraf lib module types",
-    "build:cjs": "npx rollup -c",
-    "build:module": "npx babel -s --source-root 'node_modules/@10xjs/form/module' -d module --extensions '.tsx' src",
     "build:types": "npx tsc --emitDeclarationOnly -p build.tsconfig.json",
     "format": "npx prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepublishOnly": "npm run test && npm run build",
@@ -22,7 +21,9 @@
   "types": "./types/index.d.js",
   "sideEffects": false,
   "files": [
-    "lib/**/*.@(js|map)"
+    "lib",
+    "module",
+    "types"
   ],
   "repository": {
     "type": "git",
@@ -35,12 +36,8 @@
     "react": ">=16.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.4.3",
     "@babel/core": "7.4.3",
     "@babel/plugin-proposal-class-properties": "7.4.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.4.3",
-    "@babel/plugin-syntax-class-properties": "7.2.0",
-    "@babel/plugin-syntax-dynamic-import": "7.2.0",
     "@babel/plugin-transform-object-assign": "7.2.0",
     "@babel/plugin-transform-runtime": "7.4.3",
     "@babel/preset-env": "7.4.3",
@@ -68,9 +65,6 @@
   },
   "jest": {
     "testURL": "http://localhost/",
-    "modulePathIgnorePatterns": [
-      "lib/"
-    ],
     "coveragePathIgnorePatterns": [
       "test/"
     ]
