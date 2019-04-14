@@ -6,14 +6,14 @@
     "build:clean": "npx rimraf lib module types",
     "build:cjs": "npx rollup -c",
     "build:module": "npx babel -s --source-root 'node_modules/@10xjs/form/module' -d module --extensions '.tsx' src",
-    "build:types": "tsc --emitDeclarationOnly",
+    "build:types": "npx tsc --emitDeclarationOnly -p build.tsconfig.json",
     "format": "npx prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepare": "npm run build",
     "test": "npm run test:types --slient && npm run test:lint --slient && npm run test:spec --silent",
     "test:lint": "npx eslint . --ext .tsx,.ts,.js.,.jsx",
     "test:spec": "npx jest --runInBand=${SPEC_SERIAL:-$CI} --coverage=${SPEC_COVERAGE:-$CI}",
     "test:spec-watch": "npm run spec -- --watch",
-    "test:types": "tsc --noEmit"
+    "test:types": "npx tsc --noEmit"
   },
   "author": "Neal Granger <neal@nealg.com>",
   "license": "MIT",
