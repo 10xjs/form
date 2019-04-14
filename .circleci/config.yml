@@ -1,0 +1,65 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@1.0.4
+
+executors:
+  build_env:
+    docker:
+      - image: circleci/node:10.15
+
+commands:
+  install:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run: npm install --ignore-scripts
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+
+jobs:
+  lint:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - run: npm run test:lint
+  types:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - run: npm run test:types
+  spec:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - run: npm run test:spec
+      - codecov/upload:
+          file: ./coverage/lcov.info
+  build:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - run: npm run build
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - lint
+      - types
+      - spec:
+          requires:
+            - lint
+            - types
+      - build:
+          requires:
+            - lint
+            - types
