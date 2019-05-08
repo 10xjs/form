@@ -1,76 +1,66 @@
 import * as React from 'react';
 
-import {FormProps, FormWrapperProps, Context, FormActions, Path} from './types';
+import Context from './Context';
+import Provider from './Provider';
+import useForm, {
+  Interface,
+  Warn,
+  Validate,
+  OnSubmit,
+  OnSubmitFail,
+  OnSubmitSuccess,
+} from './useForm';
 
-import {Provider} from './context';
-
-import StateProvider from './StateProvider';
-
-class FormWrapper extends React.PureComponent<FormWrapperProps> {
-  public render(): React.ReactNode {
-    return this.props.children(
-      Object.assign({}, this.props.actions, {
-        submitting: this.props.submitting,
-        submitFailed: this.props.submitFailed,
-        submitSucceeded: this.props.submitSucceeded,
-        hasErrors: this.props.hasErrors,
-        hasSubmitErrors: this.props.hasSubmitErrors,
-        hasWarnings: this.props.hasWarnings,
-      }),
-    );
-  }
+export interface FormProps<V, R, RR = R, E = null, W = null> {
+  values: V;
+  warn?: Warn<V, W>;
+  validate?: Validate<V, E>;
+  onSubmit?: OnSubmit<V, R>;
+  onSubmitFail?: OnSubmitFail<RR>;
+  onSubmitSuccess?: OnSubmitSuccess<R, RR>;
+  children?: React.ReactNode;
 }
 
-class Form extends React.PureComponent<FormProps, Context>
-  implements FormActions {
-  public static defaultProps = {
-    values: {},
-    onSubmit: (): void => {},
-    onSubmitFail: (error: Error): Promise<void> => Promise.reject(error),
-    onSubmitSuccess: (): void => {},
-    onSubmitValidationFail: (): void => {},
-    warn: (): null => null,
-    validate: (): null => null,
-  };
+export const renderForm = function Form<V, R, RR, E, W>(
+  {
+    values,
+    validate,
+    warn,
+    onSubmit,
+    onSubmitFail,
+    onSubmitSuccess,
+    children,
+  }: FormProps<V, R, RR, E, W>,
+  ref?: React.Ref<Interface<V, R, RR, E, W>>,
+): React.ReactElement<typeof Context['Provider']> {
+  const form = useForm({
+    values,
+    onSubmit,
+    onSubmitFail,
+    onSubmitSuccess,
+    validate,
+    warn,
+  });
 
-  private _lastSetActions: FormActions | undefined;
-  public setValue: (path: Path, value: unknown) => void = (): void => {};
-  public setInitialValue: (path: Path, value: unknown) => void = (): void => {};
-  public setPendingValue: (path: Path, value: unknown) => void = (): void => {};
-  public setTouched: (path: Path, touched: boolean) => void = (): void => {};
-  public setVisited: (path: Path, visited: boolean) => void = (): void => {};
-  public setFocused: (path: Path, focused: boolean) => void = (): void => {};
-  public submit: (
-    event?: Event | React.SyntheticEvent<HTMLElement>,
-  ) => void = (): void => {};
+  React.useImperativeHandle(ref, (): Interface<V, R, RR, E, W> => form, []);
 
-  public render(): React.ReactNode {
-    return (
-      <StateProvider {...this.props}>
-        {(context: Context): React.ReactNode => {
-          if (this._lastSetActions !== context.actions) {
-            Object.assign(this, context.actions);
-            this._lastSetActions = context.actions;
-          }
-          return (
-            <Provider value={context}>
-              <FormWrapper
-                actions={context.actions}
-                submitting={context.submitting}
-                submitFailed={context.submitFailed}
-                submitSucceeded={context.submitSucceeded}
-                hasErrors={context.errorState !== null}
-                hasSubmitErrors={context.submitErrorState !== null}
-                hasWarnings={context.warningState !== null}
-              >
-                {this.props.children}
-              </FormWrapper>
-            </Provider>
-          );
-        }}
-      </StateProvider>
-    );
-  }
+  return <Provider form={form}>{children}</Provider>;
+};
+
+const component = (React.forwardRef as any)(renderForm);
+
+interface Form {
+  <V, R, RR = R, E = null, W = null>(
+    props: FormProps<V, R, RR, E, W> &
+      React.RefAttributes<Interface<V, R, RR, E, W>>,
+  ): React.ReactElement<typeof Context['Provider']>;
 }
 
-export default Form;
+export default component as Form;
+
+export interface TypedForm<V, R, RR = R, E = null, W = null> {
+  (
+    props: FormProps<V, R, RR, E, W> &
+      React.RefAttributes<Interface<V, R, RR, E, W>>,
+  ): React.ReactElement<typeof Context['Provider']>;
+}

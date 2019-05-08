@@ -2,7 +2,6 @@ import {
   pathError,
   pathSyntaxError,
   arrayTargetError,
-  emptyPathError,
   indexError,
   boundsError,
   pathArrayError,
@@ -22,7 +21,8 @@ import {
   isEvent,
   mergeHandlers,
   parseEvent,
-} from '../src/util';
+  hasValue,
+} from '../util';
 
 class HTMLMockElement {
   public value: string | void;
@@ -53,11 +53,6 @@ class MockEvent<T> {
 }
 
 describe('utils', () => {
-  describe('emptyPathError', () => {
-    it('should return a string', () => {
-      expect(typeof emptyPathError()).toBe('string');
-    });
-  });
   describe('isValidPath', () => {
     it('should return true if the provided path is valid', () => {
       expect(isValidPath([])).toEqual(false);
@@ -476,6 +471,28 @@ describe('utils', () => {
       );
 
       expect(parseEvent(event)).toEqual(true);
+    });
+  });
+
+  describe('hasValue', () => {
+    it('should return the correct result', () => {
+      // string, number, function, or boolean values or objects with string,
+      // number, function, or boolean leaf values should return true.
+      expect(hasValue({foo: 'bar'})).toBe(true);
+      expect(hasValue('')).toBe(true);
+      expect(hasValue(0)).toBe(true);
+      expect(hasValue(false)).toBe(true);
+      expect(hasValue(() => {})).toBe(true);
+      expect(hasValue(/regex/)).toBe(true);
+
+      // Any other value should return false
+      expect(hasValue(undefined)).toBe(false);
+      expect(hasValue(null)).toBe(false);
+      expect(hasValue([])).toBe(false);
+      expect(hasValue([[], {}])).toBe(false);
+      expect(hasValue({})).toBe(false);
+      expect(hasValue({foo: {}})).toBe(false);
+      expect(hasValue({bar: []})).toBe(false);
     });
   });
 });

@@ -23,11 +23,18 @@ rules:
     - error
     - varsIgnorePattern: _
       argsIgnorePattern: _
+  '@typescript-eslint/explicit-function-return-type':
+    - warn
+    - allowTypedFunctionExpressions: true
+      allowExpressions: true
   react/prop-types: off
 overrides:
   - files: "*.test.tsx"
-    env: {jest: true}
+    env:
+      jest: true
+      node: true
     rules:
       '@typescript-eslint/explicit-function-return-type': off
   - files: "*.stories.tsx"
-    env: {node: true}
+    env:
+      node: true
