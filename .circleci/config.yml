@@ -15,7 +15,9 @@ commands:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
-      - run: npm install --ignore-scripts
+      - run:
+          name: Install npm Dependencies
+          command: npm install --ignore-scripts
       - save_cache:
           paths:
             - node_modules
@@ -48,10 +50,35 @@ jobs:
       - checkout
       - install
       - run: npm run build
+      - run:
+          name: Set canary package version
+          command: npm version 0.0.0-$(echo $CIRCLE_SHA1 | cut -c -9) --no-git-tag-version
+      - run:
+          name: Build canary package tarball
+          command: |
+            npm pack --silent > tarball_name
+            mv "$(cat tarball_name)" package.tgz
+      - store_artifacts:
+          path: package.tgz
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - package.tgz
+  publish_canary:
+    executor: build_env
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Authenticate with npm registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+      - run:
+          name: Publish canary package
+          command: npm publish package.tgz --tag canary
 
 workflows:
   version: 2
-  test:
+  commit:
     jobs:
       - lint
       - types
@@ -63,3 +90,10 @@ workflows:
           requires:
             - lint
             - types
+      - publish_canary:
+          requires:
+            - spec
+            - build
+          filters:
+            branches:
+              only: master
