@@ -1,4 +1,4 @@
-import SubmitValidationError from '../src/SubmitValidationError';
+import {SubmitValidationError} from '../';
 
 describe('SubmitValidationError', () => {
   const errors = {};
@@ -14,13 +14,5 @@ describe('SubmitValidationError', () => {
 
   it('should have an original property', () => {
     expect(new SubmitValidationError(errors, original).original).toBe(original);
-  });
-
-  it('should convert unexpected values to null', () => {
-    expect(new SubmitValidationError(undefined as any).errors).toBe(null);
-    expect(new SubmitValidationError(2 as any).errors).toBe(null);
-    expect(new SubmitValidationError([] as any).errors).toBe(null);
-    expect(new SubmitValidationError('foo' as any).errors).toBe(null);
-    expect(new SubmitValidationError((() => {}) as any).errors).toBe(null);
   });
 });

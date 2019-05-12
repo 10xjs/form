@@ -1,20 +1,18 @@
 import path from 'path';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
-import resolve from 'rollup-plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript2';
 
 import pkg from './package.json';
 
-const extensions = ['.js', '.jsx', '.ts', '.tsx'];
-
 const plugins = [
-  resolve({extensions}),
-  commonjs(),
-  babel({exclude: 'node_modules/**', extensions}),
+  typescript({
+    tsconfig: 'build.tsconfig.json',
+    useTsconfigDeclarationDir: true,
+    cacheRoot: './node_modules/.cache/rpt2',
+  }),
 ];
 
-const external = ['es6-error', 'react', 'hoist-non-react-statics'];
+const external = ['es6-error', 'react'];
 const umdGlobals = {react: 'React'};
 
 const sourcemapPathTransform = (sourcePath) =>
@@ -47,14 +45,18 @@ export default [
   },
   {
     input: {
-      context: './src/context.tsx',
-      Field: './src/Field.tsx',
-      FieldArray: './src/FieldArray.tsx',
+      Context: './src/Context.tsx',
       Form: './src/Form.tsx',
+      fieldHelpers: './src/fieldHelpers.tsx',
+      Provider: './src/Provider.tsx',
       index: './src/index.tsx',
-      renderWrapper: './src/renderWrapper.tsx',
-      StateProvider: './src/StateProvider.tsx',
+      SubmitConcurrencyError: './src/SubmitConcurrencyError.tsx',
       SubmitValidationError: './src/SubmitValidationError.tsx',
+      useField: './src/useField.tsx',
+      useFieldStatus: './src/useFieldStatus.tsx',
+      useForm: './src/useForm.tsx',
+      useContext: './src/useContext.tsx',
+      useStatus: './src/useStatus.tsx',
       util: './src/util.tsx',
     },
     output: [

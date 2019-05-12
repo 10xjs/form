@@ -1,4 +1,5 @@
-import {PathArray, Path} from './types';
+type PathArray = (string | number)[];
+type Path = PathArray | string;
 
 const formatErrorPath = (path: unknown[], more: boolean): string => {
   return path
@@ -11,12 +12,6 @@ export const pathError = (): string =>
   'Invalid path. Expected array or string.';
 export const pathSyntaxError = (path: string): string =>
   `Invalid path. Syntax error at "${path}".`;
-export const emptyPathError = (): string =>
-  'Invalid path. Expected non-empty array or string.';
-export const emptyPathArrayError = (): string =>
-  'Invalid path. Expected non-empty array.';
-export const emptyPathStringError = (): string =>
-  'Invalid path. Expected non-empty string.';
 export const arrayTargetError = (): string => 'Invalid target. Expected array.';
 export const indexError = (): string => 'Invalid index. Expected int.';
 export const boundsError = (): string => 'Invalid index. Out of bounds.';
@@ -92,7 +87,6 @@ export const equals = (a: unknown, b: unknown): boolean => {
   if (a === b) {
     return true;
   }
-  // eslint-disable-next-line no-self-compare
   if (a !== a && b !== b) {
     return true;
   }
@@ -243,11 +237,7 @@ export const setWith = <T extends any>(
 export const set = <T extends any>(object: T, path: PathArray, value: any): T =>
   _setWith(object, path, (): any => value);
 
-export const get = (
-  value: any,
-  path: PathArray,
-  currentPath: PathArray = [],
-): unknown => {
+const _get = (value: any, path: PathArray, currentPath: PathArray): unknown => {
   if (!Array.isArray(path)) {
     throw new TypeError(pathArrayError());
   }
@@ -275,12 +265,15 @@ export const get = (
     );
   }
 
-  return get(
+  return _get(
     valueIsUndefined ? undefined : value[key],
     path.slice(1),
-    currentPath.concat[key],
+    currentPath.concat([key]),
   );
 };
+
+export const get = (value: any, path: PathArray): unknown =>
+  _get(value, path, []);
 
 export const matchesDeep = (
   value: any,
@@ -297,7 +290,6 @@ export const matchesDeep = (
   }
 
   if (/^\[object Object\]$/.test(Object.prototype.toString.call(value))) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const key in value) {
       if (Object.prototype.hasOwnProperty.call(value, key)) {
         if (matchesDeep(value[key], test)) {
@@ -314,7 +306,7 @@ export const hasValue = (value: unknown): boolean =>
   matchesDeep(
     value,
     (value): boolean =>
-      !/^\[object (Object|Array|Undefined)\]$/.test(
+      !/^\[object (Object|Array|Undefined|Null)\]$/.test(
         Object.prototype.toString.call(value),
       ),
   );
@@ -326,10 +318,8 @@ export const isEvent = (
   return (
     event !== null &&
     typeof event === 'object' &&
-    typeof event.stopPropagation === 'function' &&
-    typeof event.preventDefault === 'function' &&
-    event.target &&
-    event.target.constructor &&
+    !!event.target &&
+    !!event.target.constructor &&
     /^HTML.*?Element$/.test(event.target.constructor.name)
   );
 };
@@ -355,7 +345,7 @@ export const parseEvent = (eventOrValue: unknown): unknown => {
   if (isEvent(eventOrValue) && eventOrValue.target) {
     const type = (eventOrValue.target as HTMLInputElement).type;
 
-    if (type === 'checkbox') {
+    if (type === 'checkbox' || type === 'radio') {
       return !!(eventOrValue.target as HTMLInputElement).checked;
     }
 

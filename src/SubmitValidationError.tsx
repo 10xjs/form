@@ -7,11 +7,7 @@ export default class SubmitValidationError extends ExtendableError {
   public constructor(errors: unknown, original?: Error) {
     super('Submit Validation Failed');
 
-    if (typeof errors === 'object' && !Array.isArray(errors)) {
-      this.errors = errors;
-    } else {
-      this.errors = null;
-    }
+    this.errors = errors;
 
     this.original = original;
   }
