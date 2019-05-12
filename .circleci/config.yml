@@ -70,8 +70,11 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
+          name: Authenticate with npm registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+      - run:
           name: Publish canary package
-          command: npm publish package.tgz --tag canary --dry-run
+          command: npm publish package.tgz --tag canary
 
 workflows:
   version: 2
@@ -91,3 +94,6 @@ workflows:
           requires:
             - spec
             - build
+          filters:
+            branches:
+              only: master
