@@ -133,15 +133,15 @@ workflows:
       - lint:
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^v.*/
       - types:
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^v.*/
       - spec:
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^v.*/
 
       # build non-release npm package on any branch and not on tags
       - build:
@@ -162,7 +162,7 @@ workflows:
       - build_release:
           filters:
             tags:
-              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^v.*/
             branches:
               ignore: /.*/
           requires:
