@@ -129,22 +129,28 @@ workflows:
   version: 2
   test-build-publish:
     jobs:
-      # run tests in parallel
-      - lint
-      - types
-      - spec
-
-      # build non-release npm package when not on a version tag
-      - build:
+      # run tests in parallel on any branch and on version tags
+      - lint:
           filters:
             tags:
-              ignore: /^v[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+      - types:
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+      - spec:
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+
+      # build non-release npm package on any branch and not on tags
+      - build:
           requires:
             - spec
             - types
             - lint
 
-      # publish canary tagged npm package when commit is to master
+      # publish canary tagged npm package on master and not on tags
       - publish_canary:
           filters:
             branches:
