@@ -133,15 +133,15 @@ workflows:
       - lint:
           filters:
             tags:
-              only: /^v.*/
+              only: /^v\d+\.\d+\.\d+/
       - types:
           filters:
             tags:
-              only: /^v.*/
+              only: /^v\d+\.\d+\.\d+/
       - spec:
           filters:
             tags:
-              only: /^v.*/
+              only: /^v\d+\.\d+\.\d+/
 
       # build non-release npm package on any branch and not on tags
       - build:
@@ -162,7 +162,7 @@ workflows:
       - build_release:
           filters:
             tags:
-              only: /^v.*/
+              only: /^v\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
           requires:
@@ -173,10 +173,16 @@ workflows:
       # hold workflow pending user approval
       - approve_release:
           type: approval
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+/
           requires:
             - build_release
 
       # publish latest tagged npm package when approved
       - publish_release:
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+/
           requires:
             - approve_release
