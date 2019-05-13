@@ -9,6 +9,7 @@ executors:
       - image: circleci/node:10.15
 
 commands:
+  # install and cache npm dependencies
   install:
     steps:
       - restore_cache:
@@ -23,19 +24,68 @@ commands:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
 
+  # build and and store npm package archive artifact
+  build:
+    parameters:
+      sha_version:
+        description: Override built package version with the commit sha
+        type: boolean
+        default: false
+    steps:
+      - run: npm run build
+      - when:
+          condition: << parameters.sha_version >>
+          steps:
+            - run:
+                name: Set package sha version
+                command: npm version 0.0.0-$(echo $CIRCLE_SHA1 | cut -c -9) --no-git-tag-version
+      - run:
+          name: Create npm package archive
+          command: |
+            npm pack --silent > archive_name
+            mv "$(cat archive_name)" package.tgz
+      - store_artifacts:
+          path: package.tgz
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - package.tgz
+
+  # publish built package archive to npm
+  publish:
+    parameters:
+      npm_tag:
+        description: Register the published package with the given tag
+        type: string
+        default: latest
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Authenticate with npm registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+      - run:
+          name: Publish npm package
+          command: npm publish package.tgz --tag << parameters.npm_tag >>
+
 jobs:
+  # check code styles with ESLint
   lint:
     executor: build_env
     steps:
       - checkout
       - install
       - run: npm run test:lint
+
+  # check type annotations with Typescript
   types:
     executor: build_env
     steps:
       - checkout
       - install
       - run: npm run test:types
+
+  # run unit tests with Jest
   spec:
     executor: build_env
     steps:
@@ -44,56 +94,83 @@ jobs:
       - run: npm run test:spec
       - codecov/upload:
           file: ./coverage/lcov.info
+
+  # build non-release npm package archive with sha version
   build:
     executor: build_env
     steps:
       - checkout
       - install
-      - run: npm run build
-      - run:
-          name: Set canary package version
-          command: npm version 0.0.0-$(echo $CIRCLE_SHA1 | cut -c -9) --no-git-tag-version
-      - run:
-          name: Build canary package tarball
-          command: |
-            npm pack --silent > tarball_name
-            mv "$(cat tarball_name)" package.tgz
-      - store_artifacts:
-          path: package.tgz
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - package.tgz
+      - build:
+          sha_version: true
+
+  # build release npm package archive at current version
+  build_release:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - build
+
+  # publish canary tagged npm package with sha version
   publish_canary:
     executor: build_env
     steps:
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Authenticate with npm registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-      - run:
-          name: Publish canary package
-          command: npm publish package.tgz --tag canary
+      - publish:
+          npm_tag: canary
+
+  # publish latest tagged npm package at current version
+  publish_release:
+    executor: build_env
+    steps:
+      - publish
 
 workflows:
   version: 2
-  commit:
+  test-build-publish:
     jobs:
+      # run tests in parallel
       - lint
       - types
-      - spec:
-          requires:
-            - lint
-            - types
+      - spec
+
+      # build non-release npm package when not on a version tag
       - build:
-          requires:
-            - lint
-            - types
-      - publish_canary:
+          filters:
+            tags:
+              ignore: /^v[0-9]+\.[0-9]+\.[0-9]+/
           requires:
             - spec
-            - build
+            - types
+            - lint
+
+      # publish canary tagged npm package when commit is to master
+      - publish_canary:
           filters:
             branches:
               only: master
+          requires:
+            - build
+
+      # build release npm package when on a version tag
+      - build_release:
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+/
+            branches:
+              ignore: /.*/
+          requires:
+            - spec
+            - types
+            - lint
+
+      # hold workflow pending user approval
+      - approve_release:
+          type: approval
+          requires:
+            - build_release
+
+      # publish latest tagged npm package when approved
+      - publish_release:
+          requires:
+            - approve_release
