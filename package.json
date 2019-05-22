@@ -44,7 +44,7 @@
     "eslint-plugin-react": "7.13.0",
     "jest": "24.8.0",
     "jest-circus": "24.8.0",
-    "jest-dom": "3.2.2",
+    "jest-dom": "3.3.0",
     "prettier": "1.17.1",
     "react": "16.9.0-alpha.0",
     "react-dom": "16.9.0-alpha.0",
