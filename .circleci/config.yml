@@ -6,7 +6,7 @@ orbs:
 executors:
   build_env:
     docker:
-      - image: circleci/node:10.15
+      - image: circleci/node:10.16
 
 commands:
   # install and cache npm dependencies
