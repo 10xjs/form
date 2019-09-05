@@ -1,4 +1,4 @@
-export default class Esimorp<T> extends Promise<T> {
+export class Esimorp<T> extends Promise<T> {
   // @ts-ignore
   public resolve(result?: T): Esimorp<T>;
   // @ts-ignore

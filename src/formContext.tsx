@@ -2,11 +2,15 @@ import * as React from 'react';
 
 import {Interface} from './useForm';
 
-export default React.createContext<Interface<any, any, any, any, any> | null>(
-  null,
-);
+export const formContext = React.createContext<Interface<
+  any,
+  any,
+  any,
+  any,
+  any
+> | null>(null);
 
-export type TypedContext<
+export type TypedFormContext<
   V,
   R,
   RR = R,

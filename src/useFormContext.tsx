@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import Context from './Context';
+import {formContext} from './formContext';
 import {Interface} from './useForm';
 
-const useContext = <V, R, RR = R, E = null, W = null>(): Interface<
+export const useContext = <V, R, RR = R, E = null, W = null>(): Interface<
   V,
   R,
   RR,
   E,
   W
 > => {
-  const context = React.useContext(Context);
+  const context = React.useContext(formContext);
 
   if (context === null) {
     throw new Error('<Form> context provider is missing.');
@@ -18,8 +18,6 @@ const useContext = <V, R, RR = R, E = null, W = null>(): Interface<
 
   return context;
 };
-
-export default useContext;
 
 export interface TypedUseContext<V, R, RR = R, E = null, W = null> {
   (): Interface<V, R, RR, E, W>;

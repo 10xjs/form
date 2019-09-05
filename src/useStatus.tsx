@@ -7,7 +7,7 @@ import {
   STATUS_FAILED,
   STATUS_ENDED,
 } from './useForm';
-import useContext from './useContext';
+import {useContext} from './useFormContext';
 import {set} from './util';
 
 export interface Status<R> {
@@ -73,7 +73,7 @@ export interface StatusConfig<R> {
   form?: Interface<any, R, any, any, any>;
 }
 
-const useStatus = <R extends any>({
+export const useStatus = <R extends any>({
   form = useContext<unknown, R, unknown, unknown, unknown>(),
 }: StatusConfig<R> = {}): Status<R> => {
   const [status, setStatus] = React.useState(
@@ -100,8 +100,6 @@ const useStatus = <R extends any>({
   return status;
 };
 
-export default useStatus;
-
 export interface TypedUseStatus<R> {
-  (): Status<R>;
+  (config?: StatusConfig<R>): Status<R>;
 }

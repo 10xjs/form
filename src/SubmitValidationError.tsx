@@ -1,6 +1,6 @@
 import ExtendableError from 'es6-error';
 
-export default class SubmitValidationError extends ExtendableError {
+export class SubmitValidationError extends ExtendableError {
   public errors: unknown;
   public original: Error | void;
 

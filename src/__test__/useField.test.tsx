@@ -9,6 +9,7 @@ type FormInterface = Form.InterfaceOf<ModuleType>;
 
 const fieldHandler = (
   path: (string | number)[],
+  form?: any,
 ): [
   jest.Mock<void, [Form.FieldInterface<string, string, string>]>,
   React.NamedExoticComponent,
@@ -19,7 +20,7 @@ const fieldHandler = (
   >();
 
   const WithField = React.memo((): null => {
-    handleField(Form.useField(path));
+    handleField(Form.useField(path, {form}));
     return null;
   });
 
