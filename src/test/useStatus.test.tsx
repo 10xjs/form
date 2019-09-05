@@ -19,16 +19,14 @@ const TypedForm = Form as ModuleType;
 
 const statusHandler = (): [
   jest.Mock<void, [Status]>,
-  React.NamedExoticComponent
+  React.NamedExoticComponent,
 ] => {
   const handleStatus = jest.fn<void, [Status]>();
 
-  const WithStatus = React.memo(
-    (): null => {
-      handleStatus(TypedForm.useStatus());
-      return null;
-    },
-  );
+  const WithStatus = React.memo((): null => {
+    handleStatus(TypedForm.useStatus());
+    return null;
+  });
 
   WithStatus.displayName = 'WithStatus';
 

@@ -104,17 +104,15 @@ export const formatPath = (path: Path): string => {
   if (Array.isArray(path)) {
     let result = '';
 
-    path.forEach(
-      (part): void => {
-        if (isInt(part)) {
-          result += `[${part}]`;
-        } else if (result) {
-          result += `.${part}`;
-        } else {
-          result = part;
-        }
-      },
-    );
+    path.forEach((part): void => {
+      if (isInt(part)) {
+        result += `[${part}]`;
+      } else if (result) {
+        result += `.${part}`;
+      } else {
+        result = part;
+      }
+    });
 
     return result;
   }
@@ -140,17 +138,15 @@ export const parsePath = (path: Path): PathArray => {
 
         return result.concat(
           key === '' ? [] : [key],
-          rest.map(
-            (i): number => {
-              const match = /^([0-9]+)\]$/.exec(i);
-              if (!match) {
-                throw new TypeError(
-                  pathSyntaxError(formatPath(result.concat([part]))),
-                );
-              }
-              return parseInt(match[1], 10);
-            },
-          ),
+          rest.map((i): number => {
+            const match = /^([0-9]+)\]$/.exec(i);
+            if (!match) {
+              throw new TypeError(
+                pathSyntaxError(formatPath(result.concat([part]))),
+              );
+            }
+            return parseInt(match[1], 10);
+          }),
         );
       },
       [] as PathArray,

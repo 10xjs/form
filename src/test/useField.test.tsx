@@ -10,19 +10,17 @@ const fieldHandler = (
   path: (string | number)[],
 ): [
   jest.Mock<void, [Form.FieldInterface<string, string, string>]>,
-  React.NamedExoticComponent
+  React.NamedExoticComponent,
 ] => {
   const handleField = jest.fn<
     void,
     [Form.FieldInterface<string, string, string>]
   >();
 
-  const WithField = React.memo(
-    (): null => {
-      handleField(Form.useField(path));
-      return null;
-    },
-  );
+  const WithField = React.memo((): null => {
+    handleField(Form.useField(path));
+    return null;
+  });
 
   WithField.displayName = 'WithField';
 
