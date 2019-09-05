@@ -6,6 +6,7 @@ import * as Form from '../';
 
 type ModuleType = Form.TypedModule<any, void>;
 type FormInterface = Form.InterfaceOf<ModuleType>;
+const TypedForm = Form as ModuleType;
 
 const fieldHandler = (
   path: (string | number)[],
@@ -51,6 +52,27 @@ describe('useField hook', () => {
         <WithField />
       </Form.Form>,
     );
+
+    expect(handleField).toHaveBeenCalledTimes(1);
+
+    expect(handleField).toHaveBeenLastCalledWith(
+      expect.objectContaining(initialFieldValues),
+    );
+  });
+
+  it('should support receiving form as a prop', () => {
+    const handleField = jest.fn<
+      void,
+      [Form.FieldInterface<string, string, string>]
+    >();
+
+    const Root = () => {
+      const form = TypedForm.useForm({values: {foo: 'bar'}});
+      handleField(Form.useField('foo', {form}));
+      return null;
+    };
+
+    render(<Root />);
 
     expect(handleField).toHaveBeenCalledTimes(1);
 
