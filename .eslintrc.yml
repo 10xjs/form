@@ -15,6 +15,7 @@ settings:
     version: detect
 env:
   es6: true
+  browser: true
 rules:
   prettier/prettier: error
   # Indent is owned by prettier
