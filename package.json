@@ -63,7 +63,7 @@
   "jest": {
     "testURL": "http://localhost/",
     "testMatch": [
-      "<rootDir>/src/**/?(*.)test.tsx"
+      "<rootDir>/src/**/__test__/**/*.test.ts?(x)"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/jestSetup.tsx"

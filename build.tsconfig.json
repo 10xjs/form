@@ -3,5 +3,5 @@
   "compilerOptions": {
     "target": "es5"
   },
-  "exclude": ["node_modules", "**/*.test.tsx", "src/Esimorp.tsx"]
+  "exclude": ["node_modules", "src/**/__test__"]
 }
