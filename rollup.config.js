@@ -50,7 +50,7 @@ export default [
       formContext: './src/formContext.tsx',
       Form: './src/Form.tsx',
       fieldHelpers: './src/fieldHelpers.tsx',
-      Provider: './src/Provider.tsx',
+      FormProvider: './src/FormProvider.tsx',
       index: './src/index.tsx',
       SubmitConcurrencyError: './src/SubmitConcurrencyError.tsx',
       SubmitValidationError: './src/SubmitValidationError.tsx',
