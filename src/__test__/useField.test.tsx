@@ -6,9 +6,11 @@ import * as Form from '../';
 
 type ModuleType = Form.TypedModule<any, void>;
 type FormInterface = Form.InterfaceOf<ModuleType>;
+const TypedForm = Form as ModuleType;
 
 const fieldHandler = (
   path: (string | number)[],
+  form?: any,
 ): [
   jest.Mock<void, [Form.FieldInterface<string, string, string>]>,
   React.NamedExoticComponent,
@@ -19,7 +21,7 @@ const fieldHandler = (
   >();
 
   const WithField = React.memo((): null => {
-    handleField(Form.useField(path));
+    handleField(Form.useField(path, {form}));
     return null;
   });
 
@@ -50,6 +52,27 @@ describe('useField hook', () => {
         <WithField />
       </Form.Form>,
     );
+
+    expect(handleField).toHaveBeenCalledTimes(1);
+
+    expect(handleField).toHaveBeenLastCalledWith(
+      expect.objectContaining(initialFieldValues),
+    );
+  });
+
+  it('should support receiving form as a prop', () => {
+    const handleField = jest.fn<
+      void,
+      [Form.FieldInterface<string, string, string>]
+    >();
+
+    const Root = () => {
+      const form = TypedForm.useForm({values: {foo: 'bar'}});
+      handleField(Form.useField('foo', {form}));
+      return null;
+    };
+
+    render(<Root />);
 
     expect(handleField).toHaveBeenCalledTimes(1);
 

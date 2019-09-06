@@ -3,11 +3,11 @@
   "version": "0.1.7",
   "scripts": {
     "build:clean": "npx rimraf lib module types umd",
-    "build": "npm run build:clean && npx rollup -c",
+    "build": "npm run build:clean && npx rollup",
     "format": "npx prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepublishOnly": "npm run test && npm run build",
     "test": "npm run test:types --slient && npm run test:lint --slient && npm run test:spec --silent",
-    "test:lint": "npx eslint . --ext .tsx,.ts,.js.,.jsx",
+    "test:lint": "npx eslint . --ext .ts,.tsx,.js,.jsx",
     "test:spec": "npx jest --runInBand=${SPEC_SERIAL:-$CI} --coverage=${SPEC_COVERAGE:-$CI}",
     "test:spec-watch": "npm run test:spec -- --watch",
     "test:types": "npx tsc --noEmit"
@@ -63,7 +63,7 @@
   "jest": {
     "testURL": "http://localhost/",
     "testMatch": [
-      "<rootDir>/src/**/?(*.)test.tsx"
+      "<rootDir>/src/**/__test__/**/*.test.ts?(x)"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/jestSetup.tsx"

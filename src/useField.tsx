@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import useContext from './useContext';
+import {useContext} from './useFormContext';
 import {State, Interface, PathArray, Path, SetValueAction} from './useForm';
 import {get, set, parsePath, formatPath, hasValue} from './util';
 
@@ -111,7 +111,7 @@ const defaultConfig = {
     value === previousValue,
 };
 
-const useField = <FV, FE = null, FW = null>(
+export const useField = <FV, FE = null, FW = null>(
   path: Path,
   {
     compare = defaultConfig.compare,
@@ -247,8 +247,6 @@ const useField = <FV, FE = null, FW = null>(
     };
   }, [stateRef.current]);
 };
-
-export default useField;
 
 export interface TypedUseField<FV, FE, FW> {
   (config: FieldConfig<FV>): FieldInterface<FV, FE, FW>;

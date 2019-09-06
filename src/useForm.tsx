@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import SubmitConcurrencyError from './SubmitConcurrencyError';
-import SubmitValidationError from './SubmitValidationError';
+import {SubmitConcurrencyError} from './SubmitConcurrencyError';
+import {SubmitValidationError} from './SubmitValidationError';
 import {get, set, hasValue, formatPath, parsePath} from './util';
 
 export type PathArray = (string | number)[];
@@ -333,7 +333,7 @@ const defaultConfig = {
   onSubmitSuccess: (): undefined => undefined,
 };
 
-const useForm = <V, R, RR = R, E = null, W = null>({
+export const useForm = <V, R, RR = R, E = null, W = null>({
   values,
   onSubmit = defaultConfig.onSubmit as any,
   onSubmitFail = defaultConfig.onSubmitFail as any,
@@ -595,8 +595,6 @@ const useForm = <V, R, RR = R, E = null, W = null>({
 
   return formInterface;
 };
-
-export default useForm;
 
 export interface TypedUseForm<V, R, RR = R, E = null, W = null> {
   (config: Config<V, R, RR, E, W>): Interface<V, R, RR, E, W>;

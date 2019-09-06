@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import Context from './Context';
-import Provider from './Provider';
-import useForm, {
+import {formContext} from './formContext';
+import {FormProvider} from './FormProvider';
+import {
+  useForm,
   Interface,
   Warn,
   Validate,
@@ -32,7 +33,7 @@ export const renderForm = function Form<V, R, RR, E, W>(
     children,
   }: FormProps<V, R, RR, E, W>,
   ref?: React.Ref<Interface<V, R, RR, E, W>>,
-): React.ReactElement<typeof Context['Provider']> {
+): React.ReactElement<typeof formContext['Provider']> {
   const form = useForm({
     values,
     onSubmit,
@@ -44,23 +45,21 @@ export const renderForm = function Form<V, R, RR, E, W>(
 
   React.useImperativeHandle(ref, (): Interface<V, R, RR, E, W> => form, []);
 
-  return <Provider form={form}>{children}</Provider>;
+  return <FormProvider form={form}>{children}</FormProvider>;
 };
 
-const component = (React.forwardRef as any)(renderForm);
+export const Form = (React.forwardRef as any)(renderForm);
 
 interface Form {
   <V, R, RR = R, E = null, W = null>(
     props: FormProps<V, R, RR, E, W> &
       React.RefAttributes<Interface<V, R, RR, E, W>>,
-  ): React.ReactElement<typeof Context['Provider']>;
+  ): React.ReactElement<typeof formContext['Provider']>;
 }
-
-export default component as Form;
 
 export interface TypedForm<V, R, RR = R, E = null, W = null> {
   (
     props: FormProps<V, R, RR, E, W> &
       React.RefAttributes<Interface<V, R, RR, E, W>>,
-  ): React.ReactElement<typeof Context['Provider']>;
+  ): React.ReactElement<typeof formContext['Provider']>;
 }

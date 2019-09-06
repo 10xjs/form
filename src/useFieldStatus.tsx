@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import useContext from './useContext';
+import {useContext} from './useFormContext';
 import {State, Interface, PathArray, Path} from './useForm';
 import {get, set, parsePath, formatPath, hasValue} from './util';
 
@@ -19,7 +19,7 @@ export interface FieldStatus {
   hasWarning: boolean;
 }
 
-const updateFieldStatus = <FV extends any>(
+export const updateFieldStatus = <FV extends any>(
   formState: State<unknown, unknown, unknown, unknown>,
   parsedPath: PathArray,
   formattedPath: string,
@@ -81,7 +81,7 @@ const defaultConfig = {
     value === previousValue,
 };
 
-const useFieldStatus = <FV extends any>(
+export const useFieldStatus = <FV extends any>(
   path: Path,
   {
     compare = defaultConfig.compare,
@@ -132,8 +132,6 @@ const useFieldStatus = <FV extends any>(
 
   return fieldStatus;
 };
-
-export default useFieldStatus;
 
 export interface TypedUseFieldStatus<FV> {
   (config: FieldStatusConfig<FV>): FieldStatus;

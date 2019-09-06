@@ -2,7 +2,7 @@ import * as React from 'react';
 import {act} from 'react-dom/test-utils';
 import {render} from '@testing-library/react';
 
-import Esimorp from './Esimorp';
+import {Esimorp} from './Esimorp';
 
 import * as Form from '../';
 
@@ -43,6 +43,31 @@ describe('useStatus hook', () => {
         <WithStatus />
       </TypedForm.Form>,
     );
+
+    expect(handleStatus).toHaveBeenCalledTimes(1);
+
+    expect(handleStatus).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        hasErrors: false,
+        hasSubmitErrors: false,
+        hasWarnings: false,
+        submitFailed: false,
+        submitSucceeded: false,
+        submitting: false,
+      }),
+    );
+  });
+
+  it('should support receiving form as a prop', () => {
+    const handleStatus = jest.fn<void, [Status]>();
+
+    const Root = () => {
+      const form = TypedForm.useForm({values: {}});
+      handleStatus(TypedForm.useStatus({form}));
+      return null;
+    };
+
+    render(<Root />);
 
     expect(handleStatus).toHaveBeenCalledTimes(1);
 

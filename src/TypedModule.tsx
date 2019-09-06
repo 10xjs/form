@@ -1,11 +1,11 @@
-import {TypedContext} from './Context';
+import {TypedFormContext} from './formContext';
 import {TypedForm} from './Form';
 import {input, checkbox} from './fieldHelpers';
-import {TypedProvider} from './Provider';
-import SubmitConcurrencyError from './SubmitConcurrencyError';
-import SubmitValidationError from './SubmitValidationError';
-import useField from './useField';
-import useFieldStatus from './useFieldStatus';
+import {TypedFormProvider} from './FormProvider';
+import {SubmitConcurrencyError} from './SubmitConcurrencyError';
+import {SubmitValidationError} from './SubmitValidationError';
+import {useField} from './useField';
+import {useFieldStatus} from './useFieldStatus';
 import {
   TypedUseForm,
   Interface,
@@ -15,7 +15,7 @@ import {
   STATUS_FAILED,
   STATUS_ENDED,
 } from './useForm';
-import {TypedUseContext} from './useContext';
+import {TypedUseContext} from './useFormContext';
 import {TypedUseStatus, Status} from './useStatus';
 
 export interface TypedModule<
@@ -25,11 +25,23 @@ export interface TypedModule<
   Errors = null,
   Warnings = null
 > {
-  Context: TypedContext<Values, Result, ReturnedResult, Errors, Warnings>;
+  formContext: TypedFormContext<
+    Values,
+    Result,
+    ReturnedResult,
+    Errors,
+    Warnings
+  >;
   Form: TypedForm<Values, Result, ReturnedResult, Errors, Warnings>;
   input: typeof input;
   checkbox: typeof checkbox;
-  Provider: TypedProvider<Values, Result, ReturnedResult, Errors, Warnings>;
+  FormProvider: TypedFormProvider<
+    Values,
+    Result,
+    ReturnedResult,
+    Errors,
+    Warnings
+  >;
   SubmitConcurrencyError: typeof SubmitConcurrencyError;
   SubmitValidationError: typeof SubmitValidationError;
   useField: typeof useField;

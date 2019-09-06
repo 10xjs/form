@@ -4,7 +4,7 @@ import {render} from '@testing-library/react';
 
 import * as Form from '../';
 
-import Esimorp from './Esimorp';
+import {Esimorp} from './Esimorp';
 
 describe('<Form>', () => {
   it('should return children', () => {
