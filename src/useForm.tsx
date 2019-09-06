@@ -296,9 +296,10 @@ const setFailed = <V, R, E, W>(error: Error): StateUpdate<V, R, E, W> => (
   return nextState;
 };
 
-// Update the state to indicate that a submit is in progress.
-const setStarted = <V, R, E, W>(): StateUpdate<V, R, E, W> => (state) =>
-  set(state, ['submitStatus'], STATUS_STARTED);
+// // Update the state to indicate that a submit is in progress.
+const setStarted = <V, R, E, W>(): StateUpdate<V, R, E, W> => (state) => {
+  return set(state, ['submitStatus'], STATUS_STARTED);
+};
 
 export interface Config<V, R, RR = R, E = null, W = null> {
   values: V;
@@ -438,6 +439,8 @@ const useForm = <V, R, RR = R, E = null, W = null>({
   const onSubmitFailRef = React.useRef(onSubmitFail);
   onSubmitFailRef.current = onSubmitFail;
 
+  const nextStatusRef = React.useRef<SubmitStatus>(STATUS_INITIAL);
+
   const formInterface = React.useMemo(
     (): Interface<V, R, RR, E, W> => ({
       // Provide a minimal pub-sub interface. The unsubscribe hook is never
@@ -499,7 +502,7 @@ const useForm = <V, R, RR = R, E = null, W = null>({
           event.preventDefault();
         }
 
-        if (stateRef.current.submitStatus === STATUS_STARTED) {
+        if (nextStatusRef.current === STATUS_STARTED) {
           // Abort submit if a previous submit is still in progress.
           const error = new SubmitConcurrencyError();
 
@@ -517,12 +520,14 @@ const useForm = <V, R, RR = R, E = null, W = null>({
         if (stateRef.current.errors !== null) {
           // Abort submit if state contains validation errors
           const error = new SubmitValidationError(stateRef.current.errors);
+          nextStatusRef.current = STATUS_FAILED;
           setStateRef.current(setFailed(error));
           return Promise.resolve(onSubmitFailRef.current(error));
         }
 
         const onFail = (error: Error): RR | Promise<RR> => {
           // Update form state with error thrown/rejected from onSubmit.
+          nextStatusRef.current = STATUS_FAILED;
           setStateRef.current(setFailed(error));
 
           // Pipe the error through the error callback. This allows the consumer
@@ -532,6 +537,7 @@ const useForm = <V, R, RR = R, E = null, W = null>({
 
         const onSuccess = (result: R): RR | Promise<RR> => {
           // Update state with result returned from onSubmit.
+          nextStatusRef.current = STATUS_ENDED;
           setStateRef.current(setEnded(result));
 
           // Pipe the result through onSubmitSuccess callback. While this
@@ -541,6 +547,7 @@ const useForm = <V, R, RR = R, E = null, W = null>({
           return onSubmitSuccessRef.current(result);
         };
 
+        nextStatusRef.current = STATUS_STARTED;
         setStateRef.current(setStarted());
 
         let result: R | Promise<R>;
