@@ -43,6 +43,9 @@ commands:
           command: |
             npm pack --silent > archive_name
             mv "$(cat archive_name)" package.tgz
+      - run:
+          name: List package archive contents
+          command: npm publish ./package.tgz --dry-run
       - store_artifacts:
           path: package.tgz
       - persist_to_workspace:
