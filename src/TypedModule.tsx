@@ -16,7 +16,7 @@ import {
   STATUS_ENDED,
 } from './useForm';
 import {TypedUseContext} from './useFormContext';
-import {TypedUseStatus, Status} from './useStatus';
+import {TypedUseFormStatus, FormStatus} from './useFormStatus';
 
 export interface TypedModule<
   Values,
@@ -52,7 +52,7 @@ export interface TypedModule<
   STATUS_STARTED: typeof STATUS_STARTED;
   STATUS_FAILED: typeof STATUS_FAILED;
   STATUS_ENDED: typeof STATUS_ENDED;
-  useStatus: TypedUseStatus<Result>;
+  useFormStatus: TypedUseFormStatus<Result>;
 }
 
 export type InterfaceOf<M> = M extends TypedModule<
@@ -82,5 +82,5 @@ export type StatusOf<M> = M extends TypedModule<
   infer E,
   infer W
 >
-  ? Status<R>
+  ? FormStatus<R>
   : never;
