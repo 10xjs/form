@@ -25,7 +25,7 @@ export interface Status<R> {
 }
 
 const isEmpty = (object: any): boolean => {
-  for (let _key in object) {
+  for (const _key in object) {
     return false;
   }
   return true;
