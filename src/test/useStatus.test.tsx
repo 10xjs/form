@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {render} from 'react-testing-library';
+import {act} from 'react-dom/test-utils';
+import {render} from '@testing-library/react';
 
 import Esimorp from './Esimorp';
 
@@ -7,8 +8,8 @@ import * as Form from '../';
 
 type ModuleType = Form.TypedModule<
   any,
-  void,
-  void,
+  unknown,
+  unknown,
   string | void,
   string | void
 >;
@@ -19,16 +20,14 @@ const TypedForm = Form as ModuleType;
 
 const statusHandler = (): [
   jest.Mock<void, [Status]>,
-  React.NamedExoticComponent
+  React.NamedExoticComponent,
 ] => {
   const handleStatus = jest.fn<void, [Status]>();
 
-  const WithStatus = React.memo(
-    (): null => {
-      handleStatus(TypedForm.useStatus());
-      return null;
-    },
-  );
+  const WithStatus = React.memo((): null => {
+    handleStatus(TypedForm.useStatus());
+    return null;
+  });
 
   WithStatus.displayName = 'WithStatus';
 
@@ -36,7 +35,7 @@ const statusHandler = (): [
 };
 
 describe('useStatus hook', () => {
-  it.only('should update once with the correct result on first render', () => {
+  it('should update once with the correct result on first render', () => {
     const [handleStatus, WithStatus] = statusHandler();
 
     render(
@@ -221,13 +220,15 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).setValue(['foo'], 'updated');
-    (ref.current as Interface).setValue(['foo'], 'updated again');
+    act(() => {
+      (ref.current as Interface).setValue(['foo'], 'updated');
+      (ref.current as Interface).setValue(['foo'], 'updated again');
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(1);
   });
 
-  it('should not be affected by focus and blur events', () => {
+  it('should return updated touched, focused, and visited for focus and blur events', () => {
     const [handleStatus, WithStatus] = statusHandler();
     const ref = React.createRef<Interface>();
 
@@ -237,13 +238,43 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).focus(['foo']);
-    (ref.current as Interface).blur(['bar']);
-    (ref.current as Interface).blur(['foo']);
-    (ref.current as Interface).focus(['foo']);
-    (ref.current as Interface).blur(['foo']);
-
     expect(handleStatus).toHaveBeenCalledTimes(1);
+
+    expect(handleStatus).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        touched: false,
+        focused: false,
+        visited: false,
+      }),
+    );
+
+    act(() => {
+      (ref.current as Interface).focus(['foo']);
+    });
+
+    expect(handleStatus).toHaveBeenCalledTimes(2);
+
+    expect(handleStatus).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        touched: false,
+        focused: true,
+        visited: true,
+      }),
+    );
+
+    act(() => {
+      (ref.current as Interface).blur(['foo']);
+    });
+
+    expect(handleStatus).toHaveBeenCalledTimes(3);
+
+    expect(handleStatus).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        touched: true,
+        focused: false,
+        visited: true,
+      }),
+    );
   });
 
   it('should not be affected when accepting a pending value', () => {
@@ -263,7 +294,9 @@ describe('useStatus hook', () => {
       {container},
     );
 
-    (ref.current as Interface).acceptPendingValue(['foo']);
+    act(() => {
+      (ref.current as Interface).acceptPendingValue(['foo']);
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(1);
   });
@@ -285,7 +318,9 @@ describe('useStatus hook', () => {
       {container},
     );
 
-    (ref.current as Interface).rejectPendingValue(['foo']);
+    act(() => {
+      (ref.current as Interface).rejectPendingValue(['foo']);
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(1);
   });
@@ -304,28 +339,30 @@ describe('useStatus hook', () => {
         ref={ref}
         values={{}}
         onSubmit={() => {
-          submit.resolve(submitResult);
+          return submit.resolve(submitResult);
         }}
         onSubmitSuccess={() => {
-          success.resolve();
+          return success.resolve();
         }}
       >
         <WithStatus />
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
+    await act(async () => {
+      (ref.current as Interface).submit();
+      await submit;
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+      expect(handleStatus).toHaveBeenCalledTimes(2);
 
-    expect(handleStatus).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        submitting: true,
-      }),
-    );
+      expect(handleStatus).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          submitting: true,
+        }),
+      );
 
-    await submit;
-    await success;
+      await success;
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(3);
 
@@ -358,9 +395,11 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
+    await act(async () => {
+      (ref.current as Interface).submit();
 
-    await fail;
+      await fail;
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(2);
 
@@ -386,7 +425,9 @@ describe('useStatus hook', () => {
       <TypedForm.Form
         ref={ref}
         values={{}}
-        onSubmit={() => Promise.reject(validationError)}
+        onSubmit={() => {
+          return Promise.reject(validationError);
+        }}
         onSubmitFail={() => {
           fail.resolve();
         }}
@@ -395,7 +436,9 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
+    act(() => {
+      (ref.current as Interface).submit();
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(2);
 
@@ -405,7 +448,9 @@ describe('useStatus hook', () => {
       }),
     );
 
-    await fail;
+    await act(async () => {
+      await fail;
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(3);
 
@@ -440,7 +485,9 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
+    act(() => {
+      (ref.current as Interface).submit();
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(2);
 
@@ -450,7 +497,9 @@ describe('useStatus hook', () => {
       }),
     );
 
-    await fail;
+    await act(async () => {
+      await fail;
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(3);
 
@@ -476,24 +525,26 @@ describe('useStatus hook', () => {
       <TypedForm.Form
         ref={ref}
         values={{}}
-        onSubmit={() =>
-          Promise.resolve().then(() => {
-            submit.resolve();
-          })
-        }
+        onSubmit={() => {
+          return submit.resolve();
+        }}
         onSubmitSuccess={() => {
-          success.resolve();
+          return success.resolve();
         }}
         onSubmitFail={() => {
-          fail.resolve();
+          return fail.resolve();
         }}
       >
         <WithStatus />
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
-    (ref.current as Interface).submit();
+    act(() => {
+      (ref.current as Interface).submit();
+      (ref.current as Interface).submit();
+    });
+
+    expect(handleStatus).toHaveBeenCalledTimes(2);
 
     expect(handleStatus).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -502,28 +553,19 @@ describe('useStatus hook', () => {
       }),
     );
 
-    await fail;
+    await act(async () => {
+      await fail;
+    });
 
-    expect(handleStatus).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        submitting: true,
-        submitFailed: false,
-      }),
-    );
-
-    await submit;
-
-    await success;
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenLastCalledWith(
       expect.objectContaining({
         submitting: false,
-        submitSucceeded: true,
         submitFailed: false,
+        submitSucceeded: true,
       }),
     );
-
-    expect(handleStatus).toHaveBeenCalledTimes(3);
   });
 
   it('should update correctly during a submit with which fails with an unexpected error', async () => {
@@ -547,7 +589,9 @@ describe('useStatus hook', () => {
       </TypedForm.Form>,
     );
 
-    (ref.current as Interface).submit();
+    act(() => {
+      (ref.current as Interface).submit();
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(2);
 
@@ -557,7 +601,9 @@ describe('useStatus hook', () => {
       }),
     );
 
-    await fail;
+    await act(async () => {
+      await fail;
+    });
 
     expect(handleStatus).toHaveBeenCalledTimes(3);
 

@@ -9,9 +9,6 @@ import 'jest-dom/extend-expect';
 //   throw new Error(err);
 // };
 
-process.on(
-  'unhandledRejection',
-  (error): void => {
-    throw error;
-  },
-);
+process.on('unhandledRejection', (error): void => {
+  throw error;
+});

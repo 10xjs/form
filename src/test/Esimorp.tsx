@@ -13,16 +13,14 @@ export default class Esimorp<T> extends Promise<T> {
     let _resolve: (value?: T | PromiseLike<T>) => void;
     let _reject: (reason?: any) => void;
 
-    super(
-      (resolve, reject): void => {
-        _resolve = resolve;
-        _reject = reject;
+    super((resolve, reject): void => {
+      _resolve = resolve;
+      _reject = reject;
 
-        if (executor) {
-          executor(resolve, reject);
-        }
-      },
-    );
+      if (executor) {
+        executor(resolve, reject);
+      }
+    });
 
     this.resolve = (_result?: T): Esimorp<T> => {
       _resolve(_result);
