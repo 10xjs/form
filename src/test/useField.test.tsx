@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {act} from 'react-dom/test-utils';
 import {render} from '@testing-library/react';
 
 import * as Form from '../';
@@ -68,7 +69,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['foo'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -93,14 +96,30 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['foo'], 'updated 1');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 1');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 2');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 2');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 3');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 3');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 4');
-    (ref.current as FormInterface).setValue(['foo'], 'updated 4');
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 1');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 1');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 2');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 2');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 3');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 3');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 4');
+    });
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated 4');
+    });
 
     // Expect one initial render followed by 4 value updates. Idempotent value
     // changes should not trigger updates.
@@ -118,7 +137,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['bar'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['bar'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });
@@ -143,7 +164,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['bar'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['bar'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -175,7 +198,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['bar'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['bar'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });
@@ -200,7 +225,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['bar'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['bar'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -232,7 +259,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).setValue(['bar'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['bar'], 'updated');
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });
@@ -240,17 +269,16 @@ describe('useField hook', () => {
   it('should respond correctly to pending values', () => {
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form values={{foo: 'bar'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form values={{foo: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
     expect(handleField).toHaveBeenCalledTimes(2);
@@ -269,17 +297,16 @@ describe('useField hook', () => {
   it('should not be affected by pending values for other fields', () => {
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form values={{foo: 'bar'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form values={{foo: 'bar', bar: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
     expect(handleField).toHaveBeenCalledTimes(1);
@@ -290,20 +317,21 @@ describe('useField hook', () => {
 
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form ref={ref} values={{foo: 'bar'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form ref={ref} values={{foo: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
-    (ref.current as FormInterface).acceptPendingValue(['foo']);
+    act(() => {
+      (ref.current as FormInterface).acceptPendingValue(['foo']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(3);
 
@@ -322,20 +350,21 @@ describe('useField hook', () => {
 
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form ref={ref} values={{foo: 'bar', bar: 'foo'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form ref={ref} values={{foo: 'bar', bar: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
-    (ref.current as FormInterface).acceptPendingValue(['bar']);
+    act(() => {
+      (ref.current as FormInterface).acceptPendingValue(['bar']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });
@@ -345,20 +374,21 @@ describe('useField hook', () => {
 
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form ref={ref} values={{foo: 'bar'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form ref={ref} values={{foo: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
-    (ref.current as FormInterface).rejectPendingValue(['foo']);
+    act(() => {
+      (ref.current as FormInterface).rejectPendingValue(['foo']);
+    });
 
     expect(handleField).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -374,20 +404,21 @@ describe('useField hook', () => {
 
     const [handleField, WithField] = fieldHandler(['foo']);
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form ref={ref} values={{foo: 'bar'}}>
         <WithField />
       </Form.Form>,
     );
 
-    render(
+    rerender(
       <Form.Form ref={ref} values={{foo: 'bar', bar: 'pending'}}>
         <WithField />
       </Form.Form>,
-      {container},
     );
 
-    (ref.current as FormInterface).rejectPendingValue(['bar']);
+    act(() => {
+      (ref.current as FormInterface).rejectPendingValue(['bar']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });
@@ -403,7 +434,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).focus(['foo']);
+    act(() => {
+      (ref.current as FormInterface).focus(['foo']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -415,7 +448,9 @@ describe('useField hook', () => {
       }),
     );
 
-    (ref.current as FormInterface).blur(['foo']);
+    act(() => {
+      (ref.current as FormInterface).blur(['foo']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(3);
 
@@ -439,7 +474,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).blur(['foo']);
+    act(() => {
+      (ref.current as FormInterface).blur(['foo']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -463,7 +500,9 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).focus(['foo']);
+    act(() => {
+      (ref.current as FormInterface).focus(['foo']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(2);
 
@@ -475,7 +514,9 @@ describe('useField hook', () => {
       }),
     );
 
-    (ref.current as FormInterface).focus(['bar']);
+    act(() => {
+      (ref.current as FormInterface).focus(['bar']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(3);
 
@@ -499,8 +540,12 @@ describe('useField hook', () => {
       </Form.Form>,
     );
 
-    (ref.current as FormInterface).focus(['bar']);
-    (ref.current as FormInterface).blur(['bar']);
+    act(() => {
+      (ref.current as FormInterface).focus(['bar']);
+    });
+    act(() => {
+      (ref.current as FormInterface).blur(['bar']);
+    });
 
     expect(handleField).toHaveBeenCalledTimes(1);
   });

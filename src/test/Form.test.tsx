@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {act} from 'react-dom/test-utils';
 import {render} from '@testing-library/react';
 
 import * as Form from '../';
@@ -38,11 +39,11 @@ describe('<Form>', () => {
 
     const TypedForm = Form as Form.TypedModule<typeof values, void, void, void>;
 
-    const {container} = render(<TypedForm.Form values={values} />);
+    const {rerender} = render(<TypedForm.Form values={values} />);
 
     const validate = jest.fn<void, [{foo: any}]>();
 
-    render(<TypedForm.Form values={values} validate={validate} />, {container});
+    rerender(<TypedForm.Form values={values} validate={validate} />);
 
     // Expect incoming validate to be called immediately.
     expect(validate).toHaveBeenCalledTimes(1);
@@ -68,7 +69,9 @@ describe('<Form>', () => {
 
     expect(validate).toHaveBeenLastCalledWith(values);
 
-    (ref.current as FormInterface).setValue(['foo'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated');
+    });
 
     // Expect validate to be called only once per state update.
     expect(validate).toHaveBeenCalledTimes(2);
@@ -95,8 +98,10 @@ describe('<Form>', () => {
 
     render(<TypedForm.Form ref={ref} values={{}} validate={validate} />);
 
-    (ref.current as FormInterface).focus('foo');
-    (ref.current as FormInterface).blur('foo');
+    act(() => {
+      (ref.current as FormInterface).focus('foo');
+      (ref.current as FormInterface).blur('foo');
+    });
 
     // Expect validate to be called only once.
     expect(validate).toHaveBeenCalledTimes(1);
@@ -105,13 +110,11 @@ describe('<Form>', () => {
   it('should not call validate with when the values prop changes', () => {
     const validate = jest.fn<void, [{foo: any}]>();
 
-    const {container} = render(
+    const {rerender} = render(
       <Form.Form values={{foo: 'bar'}} validate={validate} />,
     );
 
-    render(<Form.Form values={{foo: 'pending'}} validate={validate} />, {
-      container,
-    });
+    rerender(<Form.Form values={{foo: 'pending'}} validate={validate} />);
 
     // Expect validate to be called only once.
     expect(validate).toHaveBeenCalledTimes(1);
@@ -133,11 +136,11 @@ describe('<Form>', () => {
   it('should call validate with current values when warn is updated', () => {
     const values = {foo: 'bar'};
 
-    const {container} = render(<Form.Form values={values} />);
+    const {rerender} = render(<Form.Form values={values} />);
 
     const warn = jest.fn<void, [{foo: any}]>();
 
-    render(<Form.Form values={values} warn={warn} />, {container});
+    rerender(<Form.Form values={values} warn={warn} />);
 
     // Expect incoming warn to be called immediately.
     expect(warn).toHaveBeenCalledTimes(1);
@@ -161,7 +164,9 @@ describe('<Form>', () => {
 
     expect(warn).toHaveBeenLastCalledWith(values);
 
-    (ref.current as FormInterface).setValue(['foo'], 'updated');
+    act(() => {
+      (ref.current as FormInterface).setValue(['foo'], 'updated');
+    });
 
     // Expect warn to be called only once per state update.
     expect(warn).toHaveBeenCalledTimes(2);
@@ -182,8 +187,10 @@ describe('<Form>', () => {
 
     render(<TypedForm.Form ref={ref} values={{}} warn={warn} />);
 
-    (ref.current as FormInterface).focus('foo');
-    (ref.current as FormInterface).blur('foo');
+    act(() => {
+      (ref.current as FormInterface).focus('foo');
+      (ref.current as FormInterface).blur('foo');
+    });
 
     // Expect warn to be called only once.
     expect(warn).toHaveBeenCalledTimes(1);
@@ -198,11 +205,9 @@ describe('<Form>', () => {
 
     const warn = jest.fn<void, [{foo: any}]>();
 
-    const {container} = render(<TypedForm.Form values={values} warn={warn} />);
+    const {rerender} = render(<TypedForm.Form values={values} warn={warn} />);
 
-    render(<TypedForm.Form values={{foo: 'pending'}} warn={warn} />, {
-      container,
-    });
+    rerender(<TypedForm.Form values={{foo: 'pending'}} warn={warn} />);
 
     // Expect warn to be called only once.
     expect(warn).toHaveBeenCalledTimes(1);
@@ -232,7 +237,9 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    act(() => {
+      (ref.current as FormInterface).submit();
+    });
 
     await success;
 
@@ -265,9 +272,10 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
-
-    await success;
+    await act(async () => {
+      (ref.current as FormInterface).submit();
+      await success;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(1);
     expect(onSubmitFail).toHaveBeenCalledTimes(0);
@@ -287,22 +295,24 @@ describe('<Form>', () => {
     const onSubmit = jest.fn();
     const onSubmitSuccess = jest.fn(success.resolve);
 
-    const {unmount} = render(
-      <TypedForm.Form
-        ref={ref}
-        values={{}}
-        onSubmit={onSubmit}
-        onSubmitSuccess={onSubmitSuccess}
-      />,
-    );
+    await act(async () => {
+      const {unmount} = render(
+        <TypedForm.Form
+          ref={ref}
+          values={{}}
+          onSubmit={onSubmit}
+          onSubmitSuccess={onSubmitSuccess}
+        />,
+      );
 
-    const {submit} = ref.current as FormInterface;
+      const {submit} = ref.current as FormInterface;
 
-    unmount();
+      unmount();
 
-    submit();
+      submit();
 
-    await success;
+      await success;
+    });
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmitSuccess).toHaveBeenCalledTimes(1);
@@ -314,10 +324,9 @@ describe('<Form>', () => {
     const TypedForm = Form as ModuleType;
 
     const ref = React.createRef<FormInterface>();
+    const event = {preventDefault: jest.fn()};
 
     const success = new Esimorp<void>();
-
-    const event = {preventDefault: jest.fn()};
 
     render(
       <TypedForm.Form
@@ -327,9 +336,11 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit(event as any);
+    await act(async () => {
+      (ref.current as FormInterface).submit(event as any);
 
-    await success;
+      await success;
+    });
 
     expect(event.preventDefault).toHaveBeenCalledTimes(1);
   });
@@ -358,9 +369,11 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    await act(async () => {
+      (ref.current as FormInterface).submit();
 
-    await fail;
+      await fail;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
     expect(onSubmitFail).toHaveBeenCalledTimes(1);
@@ -396,9 +409,11 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    await act(async () => {
+      (ref.current as FormInterface).submit();
 
-    await fail;
+      await fail;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
     expect(onSubmitFail).toHaveBeenCalledTimes(1);
@@ -432,9 +447,11 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    await act(async () => {
+      (ref.current as FormInterface).submit();
 
-    await fail;
+      await fail;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
     expect(onSubmitFail).toHaveBeenCalledTimes(1);
@@ -470,7 +487,9 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    act(() => {
+      (ref.current as FormInterface).submit();
+    });
 
     await fail;
 
@@ -506,9 +525,11 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
+    await act(async () => {
+      (ref.current as FormInterface).submit();
 
-    await fail;
+      await fail;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
     expect(onSubmitFail).toHaveBeenCalledTimes(1);
@@ -540,10 +561,14 @@ describe('<Form>', () => {
       />,
     );
 
-    (ref.current as FormInterface).submit();
-    (ref.current as FormInterface).submit();
+    act(() => {
+      (ref.current as FormInterface).submit();
+      (ref.current as FormInterface).submit();
+    });
 
-    await fail;
+    await act(async () => {
+      await fail;
+    });
 
     expect(onSubmitSuccess).toHaveBeenCalledTimes(1);
     expect(onSubmitFail).toHaveBeenCalledTimes(1);
