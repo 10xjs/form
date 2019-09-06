@@ -26,6 +26,6 @@ export {
   Interface,
 } from './useForm';
 export {useContext, TypedUseContext} from './useFormContext';
-export {useStatus, Status} from './useStatus';
+export {useFormStatus, FormStatus} from './useFormStatus';
 
 export {TypedModule, InterfaceOf, StateOf, StatusOf} from './TypedModule';

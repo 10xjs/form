@@ -10,7 +10,7 @@ import {
 import {useContext} from './useFormContext';
 import {set} from './util';
 
-export interface Status<R> {
+export interface FormStatus<R> {
   submitting: boolean;
   submitFailed: boolean;
   submitSucceeded: boolean;
@@ -33,7 +33,7 @@ const isEmpty = (object: any): boolean => {
 
 const updateStatus = <R extends any>(
   formState: State<unknown, unknown, unknown, unknown>,
-): ((status: Partial<Status<R>>) => Status<R>) => (status) => {
+): ((status: Partial<FormStatus<R>>) => FormStatus<R>) => (status) => {
   let nextStatus = status;
 
   nextStatus = set(
@@ -66,18 +66,18 @@ const updateStatus = <R extends any>(
   nextStatus = set(nextStatus, ['error'], formState.error);
   nextStatus = set(nextStatus, ['result'], formState.result);
 
-  return nextStatus as Status<R>;
+  return nextStatus as FormStatus<R>;
 };
 
 export interface StatusConfig<R> {
   form?: Interface<any, R, any, any, any>;
 }
 
-export const useStatus = <R extends any>({
+export const useFormStatus = <R extends any>({
   form = useContext<unknown, R, unknown, unknown, unknown>(),
-}: StatusConfig<R> = {}): Status<R> => {
+}: StatusConfig<R> = {}): FormStatus<R> => {
   const [status, setStatus] = React.useState(
-    (): Status<R> => updateStatus<R>(form.getState())({}),
+    (): FormStatus<R> => updateStatus<R>(form.getState())({}),
   );
 
   const handleFormUpdate = React.useCallback((): void => {
@@ -100,6 +100,6 @@ export const useStatus = <R extends any>({
   return status;
 };
 
-export interface TypedUseStatus<R> {
-  (config?: StatusConfig<R>): Status<R>;
+export interface TypedUseFormStatus<R> {
+  (config?: StatusConfig<R>): FormStatus<R>;
 }

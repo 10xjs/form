@@ -4,7 +4,7 @@ import {render} from '@testing-library/react';
 
 import {Esimorp} from './Esimorp';
 
-import * as Form from '../';
+import * as Form from '..';
 
 type ModuleType = Form.TypedModule<
   any,
@@ -25,7 +25,7 @@ const statusHandler = (): [
   const handleStatus = jest.fn<void, [Status]>();
 
   const WithStatus = React.memo((): null => {
-    handleStatus(TypedForm.useStatus());
+    handleStatus(TypedForm.useFormStatus());
     return null;
   });
 
@@ -34,7 +34,7 @@ const statusHandler = (): [
   return [handleStatus, WithStatus];
 };
 
-describe('useStatus hook', () => {
+describe('useFormStatus hook', () => {
   it('should update once with the correct result on first render', () => {
     const [handleStatus, WithStatus] = statusHandler();
 
@@ -63,7 +63,7 @@ describe('useStatus hook', () => {
 
     const Root = () => {
       const form = TypedForm.useForm({values: {}});
-      handleStatus(TypedForm.useStatus({form}));
+      handleStatus(TypedForm.useFormStatus({form}));
       return null;
     };
 
