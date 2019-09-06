@@ -28,6 +28,8 @@ rules:
     - warn
     - allowTypedFunctionExpressions: true
       allowExpressions: true
+  '@typescript-eslint/ban-ts-ignore': off
+  '@typescript-eslint/no-empty-function': off
   react/prop-types: off
 
 overrides:
