@@ -58,7 +58,7 @@ export default [
       useFieldStatus: './src/useFieldStatus.tsx',
       useForm: './src/useForm.tsx',
       useFormContext: './src/useFormContext.tsx',
-      useStatus: './src/useStatus.tsx',
+      useFormStatus: './src/useFormStatus.tsx',
       util: './src/util.tsx',
     },
     output: [
