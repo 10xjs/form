@@ -1,5 +1,5 @@
 /* eslint-env node */
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 // React development builds log errors to the console instead of raising
 // exceptions. This patch simulates production build behavior.
