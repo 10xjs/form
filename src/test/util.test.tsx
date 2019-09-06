@@ -218,7 +218,7 @@ describe('utils', () => {
     it('should set a value at the correct path', () => {
       const state = {foo: {bar: [1, 2, 3, {foo: 'bar'}]}};
 
-      expect(set(state, [], null)).toEqual(null);
+      expect(set(state, [], null)).toBeNull();
 
       expect(set(state, ['foo'], null)).toEqual({...state, foo: null});
 
@@ -319,7 +319,7 @@ describe('utils', () => {
         },
       });
 
-      expect(updater.mock.calls.length).toBe(1);
+      expect(updater).toHaveBeenCalledTimes(1);
       expect((updater as any).mock.calls[0][0]).toBe('bar');
     });
   });
@@ -332,7 +332,7 @@ describe('utils', () => {
 
       expect(get(state, ['foo'])).toBe(state.foo);
 
-      expect(get(state, ['foo', 'foo', 'foo', 'foo'])).toEqual(undefined);
+      expect(get(state, ['foo', 'foo', 'foo', 'foo'])).toBeUndefined();
 
       expect(get(state, ['foo', 'bar', 0])).toEqual(state.foo.bar[0]);
 
@@ -425,13 +425,13 @@ describe('utils', () => {
       mergedHandlerA(event);
       mergedHandlerB(event);
 
-      expect(handlerA.mock.calls.length).toEqual(1);
+      expect(handlerA).toHaveBeenCalledTimes(1);
       expect(handlerA.mock.calls[0][0]).toBe(event);
 
-      expect(handlerB.mock.calls.length).toEqual(1);
+      expect(handlerB).toHaveBeenCalledTimes(1);
       expect(handlerB.mock.calls[0][0]).toBe(event);
 
-      expect(handlerC.mock.calls.length).toEqual(1);
+      expect(handlerC).toHaveBeenCalledTimes(1);
       expect(handlerC.mock.calls[0][0]).toBe(event);
     });
 
@@ -447,16 +447,16 @@ describe('utils', () => {
 
       mergedHandler(event);
 
-      expect(handlerA.mock.calls.length).toEqual(1);
+      expect(handlerA).toHaveBeenCalledTimes(1);
       expect(handlerA.mock.calls[0][0]).toBe(event);
 
-      expect(handlerB.mock.calls.length).toEqual(0);
+      expect(handlerB).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('parseEvent', () => {
     it('should return non Event instances', () => {
-      expect(parseEvent(null)).toEqual(null);
+      expect(parseEvent(null)).toBeNull();
     });
 
     it('should return the value of a plain event target', () => {
