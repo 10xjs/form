@@ -15,7 +15,6 @@ commands:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
       - run:
           name: Install npm Dependencies
           command: npm install --ignore-scripts
@@ -66,7 +65,7 @@ commands:
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
       - run:
           name: Publish npm package
-          command: npm publish package.tgz --tag << parameters.npm_tag >>
+          command: npm publish ./package.tgz --tag << parameters.npm_tag >>
 
 jobs:
   # check code styles with ESLint
