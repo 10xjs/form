@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "scripts": {
     "build:clean": "npx rimraf lib module types umd",
-    "build": "npm run build:clean && npx rollup -c",
+    "build": "npm run build:clean && npx rollup",
     "format": "npx prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepublishOnly": "npm run test && npm run build",
     "test": "npm run test:types --slient && npm run test:lint --slient && npm run test:spec --silent",

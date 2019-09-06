@@ -47,7 +47,7 @@ export default [
   },
   {
     input: {
-      Context: './src/Context.tsx',
+      formContext: './src/formContext.tsx',
       Form: './src/Form.tsx',
       fieldHelpers: './src/fieldHelpers.tsx',
       Provider: './src/Provider.tsx',
@@ -57,7 +57,7 @@ export default [
       useField: './src/useField.tsx',
       useFieldStatus: './src/useFieldStatus.tsx',
       useForm: './src/useForm.tsx',
-      useContext: './src/useContext.tsx',
+      useFormContext: './src/useFormContext.tsx',
       useStatus: './src/useStatus.tsx',
       util: './src/util.tsx',
     },
