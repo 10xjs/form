@@ -28,8 +28,8 @@ export const updateFieldStatus = <FV extends any>(
   let nextState = state;
 
   const focused = formState.focusedPath === formattedPath;
-  const visited = !!get(formState.visitedMap, parsedPath);
-  const touched = !!get(formState.touchedMap, parsedPath);
+  const visited = !!get(formState.visitedMap, [formattedPath]);
+  const touched = !!get(formState.touchedMap, [formattedPath]);
 
   const value = get(formState.values, parsedPath) as FV;
   const pendingValue = get(formState.pendingValues, parsedPath) as FV;
