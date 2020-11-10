@@ -1,54 +1,38 @@
 parser: '@typescript-eslint/parser'
 parserOptions:
-  project: tsconfig.json
+  project: ./tsconfig.json
 
 plugins:
   - react
-  - prettier
+  - react-hooks
   - jest
-  - '@typescript-eslint'
-
-extends:
-  - eslint:recommended
-  - plugin:react/recommended
-  - plugin:@typescript-eslint/recommended
 
 settings:
   react:
     version: detect
 
-env:
-  es6: true
-  browser: true
+extends:
+  - standard-with-typescript
+  - plugin:react-hooks/recommended
+  - plugin:react/recommended
+
 rules:
-  prettier/prettier: error
-  # Indent is owned by prettier
-  '@typescript-eslint/indent': off
-  '@typescript-eslint/no-explicit-any': off
-  '@typescript-eslint/no-unused-vars':
-    - error
-    - varsIgnorePattern: _
-      argsIgnorePattern: _
+  '@typescript-eslint/quotes': off
+  '@typescript-eslint/semi': off
+  quotes: off
+  semi: off
+  comma-dangle: off
   '@typescript-eslint/explicit-function-return-type': off
-  '@typescript-eslint/ban-ts-ignore': off
-  '@typescript-eslint/no-empty-function': off
+  no-void: off
+  '@typescript-eslint/space-before-function-paren': off
+  space-before-function-paren: off
+  '@typescript-eslint/member-delimiter-style': off
+  object-curly-spacing: off
+  '@typescript-eslint/indent': off
+  '@typescript-eslint/promise-function-async': off
   react/prop-types: off
+  react/display-name: off
 
 overrides:
-  - files: "*.test.tsx"
-    env:
-      jest: true
-      node: true
-    rules:
-      jest/no-disabled-tests: error
-      jest/no-focused-tests: error
-      jest/no-identical-title: error
-      jest/prefer-to-have-length: error
-      jest/valid-expect: error
-      jest/prefer-to-be-null: error
-      jest/prefer-to-be-undefined: error
-      jest/prefer-to-contain: error
-
-  - files: "*.stories.tsx"
-    env:
-      node: true
+  - files: '**/*.test.ts?(x)'
+    extends: plugin:jest/recommended

@@ -14,7 +14,7 @@ const plugins = [
   }),
 ];
 
-const external = ['es6-error', 'react'];
+const external = ['react'];
 const umdGlobals = {react: 'React'};
 
 const sourcemapPathTransform = (sourcePath) =>
@@ -22,7 +22,7 @@ const sourcemapPathTransform = (sourcePath) =>
 
 export default [
   {
-    input: './src/index.tsx',
+    input: './src/index.ts',
     output: {
       file: './umd/form.js',
       format: 'umd',
@@ -34,7 +34,7 @@ export default [
     plugins: plugins,
   },
   {
-    input: './src/index.tsx',
+    input: './src/index.ts',
     output: {
       file: './umd/form.min.js',
       format: 'umd',
@@ -47,19 +47,14 @@ export default [
   },
   {
     input: {
-      formContext: './src/formContext.tsx',
-      Form: './src/Form.tsx',
-      fieldHelpers: './src/fieldHelpers.tsx',
-      FormProvider: './src/FormProvider.tsx',
-      index: './src/index.tsx',
-      SubmitConcurrencyError: './src/SubmitConcurrencyError.tsx',
-      SubmitValidationError: './src/SubmitValidationError.tsx',
-      useField: './src/useField.tsx',
-      useFieldStatus: './src/useFieldStatus.tsx',
-      useForm: './src/useForm.tsx',
-      useFormContext: './src/useFormContext.tsx',
-      useFormStatus: './src/useFormStatus.tsx',
-      util: './src/util.tsx',
+      context: './src/react/context.tsx',
+      field: './src/react/field.ts',
+      fields: './src/react/fields.tsx',
+      fieldStatus: './src/react/fieldStatus.ts',
+      form: './src/react/form.tsx',
+      formState: './src/react/formState.ts',
+      formStatus: './src/react/formStatus.ts',
+      index: './src/index.ts',
     },
     output: [
       {

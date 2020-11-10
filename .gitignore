@@ -1,7 +1,10 @@
-node_modules
 *.log
-coverage
-lib
-module
-types
-umd
+node_modules
+
+/website/build
+/website/.docusaurus
+/website/.cache-loader
+
+/lib
+/umd
+/module

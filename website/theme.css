@@ -1,0 +1,128 @@
+:root {
+  --ifm-color-primary: #4883ff;
+  --ifm-color-primary-dark: #276dff;
+  --ifm-color-primary-darker: #1762ff;
+  --ifm-color-primary-darkest: #004ae5;
+  --ifm-color-primary-light: #6999ff;
+  --ifm-color-primary-lighter: #79a4ff;
+  --ifm-color-primary-lightest: #9dbdff;
+
+  --ifm-color-secondary: #b6d0e5;
+  --ifm-color-secondary-dark: #9ab8d0;
+  --ifm-color-secondary-darker: #7297b5;
+  --ifm-color-secondary-darkest: #547895;
+  --ifm-color-secondary-light: #cfe3f4;
+  --ifm-color-secondary-lighter: #daeaf8;
+  --ifm-color-secondary-lightest: #edf6fe;
+
+  --ifm-color-success: #56d0b9;
+  --ifm-color-success-dark: #3fcaaf;
+  --ifm-color-success-darker: #36c4a9;
+  --ifm-color-success-darkest: #2da18b;
+  --ifm-color-success-light: #6dd6c3;
+  --ifm-color-success-lighter: #79dac7;
+  --ifm-color-success-lightest: #92e1d2;
+
+  --ifm-color-info: #a599e9;
+  --ifm-color-info-dark: #8979e2;
+  --ifm-color-info-darker: #7b69df;
+  --ifm-color-info-darkest: #513ad4;
+  --ifm-color-info-light: #c1b9f0;
+  --ifm-color-info-lighter: #cfc9f3;
+  --ifm-color-info-lightest: #eeecfb;
+
+  --ifm-color-warning: #ffb150;
+  --ifm-color-warning-dark: #ffa22f;
+  --ifm-color-warning-darker: #ff9b1e;
+  --ifm-color-warning-darkest: #eb8200;
+  --ifm-color-warning-light: #ffc072;
+  --ifm-color-warning-lighter: #ffc782;
+  --ifm-color-warning-lightest: #ffd8a7;
+
+  --ifm-color-danger: #ec5f67;
+  --ifm-color-danger-dark: #e8414b;
+  --ifm-color-danger-darker: #e7333d;
+  --ifm-color-danger-darkest: #cf1923;
+  --ifm-color-danger-light: #f07d83;
+  --ifm-color-danger-lighter: #f18b91;
+  --ifm-color-danger-lightest: #f5acb0;
+
+  --ifm-color-white: #ffffff;
+  --ifm-color-black: #000000;
+
+  --ifm-color-gray-0: var(--ifm-color-white);
+  --ifm-color-gray-100: #f4f8fc;
+  --ifm-color-gray-200: #e4eef7;
+  --ifm-color-gray-300: #d8e5f2;
+  --ifm-color-gray-400: #c8d8e4;
+  --ifm-color-gray-500: #acc0d0;
+  --ifm-color-gray-600: #8da3b6;
+  --ifm-color-gray-700: #637c91;
+  --ifm-color-gray-800: #3d576c;
+  --ifm-color-gray-900: #142737;
+  --ifm-color-gray-1000: var(--ifm-color-black);
+
+  --ifm-color-emphasis-0: var(--ifm-color-white);
+  --ifm-color-emphasis-100: var(--ifm-color-gray-100);
+  --ifm-color-emphasis-200: var(--ifm-color-gray-200);
+  --ifm-color-emphasis-300: var(--ifm-color-gray-300);
+  --ifm-color-emphasis-400: var(--ifm-color-gray-400);
+  --ifm-color-emphasis-500: var(--ifm-color-gray-500);
+  --ifm-color-emphasis-600: var(--ifm-color-gray-600);
+  --ifm-color-emphasis-700: var(--ifm-color-gray-700);
+  --ifm-color-emphasis-800: var(--ifm-color-gray-800);
+  --ifm-color-emphasis-900: var(--ifm-color-gray-900);
+  --ifm-color-emphasis-1000: var(--ifm-color-black);
+  --ifm-color-content: var(--ifm-color-emphasis-900);
+  --ifm-color-content-inverse: var(--ifm-color-emphasis-0);
+  --ifm-color-content-secondary: var(--ifm-color-gray-700);
+
+  --ifm-background-surface-color: var(--ifm-color-gray-100);
+
+  --ifm-hover-overlay: rgba(1, 22, 39, 0.05);
+
+  --ifm-global-shadow-lw: 0 1px 2px 0 rgba(1, 22, 39, 0.1);
+  --ifm-global-shadow-md: 0 5px 40px rgba(1, 22, 39, 0.2);
+  --ifm-global-shadow-tl: 0 12px 28px 0 rgba(1, 22, 39, 0.2),
+    0 2px 4px 0 rgba(1, 22, 39, 0.1);
+}
+
+html[data-theme='dark'] {
+  --ifm-color-emphasis-0: var(--ifm-color-gray-1000);
+  --ifm-color-emphasis-100: var(--ifm-color-gray-900);
+  --ifm-color-emphasis-200: var(--ifm-color-gray-800);
+  --ifm-color-emphasis-300: var(--ifm-color-gray-700);
+  --ifm-color-emphasis-400: var(--ifm-color-gray-600);
+  --ifm-color-emphasis-500: var(--ifm-color-gray-500);
+  --ifm-color-emphasis-600: var(--ifm-color-gray-400);
+  --ifm-color-emphasis-700: var(--ifm-color-gray-300);
+  --ifm-color-emphasis-800: var(--ifm-color-gray-200);
+  --ifm-color-emphasis-900: var(--ifm-color-gray-100);
+  --ifm-color-emphasis-1000: var(--ifm-color-gray-0);
+
+  --ifm-background-color: var(--ifm-color-black);
+  --ifm-background-surface-color: var(--ifm-color-gray-900);
+
+  --ifm-hover-overlay: rgba(255, 255, 255, 0.05);
+}
+
+.footer--dark {
+  --ifm-footer-background-color: var(--ifm-color-emphasis-100);
+
+  --ifm-footer-color: var(--ifm-color-emphasis-800);
+}
+
+.react-toggle-track {
+  background-color: var(--ifm-color-gray-800) !important;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(1, 22, 39, 0.05);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+html[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(216, 229, 242, 0.1);
+}

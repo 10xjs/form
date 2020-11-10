@@ -1,6 +1,9 @@
+*.log
 node_modules
-coverage
-lib
-module
-types
-umd
+/website/build
+/website/.docusaurus
+/website/.cache-loader
+
+# Generated
+/website/typedoc-sidebar.js
+/website/docs/api

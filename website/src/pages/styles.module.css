@@ -1,0 +1,72 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 966px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.featureImage {
+  height: 200px;
+  width: 200px;
+}
+
+@media (min-width: 997px) {
+  .codeblock {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'a b'
+      'c d';
+  }
+
+  .codeblock > div:nth-of-type(1) {
+    grid-area: a;
+    border-top-left-radius: var(--ifm-global-radius);
+  }
+
+  .codeblock > div:nth-of-type(2) {
+    grid-area: c;
+    border-bottom-left-radius: var(--ifm-global-radius);
+  }
+
+  .codeblock textarea {
+    border-bottom-left-radius: var(--ifm-global-radius);
+  }
+
+  .codeblock > div:nth-of-type(3) {
+    grid-area: b;
+    border-top-right-radius: var(--ifm-global-radius);
+  }
+
+  .codeblock > div:nth-of-type(4) {
+    grid-area: d;
+    border-radius: 0;
+    border-bottom-right-radius: var(--ifm-global-radius);
+  }
+}

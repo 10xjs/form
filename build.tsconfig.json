@@ -1,10 +1,8 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./base.tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "declaration": true,
-    "declarationDir": "types"
+    "rootDir": "src"
   },
-  "exclude": ["node_modules", "src/**/__test__"],
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["**/*.test.ts?(x)"]
 }
