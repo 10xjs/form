@@ -22,7 +22,7 @@ import {SubmitError, SubmitValidationError} from './errors';
 export type FieldPath = string | Array<string | number>;
 
 /**
- * This enum defined the possible states of the
+ * This enum defines the possible states of the
  * {@link FormState | form state machine} submit sequence.
  *
  * ```mermaid

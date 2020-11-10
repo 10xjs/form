@@ -4,7 +4,7 @@ title: "Enumeration: FormSubmitStatus"
 sidebar_label: "FormSubmitStatus"
 ---
 
-This enum defined the possible states of the
+This enum defines the possible states of the
 [form state machine](../classes/formstate.md) submit sequence.
 
 ```mermaid
