@@ -86,12 +86,6 @@ module.exports = {
       },
       items: [
         {
-          to: '/',
-          activeBaseRegex: '^/$',
-          label: 'Docs',
-          position: 'left',
-        },
-        {
           to: '/api/',
           activeBasePath: 'api',
           label: 'API',

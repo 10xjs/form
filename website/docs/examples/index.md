@@ -6,7 +6,3 @@ hide_title: true
 ---
 
 # Examples
-
-```js live
-function foo() {}
-```

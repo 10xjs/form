@@ -50,7 +50,7 @@ function Home() {
                 'button button--lg button--primary',
                 styles.getStarted,
               )}
-              to={useBaseUrl('docs/')}
+              to={useBaseUrl('examples/')}
             >
               Get Started
             </Link>
