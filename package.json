@@ -29,6 +29,7 @@
     "test:types": "tsc --noEmit",
     "build:clean": "rimraf lib module types umd",
     "build": "npm run build:clean && rollup -c rollup.config.js",
+    "build:website": "yarn build && cd website && yarn build",
     "format": "prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
     "prepublishOnly": "npm run test && npm run build",
     "prepack": "node -e \"require('./package.json').files.map((file) => require('fs').statSync(require('path').join(process.cwd(), file)))\""
