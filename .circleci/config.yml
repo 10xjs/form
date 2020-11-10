@@ -121,6 +121,13 @@ jobs:
       - publish:
           npm_tag: canary
 
+  # publish next tagged npm package with sha version
+  publish_next:
+    executor: build_env
+    steps:
+      - publish:
+          npm_tag: next
+
   # publish latest tagged npm package at current version
   publish_release:
     executor: build_env
@@ -152,11 +159,19 @@ workflows:
             - types
             - lint
 
-      # publish canary tagged npm package on master and not on tags
+      # publish canary tagged npm package on master branch and not on tags
       - publish_canary:
           filters:
             branches:
               only: master
+          requires:
+            - build
+
+      # publish canary tagged npm package on next branch and not on tags
+      - publish_canary:
+          filters:
+            branches:
+              only: next
           requires:
             - build
 
