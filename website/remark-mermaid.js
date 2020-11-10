@@ -75,7 +75,7 @@ module.exports = function ({
     const style = `
 <style>
 ${light}
-${dark.replaceAll(`#${id}`, `html[data-theme=dark] #${id}`)}
+${dark.replace(new RegExp(`#${id}`, 'g'), `html[data-theme=dark] #${id}`)}
 </style>
 `;
 
