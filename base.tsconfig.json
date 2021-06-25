@@ -5,6 +5,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "declaration": true,
+    "declarationDir": "types",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
