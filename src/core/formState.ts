@@ -578,7 +578,7 @@ export class FormState<VS, SD, ES, WS> extends StateManager<
 
       if (submitStatus === FormSubmitStatus.started) {
         // Abort submit if a previous submit is still in progress.
-        return resolve();
+        return resolve(undefined);
       }
 
       this._submitStarted();

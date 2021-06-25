@@ -32,6 +32,7 @@ rules:
   '@typescript-eslint/promise-function-async': off
   react/prop-types: off
   react/display-name: off
+  react/react-in-jsx-scope: off
 
 overrides:
   - files: '**/*.test.ts?(x)'

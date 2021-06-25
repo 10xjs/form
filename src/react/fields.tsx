@@ -50,8 +50,7 @@ function create<T extends 'input' | 'select' | 'textarea'>(Component: T) {
       field.blur();
     });
 
-    rest.value = data.value;
-    (rest as any).ref = ref;
+    Object.assign(rest, {value: data.value, ref});
 
     return React.createElement(Component, rest);
   };

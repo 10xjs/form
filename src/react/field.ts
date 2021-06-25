@@ -15,9 +15,11 @@ export const useField = <T>(
   // eslint-disable-next-line react-hooks/rules-of-hooks
   form: FormState<any, any, any, any> = useForm(),
 ): [FieldData<T>, Field<T>] => {
+  const pathKey = formatPath(path);
+
   const field = React.useMemo(() => {
     return new Field<T>(path, form);
-  }, [form, formatPath(path)]);
+  }, [form, pathKey]);
 
   const data = useSubscribe(field);
 

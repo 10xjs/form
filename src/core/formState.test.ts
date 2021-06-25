@@ -17,15 +17,15 @@ describe('FormStateManager', () => {
       expect(state.values).toBe(values);
       expect(state.initialValues).toBe(values);
       expect(state.pendingValues).toBe(values);
-      expect(state.errors).toBeNull();
-      expect(state.warnings).toBeNull();
-      expect(state.submitErrors).toBeNull();
-      expect(state.focusedPath).toBeNull();
+      expect(state.errors).toBeUndefined();
+      expect(state.warnings).toBeUndefined();
+      expect(state.submitErrors).toBeUndefined();
+      expect(state.focusedPath).toBeUndefined();
       expect(state.touchedMap).toEqual({});
       expect(state.visitedMap).toEqual({});
       expect(state.submitStatus).toBe('INITIAL');
-      expect(state.result).toBeNull();
-      expect(state.error).toBeNull();
+      expect(state.result).toBeUndefined();
+      expect(state.error).toBeUndefined();
     });
 
     it('should run validate and warn', () => {
@@ -69,11 +69,11 @@ describe('FormStateManager', () => {
       expect(form.getState().warnings).toBe('warnings');
     });
 
-    it('should coerce "empty" error and warning values to null', () => {
+    it('should coerce "empty" error and warning values to undefined', () => {
       const values = {foo: 'bar'};
 
       const validate = () => [[]];
-      const warn = () => undefined;
+      const warn = () => null;
 
       const form = new FormState(values, {
         onSubmit() {
@@ -84,8 +84,8 @@ describe('FormStateManager', () => {
         warn,
       });
 
-      expect(form.getState().errors).toBeNull();
-      expect(form.getState().warnings).toBeNull();
+      expect(form.getState().errors).toBeUndefined();
+      expect(form.getState().warnings).toBeUndefined();
     });
 
     it('should not coersce falsy error and warning values to null', () => {
@@ -174,7 +174,7 @@ describe('FormStateManager', () => {
         },
       );
 
-      expect(form.getState().focusedPath).toBeNull();
+      expect(form.getState().focusedPath).toBeUndefined();
 
       form.focusField('foo');
 
@@ -275,7 +275,7 @@ describe('FormStateManager', () => {
       form.focusField('foo');
       form.blurField('foo');
 
-      expect(form.getState().focusedPath).toBeNull();
+      expect(form.getState().focusedPath).toBeUndefined();
     });
 
     it('should mark the incoming path as visited', () => {
@@ -436,7 +436,7 @@ describe('FormStateManager', () => {
 
       form.setFieldValue('foo', 'foo');
 
-      expect(form.getState().submitErrors).toBeNull();
+      expect(form.getState().submitErrors).toBeUndefined();
     });
 
     it('should ignore idempotent state changes', () => {
@@ -547,7 +547,7 @@ describe('FormStateManager', () => {
   });
 
   describe('submit', () => {
-    it('should return a promise resolving the submit handler result', async () => {
+    it('should handle success result', async () => {
       const form = new FormState(
         {},
         {
@@ -557,10 +557,12 @@ describe('FormStateManager', () => {
         },
       );
 
-      await expect(form.submit()).resolves.toEqual({ok: true, data: 'result'});
+      await expect(form.submit()).resolves.toBeUndefined();
+
+      expect(form.getState().result).toEqual('result');
     });
 
-    it('should return a promise rejecting any error thrown from submit handler', async () => {
+    it('should handle error result', async () => {
       const submitError = new Error();
 
       const form = new FormState(
@@ -572,10 +574,9 @@ describe('FormStateManager', () => {
         },
       );
 
-      await expect(form.submit()).resolves.toEqual({
-        ok: false,
-        error: submitError,
-      });
+      await expect(form.submit()).resolves.toBeUndefined();
+
+      expect(form.getState().error).toEqual(submitError);
     });
   });
 });

@@ -346,6 +346,7 @@ export function normalizeError<TError>(error: TError) {
 
 /** @internal */
 export const isEmpty = (object: any): boolean => {
+  // eslint-disable-next-line no-unreachable-loop
   for (const _key in object) {
     return false;
   }

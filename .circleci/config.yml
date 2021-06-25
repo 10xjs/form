@@ -17,7 +17,7 @@ commands:
             - v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install npm Dependencies
-          command: npm install --ignore-scripts
+          command: yarn install --ignore-scripts
       - save_cache:
           paths:
             - node_modules
@@ -31,7 +31,7 @@ commands:
         type: boolean
         default: false
     steps:
-      - run: npm run build
+      - run: yarn build
       - when:
           condition: << parameters.sha_version >>
           steps:
@@ -77,7 +77,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: npm run test:lint
+      - run: yarn test:lint
 
   # check type annotations with Typescript
   types:
@@ -85,7 +85,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: npm run test:types
+      - run: yarn test:types
 
   # run unit tests with Jest
   spec:
@@ -93,7 +93,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: npm run test:spec
+      - run: yarn test:spec
       - codecov/upload:
           file: ./coverage/lcov.info
 

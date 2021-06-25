@@ -52,21 +52,21 @@ export const useFormState = <VS, SD, ES = null, WS = null>(
       // TODO Detect and warn non-memoized values.
       form.setValues(values);
     }
-  }, [values]);
+  }, [form, values]);
 
   React.useEffect((): void => {
     if (!firstRun.current) {
       // TODO Detect and warn non-memoized validate callback.
       form.runValidate();
     }
-  }, [options.validate]);
+  }, [form, options.validate]);
 
   React.useEffect((): void => {
     if (!firstRun.current) {
       // TODO Detect and warn non-memoized validate warn callback.
       form.runWarn();
     }
-  }, [options.warn]);
+  }, [form, options.warn]);
 
   // Update the first run flag last - any further reference to this
   // firstRun.current within this closure would receive the incorrect value.

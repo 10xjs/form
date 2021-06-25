@@ -27,11 +27,11 @@ const statusHandler = (): [
 };
 
 const initialStatus = {
-  error: null,
+  error: undefined,
   hasErrors: false,
   hasSubmitErrors: false,
   hasWarnings: false,
-  result: null,
+  result: undefined,
   submitFailed: false,
   submitSucceeded: false,
   submitting: false,
@@ -497,7 +497,7 @@ describe('useFormStatus hook', () => {
       await first;
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 
