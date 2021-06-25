@@ -93,7 +93,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: yarn test:spec
+      - run: yarn test:unit
       - codecov/upload:
           file: ./coverage/lcov.info
 
