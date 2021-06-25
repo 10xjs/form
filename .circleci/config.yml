@@ -41,7 +41,7 @@ commands:
       - run:
           name: Create npm package archive
           command: |
-            npm pack --silent > archive_name
+            npm pack --silent | tail -1 > archive_name
             mv "$(cat archive_name)" package.tgz
       - run:
           name: List package archive contents
