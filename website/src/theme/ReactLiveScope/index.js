@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as form from '@10xjs/form/lib';
+import * as form from '@10xjs/form';
 
 const ReactLiveScope = {
   ...form,

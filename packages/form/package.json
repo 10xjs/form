@@ -19,16 +19,16 @@
   "files": [
     "lib",
     "module",
-    "types",
-    "umd"
+    "types"
   ],
   "scripts": {
+    "build:types": "tsc -p build.tsconfig.json",
     "test": "npm run test:types && npm run test:unit --silent",
     "test:unit": "jest",
     "test:types": "tsc --noEmit",
-    "build:clean": "rimraf lib module types umd",
-    "build": "npm run build:clean && rollup -c rollup.config.js",
-    "build:website": "cd website && yarn install && yarn build",
+    "build:clean": "rimraf lib module types",
+    "build": "yarn build:clean && node build.js",
+    "build:website": "cd website && yarn install && yarn build:types && yarn build",
     "serve:website": "cd website && yarn serve",
     "prepublishOnly": "npm run test && npm run build",
     "prepack": "node -e \"require('./package.json').files.map((file) => require('fs').statSync(require('path').join(process.cwd(), file)))\""
@@ -43,15 +43,11 @@
     "@types/node": "15.12.5",
     "@types/react": "17.0.11",
     "@types/react-dom": "17.0.8",
+    "esbuild": "0.12.12",
     "jest": "27.0.6",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rimraf": "3.0.2",
-    "rollup": "2.52.3",
-    "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-node-resolve": "5.2.0",
-    "rollup-plugin-terser": "7.0.2",
-    "rollup-plugin-typescript2": "0.30.0",
     "ts-jest": "27.0.3",
     "typescript": "4.3.4"
   },

@@ -69,7 +69,7 @@ render(Basic);
 
 ## Field Mapping
 
-A core concept of `@10xjs/form` is a clean separation of form state and any inputs that interact with it. Each input is mapped to a slice of the form value state through the `path` prop. Field state is not directly accessible from your outer form component and should be accessed using [`useField`](/docs/api/functions/usefield) (or the utility [`fields.*`](/docs/api/variables/fields.input) components). This pattern ensures that changes to the state of one field do not propagate as render updates to the entire form. A mapped field only re-renders when state under its `path` changes.
+A core concept of `@10xjs/form` is a clean separation of form state and any inputs that interact with it. Each input is mapped to a slice of the form value state through the `path` prop. Field state is not directly accessible from your outer form component and should be accessed using [`useField`](/docs/api/functions/usefield) (or the utility [`fields.*`](/docs/api/modules/fields) components). This pattern ensures that changes to the state of one field do not propagate as render updates to the entire form. A mapped field only re-renders when state under its `path` changes.
 
 #### Custom mapped input example
 
