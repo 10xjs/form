@@ -1,8 +1,10 @@
 # Dependencies
 /node_modules
+/.yarn
 
 # Production
 /build
+/docs/api
 
 # Generated files
 .docusaurus

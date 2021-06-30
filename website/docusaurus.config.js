@@ -26,7 +26,6 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          // routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [

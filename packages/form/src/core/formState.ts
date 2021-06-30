@@ -117,7 +117,7 @@ export interface FormOptions<VS, SD, ES = undefined, WS = undefined> {
    * ```
    *
    * Return async submit validation errors as a failed submit result, _not_ as
-   * a thrown error or rejected promise (See [error handling](../../errors.md)).
+   * a thrown error or rejected promise.
    *
    * ```js live noInline
    * const options = {
@@ -135,8 +135,7 @@ export interface FormOptions<VS, SD, ES = undefined, WS = undefined> {
    * when a {@link FormState} instance is first initialized and every time the
    * value state changes. The return value is an object that matches the
    * structure of the form value state where any non-empty value at the same
-   * path as a field is considered an error
-   * (See [Validation](../../validation.md)).
+   * path as a field is considered an error.
    *
    * ```js {3-6}
    * const options = {

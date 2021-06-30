@@ -49,7 +49,7 @@ function Home() {
                 'button button--lg button--primary',
                 styles.getStarted,
               )}
-              to={useBaseUrl('examples/')}
+              to={useBaseUrl('docs/installation')}
             >
               Documentation
             </Link>
