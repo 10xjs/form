@@ -2,21 +2,25 @@
 id: "usefield"
 title: "Function: useField"
 sidebar_label: "useField"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-▸ `Const`**useField**&#60;T>(`path`: [FieldPath](../types/fieldpath.md), `form?`: [FormState](../classes/formstate.md)&#60;any, any, any, any>): [[FieldData](../interfaces/fielddata.md)&#60;T>, [Field](../classes/field.md)&#60;T>]
+▸ `Const` **useField**<`T`\>(`path`, `form?`): [[`FieldData`](../interfaces/fielddata.md)<`T`\>, [`Field`](../classes/field.md)<`T`\>]
 
-#### Type parameters:
+#### Type parameters
 
-Name | Description |
------- | ------ |
-`T` | Field value type.  |
+| Name | Description |
+| :------ | :------ |
+| `T` | Field value type. |
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Default value |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | - |
-`form` | [FormState](../classes/formstate.md)&#60;any, any, any, any> | useForm() |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
+| `form` | [`FormState`](../classes/formstate.md)<`any`, `any`, `any`, `any`\> |
 
-**Returns:** [[FieldData](../interfaces/fielddata.md)&#60;T>, [Field](../classes/field.md)&#60;T>]
+#### Returns
+
+[[`FieldData`](../interfaces/fielddata.md)<`T`\>, [`Field`](../classes/field.md)<`T`\>]

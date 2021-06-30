@@ -2,9 +2,11 @@
 id: "setvalueaction"
 title: "Type alias: SetValueAction<T>"
 sidebar_label: "SetValueAction"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-Ƭ  **SetValueAction**&#60;T>: T \| (currentValue: T) => T
+Ƭ **SetValueAction**<`T`\>: `T` \| (`currentValue`: `T`) => `T`
 
 A value passed to [FormState.setFieldValue](../classes/formstate.md#setfieldvalue). If defined as a function
 it will be be called with the previous value to return an updated value.
@@ -21,8 +23,8 @@ form.setFieldValue('name', (value) => value + ' again');
 form.getFieldValue('name'); // 'updated again'
 ```
 
-#### Type parameters:
+#### Type parameters
 
-Name | Description |
------- | ------ |
-`T` | Field value type.  |
+| Name | Description |
+| :------ | :------ |
+| `T` | Field value type. |

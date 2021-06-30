@@ -2,62 +2,46 @@
 id: "submitvalidationerror"
 title: "Class: SubmitValidationError<T>"
 sidebar_label: "SubmitValidationError"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Type parameters
 
-Name | Default |
------- | ------ |
-`T` | unknown |
+| Name | Type |
+| :------ | :------ |
+| `T` | `unknown` |
 
 ## Hierarchy
 
-* [SubmitError](submiterror.md)
+- [`SubmitError`](submiterror.md)
 
-  ↳ **SubmitValidationError**
+  ↳ **`SubmitValidationError`**
 
 ## Constructors
 
 ### constructor
 
-\+ **new SubmitValidationError**(`errors`: T): [SubmitValidationError](submitvalidationerror.md)
+• **new SubmitValidationError**<`T`\>(`errors`)
 
-*Overrides [SubmitError](submiterror.md).[constructor](submiterror.md#constructor)*
+#### Type parameters
 
-#### Parameters:
+| Name | Type |
+| :------ | :------ |
+| `T` | `unknown` |
 
-Name | Type |
------- | ------ |
-`errors` | T |
+#### Parameters
 
-**Returns:** [SubmitValidationError](submitvalidationerror.md)
+| Name | Type |
+| :------ | :------ |
+| `errors` | `T` |
+
+#### Overrides
+
+[SubmitError](submiterror.md).[constructor](submiterror.md#constructor)
 
 ## Properties
 
 ### errors
 
-•  **errors**: T
-
-___
-
-### message
-
-•  **message**: string
-
-*Inherited from [SubmitError](submiterror.md).[message](submiterror.md#message)*
-
-___
-
-### name
-
-•  **name**: string
-
-*Inherited from [SubmitError](submiterror.md).[name](submiterror.md#name)*
-
-___
-
-### stack
-
-• `Optional` **stack**: undefined \| string
-
-*Inherited from [SubmitError](submiterror.md).[stack](submiterror.md#stack)*
+• **errors**: `T`

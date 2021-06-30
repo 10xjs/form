@@ -1,86 +1,30 @@
 {
-  "name": "@10xjs/form",
-  "description": "Form library",
-  "license": "MIT",
-  "author": "Neal Granger <neal@nealg.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/10xjs/form"
-  },
-  "bugs": {
-    "url": "https://github.com/10xjs/form/issues"
-  },
-  "homepage": "https://github.com/10xjs/form",
-  "version": "0.1.7",
-  "main": "./lib/index.js",
-  "module": "./module/index.js",
-  "types": "./types/index.d.js",
-  "sideEffects": false,
-  "files": [
-    "lib",
-    "module",
-    "types",
-    "umd"
+  "private": true,
+  "workspaces": [
+    "website",
+    "website2",
+    "packages/*"
   ],
   "scripts": {
-    "test": "npm run test:types && npm run test:lint && npm run test:unit --silent",
-    "test:lint": "eslint .",
-    "test:unit": "jest",
-    "test:types": "tsc --noEmit",
-    "build:clean": "rimraf lib module types umd",
-    "build": "npm run build:clean && rollup -c rollup.config.js",
-    "build:website": "cd website && yarn install && yarn build",
-    "serve:website": "cd website && yarn serve",
-    "format": "prettier --write '{,!(coverage)/**/}{*.{js,tsx,html,md,yml},!(package-lock).json}'",
-    "prepublishOnly": "npm run test && npm run build",
-    "prepack": "node -e \"require('./package.json').files.map((file) => require('fs').statSync(require('path').join(process.cwd(), file)))\""
-  },
-  "dependencies": {
-    "es6-error": "4.1.1"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0"
+    "lint": "eslint .",
+    "prettier": "prettier --check .",
+    "test": "yarn lint && yarn prettier && yarn workspace @10xjs/form test"
   },
   "devDependencies": {
-    "@testing-library/react": "12.0.0",
-    "@testing-library/react-hooks": "^7.0.0",
-    "@types/jest": "26.0.23",
-    "@types/react": "17.0.11",
-    "@types/react-dom": "17.0.8",
     "@typescript-eslint/eslint-plugin": "4.28.0",
     "@typescript-eslint/parser": "4.28.0",
     "eslint": "7.29.0",
     "eslint-config-standard-with-typescript": "20.0.0",
+    "eslint-import-resolver-node": "0.3.4",
     "eslint-plugin-import": "2.23.4",
     "eslint-plugin-jest": "24.3.6",
     "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
     "eslint-plugin-standard": "5.0.0",
-    "jest": "27.0.5",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "rimraf": "3.0.2",
-    "rollup": "2.52.3",
-    "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-node-resolve": "5.2.0",
-    "rollup-plugin-terser": "7.0.2",
-    "rollup-plugin-typescript2": "0.30.0",
-    "ts-jest": "27.0.3",
+    "jest": "27.0.6",
+    "prettier": "2.3.2",
     "typescript": "4.3.4"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "transform": {
-      ".+\\.tsx?$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
   }
 }

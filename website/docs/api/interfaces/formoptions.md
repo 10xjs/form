@@ -2,30 +2,32 @@
 id: "formoptions"
 title: "Interface: FormOptions<VS, SD, ES, WS>"
 sidebar_label: "FormOptions"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 Config options for the [FormState](../classes/formstate.md) class.
 
 ## Type parameters
 
-Name | Default | Description |
------- | ------ | ------ |
-`VS` | - | Type of form value state. |
-`SD` | - | Type of submit handler result. |
-`ES` | null | Type of form error state. |
-`WS` | null | Type of form warning state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `VS` | `VS` | Type of form value state. |
+| `SD` | `SD` | Type of submit handler result. |
+| `ES` | `undefined` | Type of form error state. |
+| `WS` | `undefined` | Type of form warning state. |
 
 ## Hierarchy
 
-* **FormOptions**
+- **`FormOptions`**
 
-  ↳ [FormProviderProps](formproviderprops.md)
+  ↳ [`FormProviderProps`](formproviderprops.md)
 
 ## Properties
 
 ### onSubmit
 
-•  **onSubmit**: (values: VS) => undefined \| [SubmitResult](../types/submitresult.md)&#60;SD> \| Promise&#60;[SubmitResult](../types/submitresult.md)&#60;SD>>
+• **onSubmit**: [`SubmitHandler`](../types/submithandler.md)<`VS`, `SD`\>
 
 This handler is triggered by a call to the [FormState.submit](../classes/formstate.md#submit) method
 if all fields are currently valid and returns a
@@ -44,7 +46,7 @@ const options = {
 Return async submit validation errors as a failed submit result, _not_ as
 a thrown error or rejected promise (See [error handling](../../errors.md)).
 
-```js live
+```js live noInline
 const options = {
   async onSubmit(values) {
     // process submit event...
@@ -57,7 +59,7 @@ ___
 
 ### validate
 
-• `Optional` **validate**: undefined \| (values: VS) => null \| ES
+• `Optional` **validate**: [`ValidateHandler`](../types/validatehandler.md)<`VS`, `ES`\>
 
 Run error validation on the entire value state. This handler is triggered
 when a [FormState](../classes/formstate.md) instance is first initialized and every time the
@@ -81,7 +83,7 @@ ___
 
 ### warn
 
-• `Optional` **warn**: undefined \| (values: VS) => null \| WS
+• `Optional` **warn**: [`ValidateHandler`](../types/validatehandler.md)<`VS`, `WS`\>
 
 Use this handler to process _soft_ validation "errors" that should not
 block a submit event. This handler otherwise has identical behavior to

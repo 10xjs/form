@@ -2,6 +2,8 @@
 id: "formsubmitstatus"
 title: "Enumeration: FormSubmitStatus"
 sidebar_label: "FormSubmitStatus"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 This enum defines the possible states of the
@@ -21,7 +23,7 @@ stateDiagram
 
 ### ended
 
-•  **ended**:  = "ENDED"
+• **ended** = `"ENDED"`
 
 The form has been submitted and the immediate submit has succeeded.
 
@@ -29,7 +31,7 @@ ___
 
 ### failed
 
-•  **failed**:  = "FAILED"
+• **failed** = `"FAILED"`
 
 The form has been submitted and the immediate submit has failed.
 
@@ -37,7 +39,7 @@ ___
 
 ### initial
 
-•  **initial**:  = "INITIAL"
+• **initial** = `"INITIAL"`
 
 The form instance has not yet been submitted.
 
@@ -45,6 +47,6 @@ ___
 
 ### started
 
-•  **started**:  = "STARTED"
+• **started** = `"STARTED"`
 
 The form has been submitted and is submit resolution is pending.

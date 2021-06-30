@@ -37,7 +37,7 @@
 }
 
 @media (min-width: 997px) {
-  .codeblock {
+  .codeblock > div {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
@@ -45,26 +45,27 @@
       'c d';
   }
 
-  .codeblock > div:nth-of-type(1) {
+  .codeblock > div > div:nth-of-type(1) {
     grid-area: a;
+    border-radius: 0;
     border-top-left-radius: var(--ifm-global-radius);
   }
 
-  .codeblock > div:nth-of-type(2) {
+  .codeblock > div > div:nth-of-type(2) {
     grid-area: c;
     border-bottom-left-radius: var(--ifm-global-radius);
   }
 
-  .codeblock textarea {
+  .codeblock > div textarea {
     border-bottom-left-radius: var(--ifm-global-radius);
   }
 
-  .codeblock > div:nth-of-type(3) {
+  .codeblock > div > div:nth-of-type(3) {
     grid-area: b;
     border-top-right-radius: var(--ifm-global-radius);
   }
 
-  .codeblock > div:nth-of-type(4) {
+  .codeblock > div > div:nth-of-type(4) {
     grid-area: d;
     border-radius: 0;
     border-bottom-right-radius: var(--ifm-global-radius);

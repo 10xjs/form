@@ -2,22 +2,26 @@
 id: "set"
 title: "Function: set"
 sidebar_label: "set"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-▸ `Const`**set**&#60;T>(`object`: T, `path`: Array&#60;string \| number>, `value`: any): T
+▸ `Const` **set**<`T`\>(`object`, `path`, `value`): `T`
 
-#### Type parameters:
+#### Type parameters
 
-Name |
------- |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`object` | T |
-`path` | Array&#60;string \| number> |
-`value` | any |
+| Name | Type |
+| :------ | :------ |
+| `object` | `T` |
+| `path` | (`string` \| `number`)[] |
+| `value` | `any` |
 
-**Returns:** T
+#### Returns
+
+`T`

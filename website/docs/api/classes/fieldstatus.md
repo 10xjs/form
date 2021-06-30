@@ -2,136 +2,156 @@
 id: "fieldstatus"
 title: "Class: FieldStatus"
 sidebar_label: "FieldStatus"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Hierarchy
 
-* [StateManager](statemanager.md)&#60;[FieldStatusData](../interfaces/fieldstatusdata.md)>
+- `StateManager`<[`FieldStatusData`](../interfaces/fieldstatusdata.md)\>
 
-  ↳ **FieldStatus**
-
-## Implements
-
-* [Subscribable](../interfaces/subscribable.md)&#60;[FieldStatusData](../interfaces/fieldstatusdata.md)>
+  ↳ **`FieldStatus`**
 
 ## Constructors
 
 ### constructor
 
-\+ **new FieldStatus**(`field`: [Field](field.md)&#60;any>): [FieldStatus](fieldstatus.md)
+• **new FieldStatus**(`field`)
 
-*Overrides [StateManager](statemanager.md).[constructor](statemanager.md#constructor)*
+#### Parameters
 
-#### Parameters:
+| Name | Type |
+| :------ | :------ |
+| `field` | [`Field`](field.md)<`any`\> |
 
-Name | Type |
------- | ------ |
-`field` | [Field](field.md)&#60;any> |
+#### Overrides
 
-**Returns:** [FieldStatus](fieldstatus.md)
+StateManager&lt;FieldStatusData\&gt;.constructor
 
 ## Properties
 
 ### field
 
-• `Readonly` **field**: [Field](field.md)&#60;any>
+• `Readonly` **field**: [`Field`](field.md)<`any`\>
 
 ## Methods
 
 ### getState
 
-▸ **getState**(): T
+▸ **getState**(): [`FieldStatusData`](../interfaces/fieldstatusdata.md)
 
-*Inherited from [StateManager](statemanager.md).[getState](statemanager.md#getstate)*
+#### Returns
 
-**Returns:** T
+[`FieldStatusData`](../interfaces/fieldstatusdata.md)
+
+#### Inherited from
+
+StateManager.getState
 
 ___
 
 ### hasError
 
-▸ **hasError**(): boolean
+▸ **hasError**(): `boolean`
 
 The current field error value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### hasWarning
 
-▸ **hasWarning**(): boolean
+▸ **hasWarning**(): `boolean`
 
 The current field warning value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isDetached
 
-▸ **isDetached**(): boolean
+▸ **isDetached**(): `boolean`
 
 True if the current value is different from the pending value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isDirty
 
-▸ **isDirty**(): boolean
+▸ **isDirty**(): `boolean`
 
 True if the current value is different from the initial value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isFocused
 
-▸ **isFocused**(): boolean
+▸ **isFocused**(): `boolean`
 
 True if the field is currently focused.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isTouched
 
-▸ **isTouched**(): boolean
+▸ **isTouched**(): `boolean`
 
 True if the field value has been edited.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isVisited
 
-▸ **isVisited**(): boolean
+▸ **isVisited**(): `boolean`
 
 True if the field is has been or is currently focused.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### subscribe
 
-▸ **subscribe**(`subscriber`: () => void): object
+▸ **subscribe**(`subscriber`): `Object`
 
-*Inherited from [StateManager](statemanager.md).[subscribe](statemanager.md#subscribe)*
+#### Parameters
 
-#### Parameters:
+| Name | Type |
+| :------ | :------ |
+| `subscriber` | () => `void` |
 
-Name | Type |
------- | ------ |
-`subscriber` | () => void |
+#### Returns
 
-**Returns:** object
+`Object`
 
-Name | Type |
------- | ------ |
-`unsubscribe` | () => void |
+| Name | Type |
+| :------ | :------ |
+| `unsubscribe` | () => `void` |
+
+#### Inherited from
+
+StateManager.subscribe

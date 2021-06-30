@@ -2,22 +2,26 @@
 id: "insert"
 title: "Function: insert"
 sidebar_label: "insert"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-▸ `Const`**insert**&#60;T>(`array`: T[], `index`: number, `value`: T): T[]
+▸ `Const` **insert**<`T`\>(`array`, `index`, `value`): `T`[]
 
-#### Type parameters:
+#### Type parameters
 
-Name |
------- |
-`T` |
+| Name |
+| :------ |
+| `T` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`array` | T[] |
-`index` | number |
-`value` | T |
+| Name | Type |
+| :------ | :------ |
+| `array` | `T`[] |
+| `index` | `number` |
+| `value` | `T` |
 
-**Returns:** T[]
+#### Returns
+
+`T`[]

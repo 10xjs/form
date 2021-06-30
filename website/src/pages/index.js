@@ -1,12 +1,16 @@
+import React from 'react';
 import clsx from 'clsx';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CodeBlock from '@theme/CodeBlock';
+import ReactLiveScope from '@theme/ReactLiveScope';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
 const features = [];
+
+console.log(ReactLiveScope);
 
 function Feature({imageUrl, title, description}) {
   const imgUrl = useBaseUrl(imageUrl);
@@ -33,15 +37,11 @@ function Home() {
     >
       <header className={clsx('hero', styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">
-            <em>Pure and Simple</em>
-            <br />
-            Form State for React
-          </h1>
+          <h1 className="hero__title">Form State for React</h1>
           <p className="hero__subtitle">
-            @10xjs/form is a high-performance React form state
+            @10xjs/form is a form state library engineered
             <br />
-            management library with a flexible no-frills interface
+            for high-performance and user-delight.
           </p>
           <div className={styles.buttons}>
             <Link
@@ -51,7 +51,7 @@ function Home() {
               )}
               to={useBaseUrl('examples/')}
             >
-              Get Started
+              Documentation
             </Link>
             <div style={{width: 12}} />
             <Link
@@ -61,7 +61,7 @@ function Home() {
               )}
               to="https://github.com/10xjs/form"
             >
-              Github
+              Source Code
             </Link>
           </div>
         </div>
@@ -83,7 +83,7 @@ function Home() {
             <div className="row">
               <div className="col col--12">
                 <div className={styles.codeblock}>
-                  <CodeBlock className="js" live noInline>
+                  <CodeBlock className="jsx" live noInline>
                     {`const values = {
   name: 'name',
 };
@@ -93,7 +93,7 @@ const Result = () => {
   return <div>{data.result}</div>;
 }
 
-render(
+const Example = () => (
   <FormProvider
     values={values}
     onSubmit={(values) => ({
@@ -110,6 +110,8 @@ render(
     <Result/>
   </FormProvider>
 );
+
+render(<Example/>);
 `}
                   </CodeBlock>
                 </div>

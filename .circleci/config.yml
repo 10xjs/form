@@ -6,7 +6,7 @@ orbs:
 executors:
   build_env:
     docker:
-      - image: circleci/node:15
+      - image: circleci/node:14
 
 commands:
   # install and cache npm dependencies
@@ -17,10 +17,10 @@ commands:
             - v1-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install npm Dependencies
-          command: yarn install --ignore-scripts
+          command: yarn install
       - save_cache:
           paths:
-            - node_modules
+            - .yarn
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
   # build and and store npm package archive artifact
@@ -31,18 +31,21 @@ commands:
         type: boolean
         default: false
     steps:
-      - run: yarn build
+      - run: yarn workspace @10xjs/form build
       - when:
           condition: << parameters.sha_version >>
           steps:
             - run:
                 name: Set package sha version
-                command: npm version 0.0.0-$(echo $CIRCLE_SHA1 | cut -c -9) --no-git-tag-version
+                command: |
+                  cd packages/form
+                  npm version 0.0.0-$(echo $CIRCLE_SHA1 | cut -c -9) --no-git-tag-version
       - run:
           name: Create npm package archive
           command: |
+            cd packages/form
             npm pack --silent | tail -1 > archive_name
-            mv "$(cat archive_name)" package.tgz
+            mv "$(cat archive_name)" ../../package.tgz
       - run:
           name: List package archive contents
           command: npm publish ./package.tgz --dry-run
@@ -77,7 +80,14 @@ jobs:
     steps:
       - checkout
       - install
-      - run: yarn test:lint
+      - run: yarn lint
+
+  prettier:
+    executor: build_env
+    steps:
+      - checkout
+      - install
+      - run: yarn prettier
 
   # check type annotations with Typescript
   types:
@@ -85,7 +95,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: yarn test:types
+      - run: yarn workspace @10xjs/form test:types
 
   # run unit tests with Jest
   spec:
@@ -93,7 +103,7 @@ jobs:
     steps:
       - checkout
       - install
-      - run: yarn test:unit
+      - run: yarn workspace @10xjs/form test:unit
       - codecov/upload:
           file: ./coverage/lcov.info
 
@@ -143,6 +153,10 @@ workflows:
           filters:
             tags:
               only: /^v\d+\.\d+\.\d+(-.+)?$/
+      - prettier:
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+(-.+)?$/
       - types:
           filters:
             tags:
@@ -158,6 +172,7 @@ workflows:
             - spec
             - types
             - lint
+            - prettier
 
       # publish canary tagged npm package on master branch and not on tags
       - publish_canary:
@@ -167,8 +182,8 @@ workflows:
           requires:
             - build
 
-      # publish canary tagged npm package on next branch and not on tags
-      - publish_canary:
+      # publish next tagged npm package on next branch and not on tags
+      - publish_next:
           filters:
             branches:
               only: next
@@ -186,6 +201,7 @@ workflows:
             - spec
             - types
             - lint
+            - prettier
 
       # hold workflow pending user approval
       - approve_release:

@@ -7,3 +7,11 @@ node_modules
 # Generated
 /website/typedoc-sidebar.js
 /website/docs/api
+
+/packages/form/lib
+/packages/form/umd
+/packages/form/module
+/packages/form/types
+
+.yarn/*
+.pnp.*

@@ -1,29 +1,46 @@
-const manifest = require('../package.json');
+const manifest = require('../packages/form/package.json');
 
+/** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
+  baseUrlIssueBanner: false,
+  trailingSlash: false,
   title: '@10xjs/form',
-  url: 'https://your-docusaurus-test-site.com',
-  organizationName: '10xjs',
-  projectName: 'form',
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+    localeConfigs: {
+      en: {},
+    },
+  },
+  noIndex: false,
+  onDuplicateRoutes: 'throw',
+  url: 'https://form.10xjs.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
+  organizationName: '10xjs',
+  projectName: 'form',
   presets: [
     [
       '@docusaurus/preset-classic',
       {
         docs: {
-          routeBasePath: '/',
+          // routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [
-              require('./remark-mermaid.js'),
+              require('remark-plugin-mermaid'),
               {config: {flowchart: {fontSize: 16}}},
             ],
+            [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
           ],
+          editUrl: 'https://github.com/10xjs/form/edit/master/website/',
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
         },
         theme: {
-          customCss: [require.resolve('./theme.css')],
+          customCss: require.resolve('./src/css/custom.css'),
         },
       },
     ],
@@ -33,32 +50,21 @@ module.exports = {
     [
       'docusaurus-plugin-typedoc',
       {
-        inputFiles: ['../src'],
-        exclude: ['**/*.test.ts?(x)'],
+        entryPoints: ['../packages/form/src/index.ts'],
+        tsconfig: '../packages/form/typedoc.tsconfig.json',
         externalPattern: ['**/node_modules/**'],
         sidebar: {
-          // readmeLabel: 'Overview',
-          globalsLabel: 'Overview',
+          sidebarFile: null,
         },
-        mode: 'file',
+        watch: process.env.TYPEDOC_WATCH,
         readme: 'none',
-        // readmeTitle: 'API',
         globalsTitle: 'API',
-        hideProjectName: true,
         allReflectionsHaveOwnDocument: true,
-        tsconfig: 'tsconfig.json',
-        jsx: 'preserve',
-        target: 'esnext',
-        moduleResolution: 'node',
-        strict: true,
         disableSources: true,
         excludeExternals: true,
-        excludeNotExported: true,
         excludePrivate: true,
         excludeProtected: true,
-        includeDeclarations: true,
         listInvalidSymbolLinks: true,
-        stripInternal: true,
       },
     ],
   ],
@@ -81,20 +87,17 @@ module.exports = {
       title: manifest.name,
       logo: {
         alt: manifest.name,
-        src:
-          'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
+        src: 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
       },
       items: [
         {
-          to: '/api/',
-          activeBasePath: 'api',
-          label: 'API',
+          to: 'docs/installation',
+          label: 'Docs',
           position: 'left',
         },
         {
-          to: '/examples/',
-          activeBasePath: 'examples',
-          label: 'Examples',
+          to: 'docs/api/',
+          label: 'API',
           position: 'left',
         },
         {

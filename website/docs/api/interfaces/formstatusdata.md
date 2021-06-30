@@ -2,23 +2,21 @@
 id: "formstatusdata"
 title: "Interface: FormStatusData<SR>"
 sidebar_label: "FormStatusData"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Type parameters
 
-Name |
------- |
-`SR` |
-
-## Hierarchy
-
-* **FormStatusData**
+| Name |
+| :------ |
+| `SR` |
 
 ## Properties
 
 ### error
 
-•  **error**: [SubmitError](../classes/submiterror.md) \| null
+• **error**: ``null`` \| [`SubmitError`](../classes/submiterror.md)
 
 Submit result error.
 
@@ -26,7 +24,7 @@ ___
 
 ### hasErrors
 
-•  **hasErrors**: boolean
+• **hasErrors**: `boolean`
 
 True if any field validation errors currently exist.
 
@@ -34,7 +32,7 @@ ___
 
 ### hasSubmitErrors
 
-•  **hasSubmitErrors**: boolean
+• **hasSubmitErrors**: `boolean`
 
 True if any field submit validation errors currently exist.
 
@@ -42,7 +40,7 @@ ___
 
 ### hasWarnings
 
-•  **hasWarnings**: boolean
+• **hasWarnings**: `boolean`
 
 True if any field validation warnings currently exist.
 
@@ -50,7 +48,7 @@ ___
 
 ### result
 
-•  **result**: SR \| null
+• **result**: ``null`` \| `SR`
 
 Submit result.
 
@@ -58,7 +56,7 @@ ___
 
 ### submitFailed
 
-•  **submitFailed**: boolean
+• **submitFailed**: `boolean`
 
 True if the form has been submitted and the immediate submit has failed.
 
@@ -66,7 +64,7 @@ ___
 
 ### submitSucceeded
 
-•  **submitSucceeded**: boolean
+• **submitSucceeded**: `boolean`
 
 True if the form has been submitted and the immediate submit has succeeded.
 
@@ -74,6 +72,6 @@ ___
 
 ### submitting
 
-•  **submitting**: boolean
+• **submitting**: `boolean`
 
 True if the form has been submitted and is submit resolution is pending.

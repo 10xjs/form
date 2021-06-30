@@ -2,36 +2,36 @@
 id: "formproviderprops"
 title: "Interface: FormProviderProps<VS, SD, ES, WS>"
 sidebar_label: "FormProviderProps"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Type parameters
 
-Name | Default | Description |
------- | ------ | ------ |
-`VS` | - | Type of form value state. |
-`SD` | - | Type of submit handler result. |
-`ES` | null | Type of form error state. |
-`WS` | null | Type of form warning state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `VS` | `VS` | Type of form value state. |
+| `SD` | `SD` | Type of submit handler result. |
+| `ES` | `undefined` | Type of form error state. |
+| `WS` | `undefined` | Type of form warning state. |
 
 ## Hierarchy
 
-* [FormOptions](formoptions.md)&#60;VS, SD, ES, WS>
+- [`FormOptions`](formoptions.md)<`VS`, `SD`, `ES`, `WS`\>
 
-  ↳ **FormProviderProps**
+  ↳ **`FormProviderProps`**
 
 ## Properties
 
 ### children
 
-• `Optional` **children**: React.ReactNode
+• `Optional` **children**: `ReactNode` \| (`form`: [`FormState`](../classes/formstate.md)<`VS`, `SD`, `ES`, `WS`\>) => ``null`` \| `ReactElement`<`any`, `string` \| `JSXElementConstructor`<`any`\>\>
 
 ___
 
 ### onSubmit
 
-•  **onSubmit**: (values: VS) => undefined \| [SubmitResult](../types/submitresult.md)&#60;SD> \| Promise&#60;[SubmitResult](../types/submitresult.md)&#60;SD>>
-
-*Inherited from [FormOptions](formoptions.md).[onSubmit](formoptions.md#onsubmit)*
+• **onSubmit**: [`SubmitHandler`](../types/submithandler.md)<`VS`, `SD`\>
 
 This handler is triggered by a call to the [FormState.submit](../classes/formstate.md#submit) method
 if all fields are currently valid and returns a
@@ -50,7 +50,7 @@ const options = {
 Return async submit validation errors as a failed submit result, _not_ as
 a thrown error or rejected promise (See [error handling](../../errors.md)).
 
-```js live
+```js live noInline
 const options = {
   async onSubmit(values) {
     // process submit event...
@@ -59,13 +59,15 @@ const options = {
 };
 ```
 
+#### Inherited from
+
+[FormOptions](formoptions.md).[onSubmit](formoptions.md#onsubmit)
+
 ___
 
 ### validate
 
-• `Optional` **validate**: undefined \| (values: VS) => null \| ES
-
-*Inherited from [FormOptions](formoptions.md).[validate](formoptions.md#validate)*
+• `Optional` **validate**: [`ValidateHandler`](../types/validatehandler.md)<`VS`, `ES`\>
 
 Run error validation on the entire value state. This handler is triggered
 when a [FormState](../classes/formstate.md) instance is first initialized and every time the
@@ -85,19 +87,21 @@ const options = {
 };
 ```
 
+#### Inherited from
+
+[FormOptions](formoptions.md).[validate](formoptions.md#validate)
+
 ___
 
 ### values
 
-•  **values**: VS
+• **values**: `VS`
 
 ___
 
 ### warn
 
-• `Optional` **warn**: undefined \| (values: VS) => null \| WS
-
-*Inherited from [FormOptions](formoptions.md).[warn](formoptions.md#warn)*
+• `Optional` **warn**: [`ValidateHandler`](../types/validatehandler.md)<`VS`, `WS`\>
 
 Use this handler to process _soft_ validation "errors" that should not
 block a submit event. This handler otherwise has identical behavior to
@@ -113,3 +117,7 @@ const options = {
   },
 };
 ```
+
+#### Inherited from
+
+[FormOptions](formoptions.md).[warn](formoptions.md#warn)

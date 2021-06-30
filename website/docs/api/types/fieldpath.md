@@ -2,9 +2,11 @@
 id: "fieldpath"
 title: "Type alias: FieldPath"
 sidebar_label: "FieldPath"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-Ƭ  **FieldPath**: string \| Array&#60;string \| number>
+Ƭ **FieldPath**: `string` \| (`string` \| `number`)[]
 
 The path to a field within the form state as either a string or an array.
 

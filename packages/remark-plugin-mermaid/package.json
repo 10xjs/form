@@ -1,0 +1,11 @@
+{
+  "name": "remark-plugin-mermaid",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "mermaid": "8.11.0",
+    "puppeteer": "10.1.0",
+    "svgo": "2.3.1",
+    "unist-util-visit": "2.0.3"
+  }
+}

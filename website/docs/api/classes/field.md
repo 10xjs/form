@@ -2,225 +2,267 @@
 id: "field"
 title: "Class: Field<T>"
 sidebar_label: "Field"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Type parameters
 
-Name | Description |
------- | ------ |
-`T` | Field value type.  |
+| Name | Description |
+| :------ | :------ |
+| `T` | Field value type. |
 
 ## Hierarchy
 
-* [StateManager](statemanager.md)&#60;[FieldData](../interfaces/fielddata.md)&#60;T>>
+- `StateManager`<[`FieldData`](../interfaces/fielddata.md)<`T`\>\>
 
-  ↳ **Field**
-
-## Implements
-
-* [Subscribable](../interfaces/subscribable.md)&#60;[FieldData](../interfaces/fielddata.md)&#60;T>>
+  ↳ **`Field`**
 
 ## Constructors
 
 ### constructor
 
-\+ **new Field**(`path`: [FieldPath](../types/fieldpath.md), `form`: [FormState](formstate.md)&#60;any, any, any, any>): [Field](field.md)
+• **new Field**<`T`\>(`path`, `form`)
 
-*Overrides [StateManager](statemanager.md).[constructor](statemanager.md#constructor)*
+#### Type parameters
 
-#### Parameters:
+| Name |
+| :------ |
+| `T` |
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
-`form` | [FormState](formstate.md)&#60;any, any, any, any> |
+#### Parameters
 
-**Returns:** [Field](field.md)
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
+| `form` | [`FormState`](formstate.md)<`any`, `any`, `any`, `any`\> |
+
+#### Overrides
+
+StateManager&lt;FieldData&lt;T\&gt;\&gt;.constructor
 
 ## Properties
 
 ### form
 
-• `Readonly` **form**: [FormState](formstate.md)&#60;any, any, any, any>
+• `Readonly` **form**: [`FormState`](formstate.md)<`any`, `any`, `any`, `any`\>
 
 ___
 
 ### path
 
-• `Readonly` **path**: [FieldPath](../types/fieldpath.md)
+• `Readonly` **path**: [`FieldPath`](../types/fieldpath.md)
 
 ## Methods
 
 ### acceptPendingValue
 
-▸ **acceptPendingValue**(): void
+▸ **acceptPendingValue**(): `void`
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### blur
 
-▸ **blur**(): void
+▸ **blur**(): `void`
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### focus
 
-▸ **focus**(): void
+▸ **focus**(): `void`
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### getError
 
-▸ **getError**(): unknown
+▸ **getError**(): `unknown`
 
 The current field error value.
 
-**Returns:** unknown
+#### Returns
+
+`unknown`
 
 ___
 
 ### getInitialValue
 
-▸ **getInitialValue**(): T
+▸ **getInitialValue**(): `T`
 
 The initial value set set by an update to the root form value state.
 
-**Returns:** T
+#### Returns
+
+`T`
 
 ___
 
 ### getPendingValue
 
-▸ **getPendingValue**(): T
+▸ **getPendingValue**(): `T`
 
 The pending value set set by an update to the root form value state.
 
-**Returns:** T
+#### Returns
+
+`T`
 
 ___
 
 ### getState
 
-▸ **getState**(): T
+▸ **getState**(): [`FieldData`](../interfaces/fielddata.md)<`T`\>
 
-*Inherited from [StateManager](statemanager.md).[getState](statemanager.md#getstate)*
+#### Returns
 
-**Returns:** T
+[`FieldData`](../interfaces/fielddata.md)<`T`\>
+
+#### Inherited from
+
+StateManager.getState
 
 ___
 
 ### getValue
 
-▸ **getValue**(): T
+▸ **getValue**(): `T`
 
 The current value of the field.
 
-**Returns:** T
+#### Returns
+
+`T`
 
 ___
 
 ### getWarning
 
-▸ **getWarning**(): unknown
+▸ **getWarning**(): `unknown`
 
 The current field warning value.
 
-**Returns:** unknown
+#### Returns
+
+`unknown`
 
 ___
 
 ### isDetached
 
-▸ **isDetached**(): boolean
+▸ **isDetached**(): `boolean`
 
 True if the current value is different from the pending value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isDirty
 
-▸ **isDirty**(): boolean
+▸ **isDirty**(): `boolean`
 
 True if the current value is different from the initial value.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isFocused
 
-▸ **isFocused**(): boolean
+▸ **isFocused**(): `boolean`
 
 True if the field is currently focused.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isTouched
 
-▸ **isTouched**(): boolean
+▸ **isTouched**(): `boolean`
 
 True if the field value has been edited.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isVisited
 
-▸ **isVisited**(): boolean
+▸ **isVisited**(): `boolean`
 
 True if the field is has been or is currently focused.
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### rejectPendingValue
 
-▸ **rejectPendingValue**(): void
+▸ **rejectPendingValue**(): `void`
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### setValue
 
-▸ **setValue**(`setValueAction`: [SetValueAction](../types/setvalueaction.md)&#60;T>): void
+▸ **setValue**(`setValueAction`): `void`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`setValueAction` | [SetValueAction](../types/setvalueaction.md)&#60;T> |
+| Name | Type |
+| :------ | :------ |
+| `setValueAction` | [`SetValueAction`](../types/setvalueaction.md)<`T`\> |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### subscribe
 
-▸ **subscribe**(`subscriber`: () => void): object
+▸ **subscribe**(`subscriber`): `Object`
 
-*Inherited from [StateManager](statemanager.md).[subscribe](statemanager.md#subscribe)*
+#### Parameters
 
-#### Parameters:
+| Name | Type |
+| :------ | :------ |
+| `subscriber` | () => `void` |
 
-Name | Type |
------- | ------ |
-`subscriber` | () => void |
+#### Returns
 
-**Returns:** object
+`Object`
 
-Name | Type |
------- | ------ |
-`unsubscribe` | () => void |
+| Name | Type |
+| :------ | :------ |
+| `unsubscribe` | () => `void` |
+
+#### Inherited from
+
+StateManager.subscribe

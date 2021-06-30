@@ -1,0 +1,70 @@
+{
+  "name": "@10xjs/form",
+  "version": "0.1.7",
+  "description": "Form library",
+  "license": "MIT",
+  "author": "Neal Granger <neal@nealg.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/10xjs/form"
+  },
+  "bugs": {
+    "url": "https://github.com/10xjs/form/issues"
+  },
+  "homepage": "https://github.com/10xjs/form",
+  "main": "./lib/index.js",
+  "module": "./module/index.js",
+  "types": "./types/index.d.js",
+  "sideEffects": false,
+  "files": [
+    "lib",
+    "module",
+    "types",
+    "umd"
+  ],
+  "scripts": {
+    "test": "npm run test:types && npm run test:unit --silent",
+    "test:unit": "jest",
+    "test:types": "tsc --noEmit",
+    "build:clean": "rimraf lib module types umd",
+    "build": "npm run build:clean && rollup -c rollup.config.js",
+    "build:website": "cd website && yarn install && yarn build",
+    "serve:website": "cd website && yarn serve",
+    "prepublishOnly": "npm run test && npm run build",
+    "prepack": "node -e \"require('./package.json').files.map((file) => require('fs').statSync(require('path').join(process.cwd(), file)))\""
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "12.0.0",
+    "@testing-library/react-hooks": "^7.0.0",
+    "@types/jest": "26.0.23",
+    "@types/node": "15.12.5",
+    "@types/react": "17.0.11",
+    "@types/react-dom": "17.0.8",
+    "jest": "27.0.6",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "rimraf": "3.0.2",
+    "rollup": "2.52.3",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-terser": "7.0.2",
+    "rollup-plugin-typescript2": "0.30.0",
+    "ts-jest": "27.0.3",
+    "typescript": "4.3.4"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "transform": {
+      ".+\\.tsx?$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  }
+}

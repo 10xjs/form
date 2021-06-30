@@ -2,21 +2,25 @@
 id: "remove"
 title: "Function: remove"
 sidebar_label: "remove"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-▸ `Const`**remove**&#60;T>(`array`: T[], `index`: number): T[]
+▸ `Const` **remove**<`T`\>(`array`, `index`): `T`[]
 
-#### Type parameters:
+#### Type parameters
 
-Name | Type |
------- | ------ |
-`T` | unknown |
+| Name | Type |
+| :------ | :------ |
+| `T` | extends `unknown` |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`array` | T[] |
-`index` | number |
+| Name | Type |
+| :------ | :------ |
+| `array` | `T`[] |
+| `index` | `number` |
 
-**Returns:** T[]
+#### Returns
+
+`T`[]

@@ -2,56 +2,30 @@
 id: "submiterror"
 title: "Class: SubmitError"
 sidebar_label: "SubmitError"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Hierarchy
 
-* [Error](submiterror.md#error)
+- `Error`
 
-  ↳ **SubmitError**
+  ↳ **`SubmitError`**
 
-  ↳↳ [SubmitValidationError](submitvalidationerror.md)
+  ↳↳ [`SubmitValidationError`](submitvalidationerror.md)
 
 ## Constructors
 
 ### constructor
 
-\+ **new SubmitError**(`message`: string): [SubmitError](submiterror.md)
+• **new SubmitError**(`message`)
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`message` | string |
+| Name | Type |
+| :------ | :------ |
+| `message` | `string` |
 
-**Returns:** [SubmitError](submiterror.md)
+#### Overrides
 
-## Properties
-
-### message
-
-•  **message**: string
-
-*Inherited from [SubmitError](submiterror.md).[message](submiterror.md#message)*
-
-___
-
-### name
-
-•  **name**: string
-
-*Inherited from [SubmitError](submiterror.md).[name](submiterror.md#name)*
-
-___
-
-### stack
-
-• `Optional` **stack**: undefined \| string
-
-*Inherited from [SubmitError](submiterror.md).[stack](submiterror.md#stack)*
-
-___
-
-### Error
-
-▪ `Static` **Error**: ErrorConstructor
+Error.constructor

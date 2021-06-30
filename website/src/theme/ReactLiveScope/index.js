@@ -1,37 +1,9 @@
 import React from 'react';
 
-import {
-  Field,
-  FieldStatus,
-  Form,
-  FormProvider,
-  FormState,
-  FormStatus,
-  SubmitError,
-  SubmitValidationError,
-  fields,
-  useField,
-  useFieldStatus,
-  useForm,
-  useFormState,
-  useFormStatus,
-} from '@10xjs/form';
+import * as form from '@10xjs/form/lib';
 
 const ReactLiveScope = {
-  Field,
-  FieldStatus,
-  Form,
-  FormProvider,
-  FormState,
-  FormStatus,
-  SubmitError,
-  SubmitValidationError,
-  fields,
-  useField,
-  useFieldStatus,
-  useForm,
-  useFormState,
-  useFormStatus,
+  ...form,
   React,
   ...React,
 };

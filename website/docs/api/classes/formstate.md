@@ -2,36 +2,32 @@
 id: "formstate"
 title: "Class: FormState<VS, SD, ES, WS>"
 sidebar_label: "FormState"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 A class that implements the core form state machine behavior.
 
 ## Type parameters
 
-Name | Description |
------- | ------ |
-`VS` | Type of form value state. |
-`SD` | Type of submit handler result. |
-`ES` | Type of form error state. |
-`WS` | Type of form warning state.  |
+| Name | Description |
+| :------ | :------ |
+| `VS` | Type of form value state. |
+| `SD` | Type of submit handler result. |
+| `ES` | Type of form error state. |
+| `WS` | Type of form warning state. |
 
 ## Hierarchy
 
-* [StateManager](statemanager.md)&#60;[FormData](../interfaces/formdata.md)&#60;VS, SD, ES, WS>>
+- `StateManager`<[`FormData`](../interfaces/formdata.md)<`VS`, `SD`, `ES`, `WS`\>\>
 
-  ↳ **FormState**
-
-## Implements
-
-* [Subscribable](../interfaces/subscribable.md)&#60;[FormData](../interfaces/formdata.md)&#60;VS, SD, ES, WS>>
+  ↳ **`FormState`**
 
 ## Constructors
 
 ### constructor
 
-\+ **new FormState**(`initialValues`: VS, `options`: [FormOptions](../interfaces/formoptions.md)&#60;VS, SD, ES, WS>): [FormState](formstate.md)
-
-*Overrides [StateManager](statemanager.md).[constructor](statemanager.md#constructor)*
+• **new FormState**<`VS`, `SD`, `ES`, `WS`\>(`initialValues`, `options`)
 
 Create a new [FormState](formstate.md) instance with initial values and
 [config options](../interfaces/formoptions.md).
@@ -80,20 +76,33 @@ const form = new FormState(
 );
 ```
 
-#### Parameters:
+#### Type parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`initialValues` | VS | Initial form values. |
-`options` | [FormOptions](../interfaces/formoptions.md)&#60;VS, SD, ES, WS> | Form options object.  |
+| Name |
+| :------ |
+| `VS` |
+| `SD` |
+| `ES` |
+| `WS` |
 
-**Returns:** [FormState](formstate.md)
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `initialValues` | `VS` | Initial form values. |
+| `options` | [`FormOptions`](../interfaces/formoptions.md)<`VS`, `SD`, `ES`, `WS`\> | Form options object. |
+
+#### Overrides
+
+StateManager&lt;
+  FormData&lt;VS, SD, ES, WS\&gt;
+\&gt;.constructor
 
 ## Methods
 
 ### acceptPendingFieldValue
 
-▸ **acceptPendingFieldValue**(`path`: [FieldPath](../types/fieldpath.md)): void
+▸ **acceptPendingFieldValue**(`path`): `void`
 
 Set the pending value as the current value for a field.
 
@@ -111,19 +120,21 @@ formState.acceptPendingFieldValue('foo');
 formState.getFieldValue('foo'); // 'updated'
 ```
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | The path to a field within the form state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) | The path to a field within the form state. |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### blurField
 
-▸ **blurField**(`path`: [FieldPath](../types/fieldpath.md)): void
+▸ **blurField**(`path`): `void`
 
 Process a blur event for a given path. This clears the current focused path
 state and sets the touched flag for that path. In the case that the current
@@ -140,19 +151,21 @@ const form = new FormState({foo: 'bar'}, ...);
 formState.blurField('foo');
 ```
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | The path to a field within the form state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) | The path to a field within the form state. |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### focusField
 
-▸ **focusField**(`path`: [FieldPath](../types/fieldpath.md)): void
+▸ **focusField**(`path`): `void`
 
 Process a focus event for a given path. This sets the current focus path to
 the provided path and sets the visited flag for that path. In the case that
@@ -169,19 +182,21 @@ const form = new FormState({foo: 'bar'}, ...);
 formState.focusField('foo');
 ```
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | The path to a field within the form state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) | The path to a field within the form state. |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### getError
 
-▸ **getError**(): undefined \| [SubmitError](submiterror.md)
+▸ **getError**(): `undefined` \| [`SubmitError`](submiterror.md)
 
 Get the current submit error.
 
@@ -197,13 +212,15 @@ await form.submit();
 form.getError(); // SubmitValidationError
 ```
 
-**Returns:** undefined \| [SubmitError](submiterror.md)
+#### Returns
+
+`undefined` \| [`SubmitError`](submiterror.md)
 
 ___
 
 ### getErrors
 
-▸ **getErrors**(): undefined \| ES
+▸ **getErrors**(): `undefined` \| `ES`
 
 Get the current error validation state. This method returns the most recent
 value returned from [FormOptions.validate](../interfaces/formoptions.md#validate).
@@ -222,173 +239,203 @@ await form.submit();
 form.getError(); // SubmitValidationError
 ```
 
-**Returns:** undefined \| ES
+#### Returns
+
+`undefined` \| `ES`
 
 ___
 
 ### getFieldError
 
-▸ **getFieldError**(`path`: [FieldPath](../types/fieldpath.md)): any
+▸ **getFieldError**(`path`): `any`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** any
+#### Returns
+
+`any`
 
 ___
 
 ### getFieldValue
 
-▸ **getFieldValue**(`path`: [FieldPath](../types/fieldpath.md)): any
+▸ **getFieldValue**(`path`): `any`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** any
+#### Returns
+
+`any`
 
 ___
 
 ### getFieldWarning
 
-▸ **getFieldWarning**(`path`: [FieldPath](../types/fieldpath.md)): any
+▸ **getFieldWarning**(`path`): `any`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** any
+#### Returns
+
+`any`
 
 ___
 
 ### getInitialFieldValue
 
-▸ **getInitialFieldValue**(`path`: [FieldPath](../types/fieldpath.md)): any
+▸ **getInitialFieldValue**(`path`): `any`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** any
+#### Returns
+
+`any`
 
 ___
 
 ### getPendingFieldValue
 
-▸ **getPendingFieldValue**(`path`: [FieldPath](../types/fieldpath.md)): any
+▸ **getPendingFieldValue**(`path`): `any`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** any
+#### Returns
+
+`any`
 
 ___
 
 ### getResult
 
-▸ **getResult**(): undefined \| SD
+▸ **getResult**(): `undefined` \| `SD`
 
-**Returns:** undefined \| SD
+#### Returns
+
+`undefined` \| `SD`
 
 ___
 
 ### getState
 
-▸ **getState**(): T
+▸ **getState**(): [`FormData`](../interfaces/formdata.md)<`VS`, `SD`, `ES`, `WS`\>
 
-*Inherited from [StateManager](statemanager.md).[getState](statemanager.md#getstate)*
+#### Returns
 
-**Returns:** T
+[`FormData`](../interfaces/formdata.md)<`VS`, `SD`, `ES`, `WS`\>
+
+#### Inherited from
+
+StateManager.getState
 
 ___
 
 ### getSubmitErrors
 
-▸ **getSubmitErrors**(): undefined \| ES
+▸ **getSubmitErrors**(): `undefined` \| `ES`
 
 Get the current warning validation state. This method returns the most
 recent value returned from [FormOptions.validate](../interfaces/formoptions.md#validate).
 
-**Returns:** undefined \| ES
+#### Returns
+
+`undefined` \| `ES`
 
 ___
 
 ### getSubmitStatus
 
-▸ **getSubmitStatus**(): [FormSubmitStatus](../enums/formsubmitstatus.md)
+▸ **getSubmitStatus**(): [`FormSubmitStatus`](../enums/formsubmitstatus.md)
 
-**Returns:** [FormSubmitStatus](../enums/formsubmitstatus.md)
+#### Returns
+
+[`FormSubmitStatus`](../enums/formsubmitstatus.md)
 
 ___
 
 ### getWarnings
 
-▸ **getWarnings**(): undefined \| WS
+▸ **getWarnings**(): `undefined` \| `WS`
 
 Get the current warning validation state. This method returns the most
 recent value returned from [FormOptions.warn](../interfaces/formoptions.md#warn).
 
-**Returns:** undefined \| WS
+#### Returns
+
+`undefined` \| `WS`
 
 ___
 
 ### isFieldFocused
 
-▸ **isFieldFocused**(`path`: [FieldPath](../types/fieldpath.md)): boolean
+▸ **isFieldFocused**(`path`): `boolean`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isFieldTouched
 
-▸ **isFieldTouched**(`path`: [FieldPath](../types/fieldpath.md)): boolean
+▸ **isFieldTouched**(`path`): `boolean`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### isFieldVisited
 
-▸ **isFieldVisited**(`path`: [FieldPath](../types/fieldpath.md)): boolean
+▸ **isFieldVisited**(`path`): `boolean`
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`path` | [FieldPath](../types/fieldpath.md) |
+| Name | Type |
+| :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) |
 
-**Returns:** boolean
+#### Returns
+
+`boolean`
 
 ___
 
 ### rejectPendingFieldValue
 
-▸ **rejectPendingFieldValue**(`path`: [FieldPath](../types/fieldpath.md)): void
+▸ **rejectPendingFieldValue**(`path`): `void`
 
 Set the current value as the pending value for a field.
 
@@ -406,80 +453,92 @@ formState.rejectPendingFieldValue('foo');
 formState.getPendingFieldValue('foo'); // 'foo'
 ```
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | The path to a field within the form state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) | The path to a field within the form state. |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### runValidate
 
-▸ **runValidate**(): void
+▸ **runValidate**(): `void`
 
 Update the error state with the result of the provided validate callback.
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### runWarn
 
-▸ **runWarn**(): void
+▸ **runWarn**(): `void`
 
 Update the warning state with the result of the provided warn callback.
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### setFieldValue
 
-▸ **setFieldValue**(`path`: [FieldPath](../types/fieldpath.md), `setValueAction`: [SetValueAction](../types/setvalueaction.md)&#60;any>): void
+▸ **setFieldValue**(`path`, `setValueAction`): `void`
 
 Set the current value at a given path and run the provided validate and
 warn callbacks to update the error and warning state if the value change
 is not idempotent.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | [FieldPath](../types/fieldpath.md) | The path to a field within the form state. |
-`setValueAction` | [SetValueAction](../types/setvalueaction.md)&#60;any> |   |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `path` | [`FieldPath`](../types/fieldpath.md) | The path to a field within the form state. |
+| `setValueAction` | `any` |  |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### setValues
 
-▸ **setValues**(`values`: VS): void
+▸ **setValues**(`values`): `void`
 
 Process an incoming values prop. This action update the cached initial
 values and pending values in the state - which will in turn update the
 derived detached and dirty flags returned from useField.
 
-#### Parameters:
+#### Parameters
 
-Name | Type | Description |
------- | ------ | ------ |
-`values` | VS |   |
+| Name | Type |
+| :------ | :------ |
+| `values` | `VS` |
 
-**Returns:** void
+#### Returns
+
+`void`
 
 ___
 
 ### submit
 
-▸ **submit**(): Promise&#60;void>
+▸ **submit**(): `Promise`<`void`\>
 
 Submit the current form values by calling the configured submit callback.
 
-**Returns:** Promise&#60;void>
+#### Returns
+
+`Promise`<`void`\>
 
 A promise that resolves when the submit sequence is complete.
 
@@ -487,18 +546,22 @@ ___
 
 ### subscribe
 
-▸ **subscribe**(`subscriber`: () => void): object
+▸ **subscribe**(`subscriber`): `Object`
 
-*Inherited from [StateManager](statemanager.md).[subscribe](statemanager.md#subscribe)*
+#### Parameters
 
-#### Parameters:
+| Name | Type |
+| :------ | :------ |
+| `subscriber` | () => `void` |
 
-Name | Type |
------- | ------ |
-`subscriber` | () => void |
+#### Returns
 
-**Returns:** object
+`Object`
 
-Name | Type |
------- | ------ |
-`unsubscribe` | () => void |
+| Name | Type |
+| :------ | :------ |
+| `unsubscribe` | () => `void` |
+
+#### Inherited from
+
+StateManager.subscribe

@@ -5,7 +5,15 @@ node_modules
 /website/.docusaurus
 /website/.cache-loader
 
-/lib
-/umd
-/module
-/types
+/packages/form/lib
+/packages/form/umd
+/packages/form/module
+/packages/form/types
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

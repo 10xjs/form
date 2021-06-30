@@ -2,89 +2,87 @@
 id: "formdata"
 title: "Interface: FormData<VS, SD, ES, WS>"
 sidebar_label: "FormData"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
 ## Type parameters
 
-Name | Description |
------- | ------ |
-`VS` | Type of form value state. |
-`SD` | Type of submit handler result. |
-`ES` | Type of form error state. |
-`WS` | Type of form warning state.  |
-
-## Hierarchy
-
-* **FormData**
+| Name | Description |
+| :------ | :------ |
+| `VS` | Type of form value state. |
+| `SD` | Type of submit handler result. |
+| `ES` | Type of form error state. |
+| `WS` | Type of form warning state. |
 
 ## Properties
 
 ### error
 
-• `Optional` **error**: [SubmitError](../classes/submiterror.md)
+• `Optional` **error**: [`SubmitError`](../classes/submiterror.md)
 
 ___
 
 ### errors
 
-• `Optional` **errors**: ES
+• `Optional` **errors**: `ES`
 
 ___
 
 ### focusedPath
 
-• `Optional` **focusedPath**: undefined \| string
+• `Optional` **focusedPath**: `string`
 
 ___
 
 ### initialValues
 
-•  **initialValues**: VS
+• **initialValues**: `VS`
 
 ___
 
 ### pendingValues
 
-•  **pendingValues**: VS
+• **pendingValues**: `VS`
 
 ___
 
 ### result
 
-• `Optional` **result**: SD
+• `Optional` **result**: `SD`
 
 ___
 
 ### submitErrors
 
-• `Optional` **submitErrors**: ES
+• `Optional` **submitErrors**: `ES`
 
 ___
 
 ### submitStatus
 
-•  **submitStatus**: [FormSubmitStatus](../enums/formsubmitstatus.md)
+• **submitStatus**: [`FormSubmitStatus`](../enums/formsubmitstatus.md)
 
 ___
 
 ### touchedMap
 
-•  **touchedMap**: Record&#60;string, boolean>
+• **touchedMap**: `Record`<`string`, `boolean`\>
 
 ___
 
 ### values
 
-•  **values**: VS
+• **values**: `VS`
 
 ___
 
 ### visitedMap
 
-•  **visitedMap**: Record&#60;string, boolean>
+• **visitedMap**: `Record`<`string`, `boolean`\>
 
 ___
 
 ### warnings
 
-• `Optional` **warnings**: WS
+• `Optional` **warnings**: `WS`

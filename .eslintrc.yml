@@ -33,6 +33,7 @@ rules:
   react/prop-types: off
   react/display-name: off
   react/react-in-jsx-scope: off
+  no-use-before-define: off
 
 overrides:
   - files: '**/*.test.ts?(x)'

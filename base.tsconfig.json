@@ -14,6 +14,7 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["dom", "esnext"]
+    "lib": ["dom", "esnext"],
+    "resolveJsonModule": true
   }
 }

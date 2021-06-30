@@ -2,24 +2,28 @@
 id: "useformstate"
 title: "Function: useFormState"
 sidebar_label: "useFormState"
+sidebar_position: 0
+custom_edit_url: null
 ---
 
-▸ `Const`**useFormState**&#60;VS, SD, ES, WS>(`values`: VS, `options`: [FormOptions](../interfaces/formoptions.md)&#60;VS, SD, ES, WS>): [FormState](../classes/formstate.md)&#60;VS, SD, ES, WS>
+▸ `Const` **useFormState**<`VS`, `SD`, `ES`, `WS`\>(`values`, `options`): [`FormState`](../classes/formstate.md)<`VS`, `SD`, `ES`, `WS`\>
 
-#### Type parameters:
+#### Type parameters
 
-Name | Default | Description |
------- | ------ | ------ |
-`VS` | - | Type of form value state. |
-`SD` | - | Type of submit handler result. |
-`ES` | null | Type of form error state. |
-`WS` | null | Type of form warning state.  |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `VS` | `VS` | Type of form value state. |
+| `SD` | `SD` | Type of submit handler result. |
+| `ES` | ``null`` | Type of form error state. |
+| `WS` | ``null`` | Type of form warning state. |
 
-#### Parameters:
+#### Parameters
 
-Name | Type |
------- | ------ |
-`values` | VS |
-`options` | [FormOptions](../interfaces/formoptions.md)&#60;VS, SD, ES, WS> |
+| Name | Type |
+| :------ | :------ |
+| `values` | `VS` |
+| `options` | [`FormOptions`](../interfaces/formoptions.md)<`VS`, `SD`, `ES`, `WS`\> |
 
-**Returns:** [FormState](../classes/formstate.md)&#60;VS, SD, ES, WS>
+#### Returns
+
+[`FormState`](../classes/formstate.md)<`VS`, `SD`, `ES`, `WS`\>
