@@ -60,7 +60,7 @@ export enum FormSubmitStatus {
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export interface FormData<VS, SD, ES, WS> {
+export interface FormData<VS, SD = unknown, ES = undefined, WS = undefined> {
   values: VS;
   initialValues: VS;
   pendingValues: VS;
@@ -100,7 +100,7 @@ export type ValidateHandler<VS, ES = undefined> = (
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export interface FormOptions<VS, SD, ES = undefined, WS = undefined> {
+export interface FormOptions<VS, SD = unknown, ES = undefined, WS = undefined> {
   /**
    * This handler is triggered by a call to the {@link FormState.submit} method
    * if all fields are currently valid and returns a
@@ -170,7 +170,7 @@ export interface FormOptions<VS, SD, ES = undefined, WS = undefined> {
 }
 
 /** @internal */
-class FormConfig<VS, SD, ES = undefined, WS = undefined> {
+class FormConfig<VS, SD = unknown, ES = undefined, WS = undefined> {
   constructor(private readonly config: FormOptions<VS, SD, ES, WS>) {}
 
   get onSubmit() {
@@ -214,9 +214,12 @@ export type SetValueAction<T> = T | ((currentValue: T) => T);
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export class FormState<VS, SD, ES, WS> extends StateManager<
-  FormData<VS, SD, ES, WS>
-> {
+export class FormState<
+  VS,
+  SD = unknown,
+  ES = undefined,
+  WS = undefined,
+> extends StateManager<FormData<VS, SD, ES, WS>> {
   private readonly _config: FormConfig<VS, SD, ES, WS>;
 
   /**

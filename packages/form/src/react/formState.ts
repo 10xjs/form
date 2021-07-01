@@ -27,7 +27,7 @@ class OptionsProxy<VS, SD, ES, WS> {
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export const useFormState = <VS, SD, ES = null, WS = null>(
+export const useFormState = <VS, SD = unknown, ES = undefined, WS = undefined>(
   values: VS,
   options: FormOptions<VS, SD, ES, WS>,
 ): FormState<VS, SD, ES, WS> => {

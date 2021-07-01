@@ -27,8 +27,12 @@ export const useForm = () => {
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export interface FormProviderProps<VS, SD, ES = undefined, WS = undefined>
-  extends FormOptions<VS, SD, ES, WS> {
+export interface FormProviderProps<
+  VS,
+  SD = unknown,
+  ES = undefined,
+  WS = undefined,
+> extends FormOptions<VS, SD, ES, WS> {
   values: VS;
   children?:
     | React.ReactNode
@@ -64,7 +68,7 @@ const FormProviderRefComponent: React.ForwardRefRenderFunction<
  * @typeParam WS Type of form warning state.
  */
 export const FormProvider: {
-  <VS, SD, ES = undefined, WS = undefined>(
+  <VS, SD = unknown, ES = undefined, WS = undefined>(
     props: FormProviderProps<VS, SD, ES, WS> &
       React.RefAttributes<FormState<VS, SD, ES, WS>>,
   ): React.ReactElement | null;
