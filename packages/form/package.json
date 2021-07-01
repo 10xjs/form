@@ -27,7 +27,7 @@
     "test:unit": "jest",
     "test:types": "tsc --noEmit",
     "build:clean": "rimraf lib module types",
-    "build": "yarn build:clean && node build.js",
+    "build": "yarn build:clean && yarn build:types && node build.js",
     "build:website": "cd website && yarn install && yarn build:types && yarn build",
     "serve:website": "cd website && yarn serve",
     "prepublishOnly": "npm run test && npm run build",
