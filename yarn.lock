@@ -6237,6 +6237,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"docs@workspace:docs":
+  version: 0.0.0-use.local
+  resolution: "docs@workspace:docs"
+  dependencies:
+    "@10xjs/form": "workspace:*"
+    "@docusaurus/core": 2.0.0-beta.2
+    "@docusaurus/preset-classic": 2.0.0-beta.2
+    "@docusaurus/remark-plugin-npm2yarn": 2.0.0-beta.2
+    "@docusaurus/theme-live-codeblock": 2.0.0-beta.2
+    "@mdx-js/react": ^1.6.21
+    "@svgr/webpack": ^5.5.0
+    clsx: ^1.1.1
+    docusaurus-plugin-typedoc: 0.15.0
+    file-loader: ^6.2.0
+    prism-react-renderer: ^1.2.1
+    react: ^17.0.1
+    react-dom: ^17.0.1
+    remark-plugin-mermaid: "workspace:*"
+    typedoc: 0.21.2
+    typedoc-plugin-markdown: 3.10.2
+    url-loader: ^4.1.1
+  languageName: unknown
+  linkType: soft
+
 "doctrine@npm:^2.1.0":
   version: 2.1.0
   resolution: "doctrine@npm:2.1.0"
@@ -15947,30 +15971,6 @@ typescript@4.3.4:
   checksum: 0c69f0998551a7218c43f65ba1f11e6c3262141011047a77434af013cf543c12916050a419c7528970dd2181d3d5339d28d1bb77d4d77d6a8c89a658286c3335
   languageName: node
   linkType: hard
-
-"website@workspace:website":
-  version: 0.0.0-use.local
-  resolution: "website@workspace:website"
-  dependencies:
-    "@10xjs/form": "workspace:*"
-    "@docusaurus/core": 2.0.0-beta.2
-    "@docusaurus/preset-classic": 2.0.0-beta.2
-    "@docusaurus/remark-plugin-npm2yarn": 2.0.0-beta.2
-    "@docusaurus/theme-live-codeblock": 2.0.0-beta.2
-    "@mdx-js/react": ^1.6.21
-    "@svgr/webpack": ^5.5.0
-    clsx: ^1.1.1
-    docusaurus-plugin-typedoc: 0.15.0
-    file-loader: ^6.2.0
-    prism-react-renderer: ^1.2.1
-    react: ^17.0.1
-    react-dom: ^17.0.1
-    remark-plugin-mermaid: "workspace:*"
-    typedoc: 0.21.2
-    typedoc-plugin-markdown: 3.10.2
-    url-loader: ^4.1.1
-  languageName: unknown
-  linkType: soft
 
 "websocket-driver@npm:>=0.5.1, websocket-driver@npm:^0.7.4":
   version: 0.7.4

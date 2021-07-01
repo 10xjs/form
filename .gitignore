@@ -1,9 +1,9 @@
 *.log
 node_modules
 
-/website/build
-/website/.docusaurus
-/website/.cache-loader
+/docs/build
+/docs/.docusaurus
+/docs/.cache-loader
 
 /packages/form/lib
 /packages/form/umd
@@ -16,4 +16,5 @@ node_modules
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
+!.yarn/.cache/webpack
 .pnp.*

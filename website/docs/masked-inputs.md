@@ -1,3 +1,0 @@
----
-title: Masked Inputs
----

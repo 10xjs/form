@@ -1,12 +1,12 @@
 *.log
 node_modules
-/website/build
-/website/.docusaurus
-/website/.cache-loader
+/docs/build
+/docs/.docusaurus
+/docs/.cache-loader
 
 # Generated
-/website/typedoc-sidebar.js
-/website/docs/api
+/docs/typedoc-sidebar.js
+/docs/docs/api
 
 /packages/form/lib
 /packages/form/umd

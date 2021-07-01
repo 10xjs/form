@@ -1,0 +1,356 @@
+---
+title: Component Patterns
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## External Components
+
+<Tabs
+  groupId="ts2js"
+  defaultValue="ts"
+  values={[
+    { label: 'TypeScript', value: 'ts', },
+    { label: 'JavaScript', value: 'js', },
+  ]}
+>
+<TabItem value="ts">
+
+```tsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+
+type InputProps = JSX.IntrinsicElements['input'] & {
+  path: string;
+}
+
+const Input = (props: InputProps) => {
+  const {path, disabled, ...baseProps} = props;
+
+  const [{value}, field] = useField(path);
+  const [{submitting}] = useFormStatus(path);
+
+  return (
+    <input
+      {...baseProps}
+      disabled={disabled || submitting}
+      value={value}
+      onFocus={() => field.focus()}
+      onBlur={() => field.blur()}
+      onChange={(event) => field.setValue(event.target.value)}
+    />
+  );
+};
+
+type SubmitProps = JSX.IntrinsicElements['button'];
+
+const Submit = (props: SubmitProps) => {
+  const {disabled, ...baseProps} = props;
+
+  const [{submitting}] = useFormStatus(path);
+
+  return (
+    <button type="submit" disabled={disabled || submitting} {...props}/>
+  );
+}
+
+interface Values {
+  field: string;
+}
+
+const initialValues: Values = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      <Form>
+        <Input path="field"/>
+        <Submit>
+          Submit
+        </Submit>
+      </Form>
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+<TabItem value="js">
+
+```jsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+
+const Input = (props) => {
+  const {path, disabled, ...baseProps} = props;
+
+  const [{value}, field] = useField(path);
+  const [{submitting}] = useFormStatus(path);
+
+  return (
+    <input
+      {...baseProps}
+      disabled={disabled || submitting}
+      value={value}
+      onFocus={() => field.focus()}
+      onBlur={() => field.blur()}
+      onChange={(event) => field.setValue(event.target.value)}
+    />
+  );
+};
+
+const Submit = (props) => {
+  const {disabled, ...baseProps} = props;
+
+  const [{submitting}] = useFormStatus(path);
+
+  return (
+    <button type="submit" disabled={disabled || submitting} {...props}/>
+  );
+}
+
+const initialValues = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      <Form>
+        <Input path="field"/>
+        <Submit>
+          Submit
+        </Submit>
+      </Form>
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+</Tabs>
+
+## Inline Components
+
+<Tabs
+  groupId="ts2js"
+  defaultValue="ts"
+  values={[
+    { label: 'TypeScript', value: 'ts', },
+    { label: 'JavaScript', value: 'js', },
+  ]}
+>
+<TabItem value="ts">
+
+```tsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+import {useCallback} from 'react';
+
+interface Values {
+  field: string;
+}
+
+const initialValues: Values = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  const Input = useCallback(
+    (props: JSX.IntrinsicElements['input'] & { path: string }) => {
+      const {path, disabled, ...baseProps} = props;
+
+      const [{value}, field] = useField(path);
+  const [{submitting}] = useFormStatus(path);
+
+      return (
+        <input
+          {...baseProps}
+          value={value}
+          onFocus={() => field.focus()}
+          onBlur={() => field.blur()}
+          onChange={(event) => field.setValue(event.target.value)}
+        />
+      );
+    },
+    [],
+  );
+
+  const Submit = useCallback(
+    (props: JSX.IntrinsicElements['button']) => {
+      const {disabled, ...baseProps} = props;
+
+      const [{submitting}] = useFormStatus(path);
+
+      return (
+        <button type="submit" disabled={disabled || submitting} {...props}/>
+      );
+    },
+    [],
+  );
+
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      <Form>
+        <Input path="field"/>
+        <Submit>
+          Submit
+        </Submit>
+      </Form>
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+<TabItem value="js">
+
+```jsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+import {useCallback} from 'react';
+
+const initialValues = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  const Input = useCallback(
+    (props) => {
+      const {path, disabled, ...baseProps} = props;
+
+      const [{value}, field] = useField(path);
+  const [{submitting}] = useFormStatus(path);
+
+      return (
+        <input
+          {...baseProps}
+          value={value}
+          onFocus={() => field.focus()}
+          onBlur={() => field.blur()}
+          onChange={(event) => field.setValue(event.target.value)}
+        />
+      );
+    },
+    [],
+  );
+
+  const Submit = useCallback(
+    (props) => {
+      const {disabled, ...baseProps} = props;
+
+      const [{submitting}] = useFormStatus(path);
+
+      return (
+        <button type="submit" disabled={disabled || submitting} {...props}/>
+      );
+    },
+    [],
+  );
+
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      <Form>
+        <Input path="field"/>
+        <Submit>
+          Submit
+        </Submit>
+      </Form>
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+</Tabs>
+
+## Render Callback
+
+<Tabs
+  groupId="ts2js"
+  defaultValue="ts"
+  values={[
+    { label: 'TypeScript', value: 'ts', },
+    { label: 'JavaScript', value: 'js', },
+  ]}
+>
+<TabItem value="ts">
+
+```tsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+
+interface Values {
+  field: string;
+}
+
+const initialValues: Values = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      {(form) => {
+        const [{value}, field] = useField('field', form);
+        const [{submitting}] = useFormStatus(path, form);
+
+        return (
+          <Form>
+            <input
+              {...baseProps}
+              disabled={submitting}
+              value={value}
+              onFocus={() => field.focus()}
+              onBlur={() => field.blur()}
+              onChange={(event) => field.setValue(event.target.value)}
+            />
+            <button type="submit" disabled={submitting}>
+              Submit
+            </button>
+          </Form>
+        )
+      }}
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+<TabItem value="js">
+
+```jsx
+import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
+
+const initialValues = {
+  field: 'initial value';
+}
+
+const Example = () => {
+  return (
+    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+      {(form) => {
+        const [{value}, field] = useField('field', form);
+        const [{submitting}] = useFormStatus(path, form);
+
+        return (
+          <Form>
+            <input
+              {...baseProps}
+              disabled={submitting}
+              value={value}
+              onFocus={() => field.focus()}
+              onBlur={() => field.blur()}
+              onChange={(event) => field.setValue(event.target.value)}
+            />
+            <button type="submit" disabled={submitting}>
+              Submit
+            </button>
+          </Form>
+        )
+      }}
+    </FormProvider>
+  );
+};
+```
+
+</TabItem>
+</Tabs>

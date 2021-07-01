@@ -3,15 +3,19 @@ module.exports = {
     Overview: ['installation', 'typescript', 'comparison'],
     Fundamentals: [
       'connecting-inputs',
+      'form-status',
       'form-lifecycle',
+      'component-patterns',
       'ui-libraries',
       'validation',
+      'accessibility',
     ],
     'Advanced Features': [
+      'value-types',
       'field-arrays',
       'external-state',
-      'masked-inputs',
       'dependent-fields',
+      'imperative-interface',
       'derived-state',
     ],
     Reference: [
