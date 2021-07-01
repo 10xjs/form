@@ -64,7 +64,7 @@ const FormProviderRefComponent: React.ForwardRefRenderFunction<
  * @typeParam WS Type of form warning state.
  */
 export const FormProvider: {
-  <VS, SD, ES = null, WS = undefined>(
+  <VS, SD, ES = undefined, WS = undefined>(
     props: FormProviderProps<VS, SD, ES, WS> &
       React.RefAttributes<FormState<VS, SD, ES, WS>>,
   ): React.ReactElement | null;
