@@ -32,18 +32,23 @@ export interface FormProviderProps<
   SD = unknown,
   ES = undefined,
   WS = undefined,
-> extends FormOptions<VS, SD, ES, WS> {
+> extends FormOptions<VS, SD, ES, WS>,
+    React.RefAttributes<FormState<VS, SD, ES, WS>> {
   values: VS;
   children?:
     | React.ReactNode
     | ((form: FormState<VS, SD, ES, WS>) => React.ReactElement | null);
 }
 
-/** @internal */
-const FormProviderRefComponent: React.ForwardRefRenderFunction<
-  FormState<any, any, any, any>,
-  FormProviderProps<any, any, any, any>
-> = (props, ref) => {
+const FormProviderRefComponent = <
+  VS,
+  SD = unknown,
+  ES = undefined,
+  WS = undefined,
+>(
+  props: FormProviderProps<VS, SD, ES, WS>,
+  ref: React.Ref<FormState<VS, SD, ES, WS>>,
+) => {
   const {values, validate, warn, onSubmit, children} = props;
 
   const form = useFormState(values, {
@@ -62,15 +67,55 @@ const FormProviderRefComponent: React.ForwardRefRenderFunction<
 };
 
 /**
+ * This React component initializes and provides a {@link FormState} instance through the React context.
+ *
+ * You can access the inner {@link FormState} instance with the {@link useForm} hook:
+ *
+ * ```jsx
+ * const Child = () => {
+ *   const form = useForm();
+ * }
+ * const Example () => {
+ *   return (
+ *     <FormProvider>
+ *       <Child/>
+ *     </FormProvider>
+ *   );
+ * }
+ * ```
+ *
+ * by using a `ref`:
+ *
+ * ```jsx
+ * const Example () => {
+ *   const formRef = useRef();
+ *
+ *   return (
+ *     <FormProvider ref={formRef}>
+ *       ...
+ *     </FormProvider>
+ *   );
+ * }
+ * ```
+ *
+ * or by providing a render callback function as component children:
+ * ```jsx
+ * const Example () => {
+ *   return (
+ *     <FormProvider>
+ *      {(form) => {
+ *        ...
+ *      }}
+ *     </FormProvider>
+ *   );
+ * }
+ * ```
+ *
  * @typeParam VS Type of form value state.
  * @typeParam SD Type of submit handler result.
  * @typeParam ES Type of form error state.
  * @typeParam WS Type of form warning state.
  */
-export const FormProvider: {
-  <VS, SD = unknown, ES = undefined, WS = undefined>(
-    props: FormProviderProps<VS, SD, ES, WS> &
-      React.RefAttributes<FormState<VS, SD, ES, WS>>,
-  ): React.ReactElement | null;
-  readonly $$typeof: symbol;
-} = React.forwardRef(FormProviderRefComponent);
+export const FormProvider = React.forwardRef(
+  FormProviderRefComponent,
+) as typeof FormProviderRefComponent;
