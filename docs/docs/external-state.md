@@ -1,3 +1,0 @@
----
-title: External & Dynamic State
----

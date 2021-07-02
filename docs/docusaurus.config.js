@@ -100,6 +100,11 @@ module.exports = {
           position: 'left',
         },
         {
+          to: 'docs/faq/',
+          label: 'FAQ',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/10xjs/form',
           label: 'GitHub',
           position: 'right',

@@ -15,56 +15,51 @@ import {fields, Form, FormProvider, useFormStatus} from '@10xjs/form';
 ```
 
 ```jsx live noInline
-const handleSubmit = (values) => {
-  if (values.username !== '' && values.password !== '') {
-    return {ok: true};
-  }
-
-  return {ok: false};
+const Submit = () => {
+  const [{submitting}] = useFormStatus();
+  return <button disabled={submitting}>submit</button>;
 };
 
-const Basic = () => {
+const Status = () => {
+  const [{submitting, submitSucceeded, submitFailed, hasErrors, result}] =
+    useFormStatus();
+
   return (
-    <FormProvider
-      values={{
-        username: '',
-        password: '',
-      }}
-      onSubmit={handleSubmit}
-    >
-      {(form) => {
-        const [status] = useFormStatus(form);
-
-        if (status.submitSucceeded) {
-          return <div>Success!</div>;
-        }
-
-        return (
-          <Form noValidate>
-            {status.submitFailed && <div>Invalid username or password</div>}
-            <div>
-              <label htmlFor="username">Username</label>
-              <br />
-              <fields.input id="username" path="username" />
-            </div>
-
-            <div>
-              <label htmlFor="password">Password</label>
-              <br />
-              <fields.input id="password" path="password" type="password" />
-            </div>
-
-            <div>
-              <button>submit</button>
-            </div>
-          </Form>
-        );
-      }}
-    </FormProvider>
+    <div>
+      {submitting
+        ? 'Loading'
+        : submitSucceeded
+        ? result
+        : submitFailed && hasErrors
+        ? 'Validation failed'
+        : null}
+    </div>
   );
 };
 
-render(Basic);
+const Example = () => (
+  <FormProvider
+    values={{name: ''}}
+    onSubmit={(values) =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ok: true, data: `Hello ${values.name} !`});
+        }, 2000);
+      })
+    }
+    validate={(values) => (values.name === '' ? {name: 'required'} : {})}
+  >
+    <Form>
+      <label>
+        Name <fields.input path="name" />
+      </label>
+      <Submit />
+    </Form>
+    <Status />
+  </FormProvider>
+);
+
+render(<Example />);
 ```
 
 ## Field Mapping

@@ -81,34 +81,56 @@ function Home() {
               <div className="col col--12">
                 <div className={styles.codeblock}>
                   <CodeBlock className="jsx" live noInline>
-                    {`const values = {
-  name: 'name',
+                    {`const Submit = () => {
+  const [{submitting}] = useFormStatus();
+  return <button disabled={submitting}>submit</button>;
 };
 
-const Result = () => {
-  const [data] = useFormStatus();
-  return <div>{data.result}</div>;
-}
+const Status = () => {
+  const [{
+    submitting,
+    submitSucceeded,
+    submitFailed,
+    hasErrors,
+    result,
+  }] = useFormStatus();
+
+  return (
+    <div>
+      {submitting
+        ? 'Loading'
+        : submitSucceeded
+        ? result
+        : submitFailed && hasErrors
+        ? 'Validation failed'
+        : null}
+    </div>
+  );
+};
 
 const Example = () => (
   <FormProvider
-    values={values}
-    onSubmit={(values) => ({
-      ok: true,
-      data: 'Hello ' + values.name + '!',
-    })}
+    values={{name: ''}}
+    onSubmit={(values) =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ok: true, data: \`Hello \${values.name} !\`});
+        }, 2000);
+      })
+    }
+    validate={(values) => (values.name === '' ? {name: 'required'} : {})}
   >
     <Form>
-      <fields.input path="name"/>
-      <br/>
-      <button>submit</button>
+      <label>
+        Name <fields.input path="name" />
+      </label>
+      <Submit />
     </Form>
-
-    <Result/>
+    <Status />
   </FormProvider>
 );
 
-render(<Example/>);
+render(<Example />);
 `}
                   </CodeBlock>
                 </div>

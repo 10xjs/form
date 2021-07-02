@@ -22,7 +22,7 @@ import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
 
 type InputProps = JSX.IntrinsicElements['input'] & {
   path: string;
-}
+};
 
 const Input = (props: InputProps) => {
   const {path, disabled, ...baseProps} = props;
@@ -49,27 +49,18 @@ const Submit = (props: SubmitProps) => {
 
   const [{submitting}] = useFormStatus(path);
 
-  return (
-    <button type="submit" disabled={disabled || submitting} {...props}/>
-  );
-}
-
-interface Values {
-  field: string;
-}
-
-const initialValues: Values = {
-  field: 'initial value';
-}
+  return <button type="submit" disabled={disabled || submitting} {...props} />;
+};
 
 const Example = () => {
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       <Form>
-        <Input path="field"/>
-        <Submit>
-          Submit
-        </Submit>
+        <Input path="field" />
+        <Submit>Submit</Submit>
       </Form>
     </FormProvider>
   );
@@ -105,23 +96,18 @@ const Submit = (props) => {
 
   const [{submitting}] = useFormStatus(path);
 
-  return (
-    <button type="submit" disabled={disabled || submitting} {...props}/>
-  );
-}
-
-const initialValues = {
-  field: 'initial value';
-}
+  return <button type="submit" disabled={disabled || submitting} {...props} />;
+};
 
 const Example = () => {
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       <Form>
-        <Input path="field"/>
-        <Submit>
-          Submit
-        </Submit>
+        <Input path="field" />
+        <Submit>Submit</Submit>
       </Form>
     </FormProvider>
   );
@@ -147,21 +133,13 @@ const Example = () => {
 import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
 import {useCallback} from 'react';
 
-interface Values {
-  field: string;
-}
-
-const initialValues: Values = {
-  field: 'initial value';
-}
-
 const Example = () => {
   const Input = useCallback(
-    (props: JSX.IntrinsicElements['input'] & { path: string }) => {
+    (props: JSX.IntrinsicElements['input'] & {path: string}) => {
       const {path, disabled, ...baseProps} = props;
 
       const [{value}, field] = useField(path);
-  const [{submitting}] = useFormStatus(path);
+      const [{submitting}] = useFormStatus(path);
 
       return (
         <input
@@ -176,26 +154,24 @@ const Example = () => {
     [],
   );
 
-  const Submit = useCallback(
-    (props: JSX.IntrinsicElements['button']) => {
-      const {disabled, ...baseProps} = props;
+  const Submit = useCallback((props: JSX.IntrinsicElements['button']) => {
+    const {disabled, ...baseProps} = props;
 
-      const [{submitting}] = useFormStatus(path);
+    const [{submitting}] = useFormStatus(path);
 
-      return (
-        <button type="submit" disabled={disabled || submitting} {...props}/>
-      );
-    },
-    [],
-  );
+    return (
+      <button type="submit" disabled={disabled || submitting} {...props} />
+    );
+  }, []);
 
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       <Form>
-        <Input path="field"/>
-        <Submit>
-          Submit
-        </Submit>
+        <Input path="field" />
+        <Submit>Submit</Submit>
       </Form>
     </FormProvider>
   );
@@ -209,51 +185,42 @@ const Example = () => {
 import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
 import {useCallback} from 'react';
 
-const initialValues = {
-  field: 'initial value';
-}
-
 const Example = () => {
-  const Input = useCallback(
-    (props) => {
-      const {path, disabled, ...baseProps} = props;
+  const Input = useCallback((props) => {
+    const {path, disabled, ...baseProps} = props;
 
-      const [{value}, field] = useField(path);
-  const [{submitting}] = useFormStatus(path);
+    const [{value}, field] = useField(path);
+    const [{submitting}] = useFormStatus(path);
 
-      return (
-        <input
-          {...baseProps}
-          value={value}
-          onFocus={() => field.focus()}
-          onBlur={() => field.blur()}
-          onChange={(event) => field.setValue(event.target.value)}
-        />
-      );
-    },
-    [],
-  );
+    return (
+      <input
+        {...baseProps}
+        value={value}
+        onFocus={() => field.focus()}
+        onBlur={() => field.blur()}
+        onChange={(event) => field.setValue(event.target.value)}
+      />
+    );
+  }, []);
 
-  const Submit = useCallback(
-    (props) => {
-      const {disabled, ...baseProps} = props;
+  const Submit = useCallback((props) => {
+    const {disabled, ...baseProps} = props;
 
-      const [{submitting}] = useFormStatus(path);
+    const [{submitting}] = useFormStatus(path);
 
-      return (
-        <button type="submit" disabled={disabled || submitting} {...props}/>
-      );
-    },
-    [],
-  );
+    return (
+      <button type="submit" disabled={disabled || submitting} {...props} />
+    );
+  }, []);
 
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       <Form>
-        <Input path="field"/>
-        <Submit>
-          Submit
-        </Submit>
+        <Input path="field" />
+        <Submit>Submit</Submit>
       </Form>
     </FormProvider>
   );
@@ -278,17 +245,12 @@ const Example = () => {
 ```tsx
 import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
 
-interface Values {
-  field: string;
-}
-
-const initialValues: Values = {
-  field: 'initial value';
-}
-
 const Example = () => {
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       {(form) => {
         const [{value}, field] = useField('field', form);
         const [{submitting}] = useFormStatus(path, form);
@@ -307,7 +269,7 @@ const Example = () => {
               Submit
             </button>
           </Form>
-        )
+        );
       }}
     </FormProvider>
   );
@@ -320,13 +282,12 @@ const Example = () => {
 ```jsx
 import {FormProvider, Form, useField, useFormStatus} from '@10xjs/form';
 
-const initialValues = {
-  field: 'initial value';
-}
-
 const Example = () => {
   return (
-    <FormProvider values={initialValues} onSubmit={() => ({ok: true})}>
+    <FormProvider
+      values={{field: 'initial value'}}
+      onSubmit={() => ({ok: true})}
+    >
       {(form) => {
         const [{value}, field] = useField('field', form);
         const [{submitting}] = useFormStatus(path, form);
@@ -345,7 +306,7 @@ const Example = () => {
               Submit
             </button>
           </Form>
-        )
+        );
       }}
     </FormProvider>
   );
