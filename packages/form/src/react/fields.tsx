@@ -38,7 +38,11 @@ function create<T extends 'input' | 'select' | 'textarea'>(Component: T) {
     const [data, field] = useField<string>(path);
 
     rest.onChange = combine<React.ChangeEvent<any>>(props.onChange, (event) => {
-      field.setValue(event.target.value);
+      if (event.currentTarget.type === 'checkbox') {
+        field.setValue(event.target.checked);
+      } else {
+        field.setValue(event.target.value);
+      }
     });
 
     rest.onFocus = combine<React.ChangeEvent<any>>(props.onFocus, (event) => {
@@ -49,7 +53,12 @@ function create<T extends 'input' | 'select' | 'textarea'>(Component: T) {
       field.blur();
     });
 
-    Object.assign(rest, {value: data.value, ref});
+    Object.assign(
+      rest,
+      (props as any).type === 'checkbox'
+        ? {checked: data.value, ref}
+        : {value: data.value, ref},
+    );
 
     return React.createElement(Component, rest);
   };
