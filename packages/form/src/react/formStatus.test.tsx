@@ -358,11 +358,16 @@ describe('useFormStatus hook', () => {
       await ref.current?.submit();
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 
     expect(handleStatus).toHaveBeenNthCalledWith(2, {
+      ...initialStatus,
+      submitting: true,
+    });
+
+    expect(handleStatus).toHaveBeenNthCalledWith(3, {
       ...initialStatus,
       submitSucceeded: true,
       result: submitResult,
@@ -390,7 +395,7 @@ describe('useFormStatus hook', () => {
       await ref.current?.submit();
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenLastCalledWith({
       ...initialStatus,
@@ -425,11 +430,16 @@ describe('useFormStatus hook', () => {
       await ref.current?.submit();
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 
     expect(handleStatus).toHaveBeenNthCalledWith(2, {
+      ...initialStatus,
+      submitting: true,
+    });
+
+    expect(handleStatus).toHaveBeenNthCalledWith(3, {
       ...initialStatus,
       submitFailed: true,
       hasSubmitErrors: true,
@@ -459,11 +469,11 @@ describe('useFormStatus hook', () => {
       await ref.current?.submit();
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 
-    expect(handleStatus).toHaveBeenNthCalledWith(2, {
+    expect(handleStatus).toHaveBeenNthCalledWith(3, {
       ...initialStatus,
       submitFailed: true,
       error: validationError,
@@ -498,11 +508,11 @@ describe('useFormStatus hook', () => {
       await first;
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(3);
+    expect(handleStatus).toHaveBeenCalledTimes(4);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 
-    expect(handleStatus).toHaveBeenNthCalledWith(2, {
+    expect(handleStatus).toHaveBeenNthCalledWith(3, {
       ...initialStatus,
       submitSucceeded: true,
     });
@@ -530,7 +540,7 @@ describe('useFormStatus hook', () => {
       await expect(ref.current?.submit()).rejects.toBe(unexpectedError);
     });
 
-    expect(handleStatus).toHaveBeenCalledTimes(2);
+    expect(handleStatus).toHaveBeenCalledTimes(3);
 
     expect(handleStatus).toHaveBeenNthCalledWith(1, initialStatus);
 

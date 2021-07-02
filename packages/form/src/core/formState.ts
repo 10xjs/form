@@ -582,6 +582,8 @@ export class FormState<
 
       this._submitStarted();
 
+      this._flush();
+
       if (errors !== undefined) {
         return resolve({ok: false, error: new SubmitValidationError(errors)});
       }
