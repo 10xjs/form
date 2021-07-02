@@ -65,17 +65,9 @@ export class FormStatus<SR> extends StateManager<FormStatusData<SR>> {
         ['submitSucceeded'],
         form.getSubmitStatus() === FormSubmitStatus.ended,
       );
-      nextState = set(nextState, ['hasErrors'], form.getErrors() !== undefined);
-      nextState = set(
-        nextState,
-        ['hasSubmitErrors'],
-        form.getSubmitErrors() !== undefined,
-      );
-      nextState = set(
-        nextState,
-        ['hasWarnings'],
-        form.getWarnings() !== undefined,
-      );
+      nextState = set(nextState, ['hasErrors'], form.hasErrors());
+      nextState = set(nextState, ['hasSubmitErrors'], form.hasSubmitErrors());
+      nextState = set(nextState, ['hasWarnings'], form.hasWarnings());
 
       nextState = set(nextState, ['error'], form.getError());
       nextState = set(nextState, ['result'], form.getResult());

@@ -617,31 +617,21 @@ export class FormState<
   /**
    * Get the current error validation state. This method returns the most recent
    * value returned from {@link FormOptions.validate}.
-   *
-   * See [validation](../../validation.md).
-   *
-   * ```js {9}
-   * const form = new FormState({}, {
-   *   onSubmit(values) {
-   *     return {ok: false,  error: new SubmitValidationError({...})};
-   *   }
-   * };
-   *
-   * await form.submit();
-   *
-   * form.getError(); // SubmitValidationError
-   * ```
    */
   getErrors() {
     return this.getState().errors;
   }
 
-  /**
-   * Get the current warning validation state. This method returns the most
-   * recent value returned from {@link FormOptions.validate}.
-   */
+  hasErrors() {
+    return this.getErrors() !== undefined;
+  }
+
   getSubmitErrors() {
     return this.getState().submitErrors;
+  }
+
+  hasSubmitErrors() {
+    return this.getSubmitErrors() !== undefined;
   }
 
   /**
@@ -650,6 +640,10 @@ export class FormState<
    */
   getWarnings() {
     return this.getState().warnings;
+  }
+
+  hasWarnings() {
+    return this.getWarnings() !== undefined;
   }
 
   /**
@@ -697,6 +691,17 @@ export class FormState<
 
   getInitialFieldValue(path: FieldPath): any {
     return get(this.getState().initialValues, parsePath(path));
+  }
+
+  isFieldDirty(path: FieldPath) {
+    return !equals(this.getFieldValue(path), this.getInitialFieldValue(path));
+  }
+
+  isFieldDetached(path: FieldPath) {
+    return !equals(
+      this.getPendingFieldValue(path),
+      this.getInitialFieldValue(path),
+    );
   }
 
   getFieldError(path: FieldPath): any {

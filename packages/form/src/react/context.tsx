@@ -15,7 +15,7 @@ export const useForm = () => {
   const context = React.useContext(formContext);
 
   if (context === null) {
-    throw new Error('<Form> context provider is missing.');
+    throw new Error('Form context provider is missing.');
   }
 
   return context;
