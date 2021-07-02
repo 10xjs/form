@@ -82,7 +82,6 @@ describe('useField hook', () => {
     expect(result.current[0]).toEqual({
       ...initialFieldValues,
       dirty: true,
-      pendingValue: 'updated',
       value: 'updated',
     });
   });
@@ -304,8 +303,6 @@ describe('useField hook', () => {
     expect(result.current[0]).toEqual({
       ...initialFieldValues,
       detached: true,
-      dirty: true,
-      initialValue: 'pending',
       pendingValue: 'pending',
     });
   });
@@ -349,10 +346,8 @@ describe('useField hook', () => {
 
     expect(result.current[0]).toEqual({
       ...initialFieldValues,
-      initialValue: 'pending',
-      pendingValue: 'pending',
-      dirty: true,
       detached: true,
+      pendingValue: 'pending',
     });
 
     act(() => {
@@ -389,9 +384,7 @@ describe('useField hook', () => {
 
     expect(result.current[0]).toEqual({
       ...initialFieldValues,
-      initialValue: 'pending',
       pendingValue: 'pending',
-      dirty: true,
       detached: true,
     });
 
@@ -399,11 +392,7 @@ describe('useField hook', () => {
       result.current[1].rejectPendingValue();
     });
 
-    expect(result.current[0]).toEqual({
-      ...initialFieldValues,
-      dirty: true,
-      initialValue: 'pending',
-    });
+    expect(result.current[0]).toEqual(initialFieldValues);
   });
 
   it('should respond correctly to focus changes', () => {

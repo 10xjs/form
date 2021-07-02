@@ -422,9 +422,6 @@ export class FormState<
     path: Array<string | number>,
     setValueAction: SetValueAction<any>,
   ) {
-    const maybeDetached =
-      this._getNextState().values !== this._getNextState().pendingValues;
-
     const currentValue = get(this._getNextState().values, path);
 
     const nextValue =
@@ -441,26 +438,6 @@ export class FormState<
 
     this._runValidate();
     this._runWarn();
-
-    // Keep the pending value state in sync with value changes since it
-    // is the difference between the two that signifies the existence of
-    // an incoming pending value.
-    // TODO: Consider of this is actually the best approach. Should a change event
-    // be treated as an implicit pending value rejection? Or should the rejection
-    // be explicit? Considering that a consumer can see the the presence of
-    // a pending value, the implicit rejection may be unnecessary and could cause
-    // issues. If removed, this behavior could be added by the consumer at the
-    // field level if desired.
-    if (maybeDetached) {
-      this._set(['pendingValues', ...path], nextValue);
-    } else {
-      // The pending values are equal to the values in the incoming state
-      // object. Rather than updating the value within the pending value state
-      // we can keep it in sync with the current value state.
-      this._set(['pendingValues'], this._getNextState().values);
-    }
-
-    // TODO: Test field error behavior during submit and subsequent field change.
 
     // Any validation errors returned by the submit handler are
     // invalidated by any value change.
@@ -480,10 +457,15 @@ export class FormState<
     this._flush();
   }
 
-  private _acceptPendingFieldValue(path: Array<string | number>) {
+  private _acceptPendingFieldValue(
+    path: Array<string | number>,
+    resolve: (value: any, pendingValue: any) => any,
+  ) {
+    const value = get(this._getNextState().values, path);
     const pendingValue = get(this._getNextState().pendingValues, path);
 
-    this._setFieldValue(path, pendingValue);
+    this._setFieldValue(path, resolve(value, pendingValue));
+    this._set(['initialValues', ...path], pendingValue);
   }
 
   /**
@@ -504,18 +486,21 @@ export class FormState<
    * ```
    *
    * @param path The path to a field within the form state.
+   * @param resolve
    */
-  acceptPendingFieldValue(path: FieldPath) {
-    this._acceptPendingFieldValue(parsePath(path));
+  acceptPendingFieldValue(
+    path: FieldPath,
+    resolve: (value: any, pendingValue: any) => any = (value, pendingValue) =>
+      pendingValue,
+  ) {
+    this._acceptPendingFieldValue(parsePath(path), resolve);
     this._flush();
   }
 
   private _rejectPendingFieldValue(path: Array<string | number>) {
-    const currentValue = get(this._getNextState().values, path);
+    const initialValue = get(this._getNextState().initialValues, path);
 
-    // "Erase" pending value by overwriting it with the current
-    // field value.
-    this._set(['pendingValues', ...path], currentValue);
+    this._set(['pendingValues', ...path], initialValue);
   }
 
   /**
@@ -543,7 +528,6 @@ export class FormState<
   }
 
   private _setValues(values: any) {
-    this._set(['initialValues'], values);
     this._set(['pendingValues'], values);
   }
 

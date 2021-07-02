@@ -403,25 +403,6 @@ describe('FormStateManager', () => {
       expect(form.getState().warnings).toBe('warnings');
     });
 
-    it('should overwrite the pending value at a path', () => {
-      const values = {foo: 'bar'};
-
-      const form = new FormState(values, {
-        onSubmit() {
-          return {ok: true, data: undefined};
-        },
-      });
-
-      form.setValues({foo: 'updated'});
-
-      expect(form.getState().pendingValues.foo).toBe('updated');
-
-      form.setFieldValue('foo', 'foo');
-
-      expect(form.getState().pendingValues.foo).toBe('foo');
-      expect(form.getState().values.foo).toBe('foo');
-    });
-
     it('should clear all submit validation errors', async () => {
       const values = {foo: 'bar'};
       const form = new FormState(values, {

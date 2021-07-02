@@ -1,6 +1,6 @@
 import {FieldPath, FormState, SetValueAction} from './formState';
 import {StateManager, Subscription} from './stateManager';
-import {equals, set} from './utils';
+import {set} from './utils';
 
 /**
  * @typeParam T - Field value type.
@@ -69,6 +69,8 @@ export class Field<T> extends StateManager<FieldData<T>> {
       nextState = set(nextState, ['focused'], form.isFieldFocused(path));
       nextState = set(nextState, ['visited'], form.isFieldVisited(path));
       nextState = set(nextState, ['touched'], form.isFieldTouched(path));
+      nextState = set(nextState, ['dirty'], form.isFieldDirty(path));
+      nextState = set(nextState, ['detached'], form.isFieldDetached(path));
 
       nextState = set(nextState, ['value'], value);
       nextState = set(nextState, ['initialValue'], initialValue);
@@ -76,9 +78,6 @@ export class Field<T> extends StateManager<FieldData<T>> {
 
       nextState = set(nextState, ['error'], form.getFieldError(path));
       nextState = set(nextState, ['warning'], form.getFieldWarning(path));
-
-      nextState = set(nextState, ['dirty'], !equals(value, initialValue));
-      nextState = set(nextState, ['detached'], !equals(value, pendingValue));
 
       return nextState as FieldData<T>;
     };
@@ -115,8 +114,8 @@ export class Field<T> extends StateManager<FieldData<T>> {
     this.form.setFieldValue(this.path, setValueAction);
   }
 
-  acceptPendingValue() {
-    this.form.acceptPendingFieldValue(this.path);
+  acceptPendingValue(resolve?: (value: T, pendingValue: T) => T) {
+    this.form.acceptPendingFieldValue(this.path, resolve);
   }
 
   rejectPendingValue() {

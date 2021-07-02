@@ -17,7 +17,7 @@ describe('useContext hook', () => {
     console.error = () => {};
 
     expect(() => render(<ContextConsumer />)).toThrow(
-      '<Form> context provider is missing.',
+      'Form context provider is missing.',
     );
 
     console.constructor.prototype.error = error;
