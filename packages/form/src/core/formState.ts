@@ -75,10 +75,17 @@ export interface FormData<VS, SD = unknown, ES = undefined, WS = undefined> {
   error?: SubmitError;
 }
 
+/**
+ * @typeParam SD Type of submit handler result.
+ */
 export type SubmitResult<SD = unknown> =
-  | {ok: true; data: SD}
+  | (unknown extends SD ? {ok: true; data?: SD} : {ok: true; data: SD})
   | {ok: false; error: SubmitError};
 
+/**
+ * @typeParam VS Type of form value state.
+ * @typeParam SD Type of submit handler result.
+ */
 export type SubmitHandler<VS, SD = unknown> = (
   values: VS,
 ) => // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
@@ -88,10 +95,14 @@ export type SubmitHandler<VS, SD = unknown> = (
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   | Promise<void | undefined | SubmitResult<SD>>;
 
-export type ValidateHandler<VS, ES = undefined> = (
+/**
+ * @typeParam VS Type of form value state.
+ * @typeParam S Type of form error or warning state.
+ */
+export type ValidateHandler<VS, S = undefined> = (
   values: VS,
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-) => void | undefined | ES;
+) => void | undefined | S;
 
 /**
  * Config options for the {@link FormState} class.
