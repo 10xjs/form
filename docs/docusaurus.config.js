@@ -105,6 +105,11 @@ module.exports = {
           position: 'left',
         },
         {
+          href: 'https://www.npmjs.com/package/@10xjs/form',
+          label: 'npm',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/10xjs/form',
           label: 'GitHub',
           position: 'right',
