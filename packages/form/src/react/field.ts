@@ -27,7 +27,7 @@ import {useSubscribe} from './stateManager';
  *
  * ```
  */
-export const useField = <T>(
+export const useField = <T = unknown, E = unknown, W = unknown>(
   path: FieldPath,
   // eslint-disable-next-line react-hooks/rules-of-hooks
   form: FormState<any, any, any, any> = useForm(),
@@ -35,7 +35,7 @@ export const useField = <T>(
   const pathKey = formatPath(path);
 
   const field = React.useMemo(() => {
-    return new Field<T>(path, form);
+    return new Field<T, E, W>(path, form);
   }, [form, pathKey]);
 
   const data = useSubscribe(field);

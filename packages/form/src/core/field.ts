@@ -4,8 +4,10 @@ import {set} from './utils';
 
 /**
  * @typeParam T - Field value type.
+ * @typeParam E - Field error type.
+ * @typeParam W - Field warning type.
  */
-export interface FieldData<T> {
+export interface FieldData<T = unknown, E = unknown, W = unknown> {
   /**
    * True if the field is currently focused.
    */
@@ -41,17 +43,19 @@ export interface FieldData<T> {
   /**
    * The current field error value.
    */
-  error: unknown;
+  error?: E;
   /**
    * The current field warning value.
    */
-  warning: unknown;
+  warning?: W;
 }
 
 /**
  * @typeParam T - Field value type.
  */
-export class Field<T> extends StateManager<FieldData<T>> {
+export class Field<T = unknown, E = unknown, W = unknown> extends StateManager<
+  FieldData<T, E, W>
+> {
   private _subscription?: Subscription;
 
   public readonly path: FieldPath;
@@ -59,7 +63,7 @@ export class Field<T> extends StateManager<FieldData<T>> {
   public readonly form: FormState<any, any, any, any>;
 
   constructor(path: FieldPath, form: FormState<any, any, any, any>) {
-    const getState = (state: Partial<FieldData<T>>) => {
+    const getState = (state: Partial<FieldData<T, E, W>>) => {
       let nextState = state;
 
       const value = form.getFieldValue(path);
@@ -79,7 +83,7 @@ export class Field<T> extends StateManager<FieldData<T>> {
       nextState = set(nextState, ['error'], form.getFieldError(path));
       nextState = set(nextState, ['warning'], form.getFieldWarning(path));
 
-      return nextState as FieldData<T>;
+      return nextState as FieldData<T, E, W>;
     };
 
     super(

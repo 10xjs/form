@@ -37,9 +37,9 @@ export interface FieldStatusData {
 export class FieldStatus extends StateManager<FieldStatusData> {
   private _subscription?: Subscription;
 
-  public readonly field: Field<any>;
+  public readonly field: Field;
 
-  constructor(field: Field<any>) {
+  constructor(field: Field) {
     const getState = (state: Partial<FieldStatusData>) => {
       let nextState = state;
 
