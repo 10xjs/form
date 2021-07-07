@@ -1,4 +1,3 @@
-import {SubmitError} from './errors';
 import {FormState, FormSubmitStatus} from './formState';
 import {StateManager, Subscription} from './stateManager';
 import {set} from './utils';
@@ -28,10 +27,6 @@ export interface FormStatusData<SR> {
    * True if any field validation warnings currently exist.
    */
   hasWarnings: boolean;
-  /**
-   * Submit result error.
-   */
-  error: SubmitError | null;
   /**
    * Submit result.
    */
@@ -69,7 +64,6 @@ export class FormStatus<SR> extends StateManager<FormStatusData<SR>> {
       nextState = set(nextState, ['hasSubmitErrors'], form.hasSubmitErrors());
       nextState = set(nextState, ['hasWarnings'], form.hasWarnings());
 
-      nextState = set(nextState, ['error'], form.getError());
       nextState = set(nextState, ['result'], form.getResult());
 
       return nextState as FormStatusData<SR>;

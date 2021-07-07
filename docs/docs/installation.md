@@ -215,7 +215,7 @@ const ExampleForm = () => {
 };
 ```
 
-Validation errors can also be returned from the [`onSubmit` handler](/docs/api/interfaces/formoptions#onsubmit) by returning a [`SubmitValidationError`](/docs/api/classes/submitvalidationerror) instance. This provides a mechanism to integrate API validation errors and to handle more expensive or async local validation operations.
+Validation errors can also be returned from the [`onSubmit` handler](/docs/api/interfaces/formoptions#onsubmit) by returning a failing [`SubmitResult`](/docs/api/types/submitresult) object containing `{ok: false, errors: [validation errors]}`. This provides a mechanism to integrate API validation errors and to handle more expensive or async local validation operations.
 
 The `onSubmit` callback must return a [`SubmitResult`](/docs/api/types/submitresult) value (or a `Promise` resolving a `SubmitResult` value) with `ok` and `data`/`error` properties.
 
@@ -241,7 +241,7 @@ const ExampleForm = () => {
         }
 
         if (Object.keys(errors).length) {
-          return {ok: false, error: new SubmitValidationError(errors)};
+          return {ok: false, errors};
         }
 
         return {ok: true};

@@ -1,5 +1,4 @@
 import {FormState} from './formState';
-import {SubmitValidationError} from './errors';
 
 describe('FormStateManager', () => {
   describe('constructor', () => {
@@ -25,7 +24,6 @@ describe('FormStateManager', () => {
       expect(state.visitedMap).toEqual({});
       expect(state.submitStatus).toBe('INITIAL');
       expect(state.result).toBeUndefined();
-      expect(state.error).toBeUndefined();
     });
 
     it('should run validate and warn', () => {
@@ -407,7 +405,7 @@ describe('FormStateManager', () => {
       const values = {foo: 'bar'};
       const form = new FormState(values, {
         onSubmit() {
-          return {ok: false, error: new SubmitValidationError({foo: 'error'})};
+          return {ok: false, errors: {foo: 'error'}};
         },
       });
 
@@ -541,23 +539,6 @@ describe('FormStateManager', () => {
       await expect(form.submit()).resolves.toBeUndefined();
 
       expect(form.getState().result).toEqual('result');
-    });
-
-    it('should handle error result', async () => {
-      const submitError = new Error();
-
-      const form = new FormState(
-        {},
-        {
-          onSubmit() {
-            return {ok: false, error: submitError};
-          },
-        },
-      );
-
-      await expect(form.submit()).resolves.toBeUndefined();
-
-      expect(form.getState().error).toEqual(submitError);
     });
   });
 });

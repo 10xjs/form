@@ -4,7 +4,6 @@ import {render} from '@testing-library/react';
 
 import {FormState, SubmitResult} from '../core/formState';
 import {FormStatusData} from '../core/formStatus';
-import {SubmitValidationError} from '../core/errors';
 
 import {FormProvider} from './context';
 import {useFormStatus} from './formStatus';
@@ -402,7 +401,6 @@ describe('useFormStatus hook', () => {
       hasErrors: true,
       submitFailed: true,
       hasSubmitErrors: true,
-      error: expect.any(SubmitValidationError),
     });
   });
 
@@ -412,14 +410,14 @@ describe('useFormStatus hook', () => {
     const values = {};
     const ref = React.createRef<FormState<typeof values, any, any, any>>();
 
-    const validationError = new SubmitValidationError('errors');
+    const errors = 'errors';
 
     render(
       <FormProvider
         ref={ref}
         values={values}
         onSubmit={() => {
-          return {ok: false, error: validationError};
+          return {ok: false, errors};
         }}
       >
         <WithStatus />
@@ -443,7 +441,6 @@ describe('useFormStatus hook', () => {
       ...initialStatus,
       submitFailed: true,
       hasSubmitErrors: true,
-      error: validationError,
     });
   });
 
@@ -453,13 +450,13 @@ describe('useFormStatus hook', () => {
     const values = {};
     const ref = React.createRef<FormState<typeof values, any, any, any>>();
 
-    const validationError = new SubmitValidationError({});
+    const errors = {};
 
     render(
       <FormProvider
         ref={ref}
         values={values}
-        onSubmit={() => Promise.resolve({ok: false, error: validationError})}
+        onSubmit={() => Promise.resolve({ok: false, errors})}
       >
         <WithStatus />
       </FormProvider>,
@@ -476,7 +473,6 @@ describe('useFormStatus hook', () => {
     expect(handleStatus).toHaveBeenNthCalledWith(3, {
       ...initialStatus,
       submitFailed: true,
-      error: validationError,
     });
   });
 

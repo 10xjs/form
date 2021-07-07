@@ -1,6 +1,5 @@
 import {set, get, normalizeError, formatPath, parsePath, equals} from './utils';
 import {StateManager} from './stateManager';
-import {SubmitError, SubmitValidationError} from './errors';
 
 /**
  * The path to a field within the form state as either a string or an array.
@@ -72,28 +71,29 @@ export interface FormData<VS, SD = unknown, ES = undefined, WS = undefined> {
   visitedMap: Record<string, boolean>;
   submitStatus: FormSubmitStatus;
   result?: SD;
-  error?: SubmitError;
 }
 
 /**
  * @typeParam SD Type of submit handler result.
+ * @typeParam ES Type of form error state.
  */
-export type SubmitResult<SD = unknown> =
+export type SubmitResult<SD = unknown, ES = unknown> =
   | (unknown extends SD ? {ok: true; data?: SD} : {ok: true; data: SD})
-  | {ok: false; error: SubmitError};
+  | {ok: false; errors: ES};
 
 /**
  * @typeParam VS Type of form value state.
  * @typeParam SD Type of submit handler result.
+ * @typeParam ES Type of form error state.
  */
-export type SubmitHandler<VS, SD = unknown> = (
+export type SubmitHandler<VS, SD = unknown, ES = unknown> = (
   values: VS,
 ) => // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 | void
   | undefined
-  | SubmitResult<SD>
+  | SubmitResult<SD, ES>
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  | Promise<void | undefined | SubmitResult<SD>>;
+  | Promise<void | undefined | SubmitResult<SD, ES>>;
 
 /**
  * @typeParam VS Type of form value state.
@@ -139,7 +139,7 @@ export interface FormOptions<VS, SD = unknown, ES = undefined, WS = undefined> {
    * };
    * ```
    */
-  onSubmit: SubmitHandler<VS, SD>;
+  onSubmit: SubmitHandler<VS, SD, ES>;
 
   /**
    * Run error validation on the entire value state. This handler is triggered
@@ -299,7 +299,6 @@ export class FormState<
       visitedMap: {},
       submitStatus: FormSubmitStatus.initial,
       result: undefined,
-      error: undefined,
     });
 
     this._config = config;
@@ -558,14 +557,10 @@ export class FormState<
     this._set(['submitStatus'], FormSubmitStatus.started);
   }
 
-  private _submitFailed(error?: SubmitError) {
-    if (error instanceof SubmitValidationError) {
-      this._set(['submitErrors'], normalizeError(error.errors));
-    }
-
+  private _submitFailed(errors?: ES) {
+    this._set(['submitErrors'], normalizeError(errors));
     this._set(['submitStatus'], FormSubmitStatus.failed);
     this._set(['result'], undefined);
-    this._set(['error'], error);
   }
 
   private _submitEnded(data?: SD) {
@@ -583,7 +578,7 @@ export class FormState<
    */
   submit() {
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    return new Promise<void | undefined | SubmitResult<SD>>((resolve) => {
+    return new Promise<void | undefined | SubmitResult<SD, ES>>((resolve) => {
       const {submitStatus, errors, values} = this._getNextState();
 
       if (submitStatus === FormSubmitStatus.started) {
@@ -596,7 +591,7 @@ export class FormState<
       this._flush();
 
       if (errors !== undefined) {
-        return resolve({ok: false, error: new SubmitValidationError(errors)});
+        return resolve({ok: false, errors});
       }
 
       return resolve(this._config.onSubmit(values));
@@ -607,7 +602,7 @@ export class FormState<
         } else if (result.ok) {
           this._submitEnded(result.data);
         } else {
-          this._submitFailed(result.error);
+          this._submitFailed(result.errors);
         }
 
         this._flush();
@@ -655,25 +650,6 @@ export class FormState<
 
   hasWarnings() {
     return this.getWarnings() !== undefined;
-  }
-
-  /**
-   * Get the current submit error.
-   *
-   * ```js {9}
-   * const form = new FormState({}, {
-   *   async onSubmit(values) {
-   *     return {ok: false,  error: new SubmitValidationError({...})};
-   *   }
-   * };
-   *
-   * await form.submit();
-   *
-   * form.getError(); // SubmitValidationError
-   * ```
-   */
-  getError() {
-    return this.getState().error;
   }
 
   getResult() {

@@ -64,11 +64,6 @@ module.exports = {
         label: 'FormState',
         href: '/docs/api/classes/formstate',
       },
-      {
-        type: 'link',
-        label: 'SubmitValidationError',
-        href: '/docs/api/classes/submitvalidationerror',
-      },
     ],
     Recipes: ['persistent-state', 'multi-step-forms'],
   },
